@@ -1,0 +1,9 @@
+<Project>
+	<Import Project="../Version.props" />
+
+	<PropertyGroup>
+		<Authors>SAHB</Authors>
+		<Company>SAHB</Company>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	</PropertyGroup>
+</Project>
