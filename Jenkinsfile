@@ -13,11 +13,9 @@ pipeline {
 		script {
 		  if (isUnix()) {
 			sh "git submodule update --init"
-			//sh "git remote rm origin1"
 		  }
 		  else {
 			bat "git submodule update --init"
-			//bat "git remote rm origin1"
 		  }
 		}
 	  }
