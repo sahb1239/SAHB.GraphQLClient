@@ -2,7 +2,7 @@
 
 namespace SAHB.GraphQLClient.FieldBuilder.Attributes
 {
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property, AllowMultiple = true)]
     // ReSharper disable once InconsistentNaming
     public class GraphQLArgumentsAttribute : Attribute
     {

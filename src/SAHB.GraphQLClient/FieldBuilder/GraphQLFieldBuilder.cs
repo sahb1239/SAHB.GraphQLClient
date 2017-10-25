@@ -134,12 +134,29 @@ namespace SAHB.GraphQLClient.FieldBuilder
 
         protected virtual IEnumerable<GraphQLFieldArguments> GetPropertyArguments(PropertyInfo property)
         {
+            // Get GraphQLArgumentsAttribute on class
+            var propertyType = property.PropertyType;
+            var classAttributes = propertyType.GetTypeInfo().GetCustomAttributes<GraphQLArgumentsAttribute>().ToList();
+
+            // Check if the property type is IEnumerable type
+            if (IsIEnumerableType(propertyType))
+            {
+                // Get attributes for type
+                var attributes = GetIEnumerableType(propertyType).GetTypeInfo()
+                    .GetCustomAttributes<GraphQLArgumentsAttribute>().ToList();
+
+                // Add attributes
+                classAttributes = classAttributes.Concat(attributes).ToList();
+            }
+
             // Get GraphQLArgumentsAttribute on field
-            var fieldAttribute = property.GetCustomAttributes<GraphQLArgumentsAttribute>();
-            if (fieldAttribute == null || !fieldAttribute.Any())
+            var fieldAttribute = property.GetCustomAttributes<GraphQLArgumentsAttribute>().ToList();
+
+            // If no attributes was found
+            if (!classAttributes.Any() && !fieldAttribute.Any())
                 return null;
 
-            return fieldAttribute.Select(attribute =>
+            return classAttributes.Concat(fieldAttribute).Select(attribute =>
                 new GraphQLFieldArguments(attribute.ArgumentName, attribute.VariableName));
         }
 
