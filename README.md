@@ -13,7 +13,7 @@ Install-Package SAHB.GraphQLClient
 ## Examples
 An example for the Starwars API.
 
-```
+```csharp
 // TODO: Use dependency injection (services.AddGraphQLClient()) (IServiceCollection)
 // Initilize GraphQLClient
 var fieldBuilder = new GraphQLFieldBuilder();
@@ -52,7 +52,7 @@ The following code requests the endpoint with the following query
 
 ### Renaming of a field
 To rename a field name use the attribute ```GraphQLFieldNameAttribute``` on the class or property which you want to remap. For example request the field Fullname on the property Name do the follwing.
-```
+```csharp
 public class Friend
 {
    [GraphQLFieldNameAttribute("fullname")
@@ -64,7 +64,7 @@ This will remap the field fullname over to the property Name ```Name:fullname```
 
 ### Ignoring a field
 To ignore a field use the property ```GraphQLFieldIgnoreAttribute``` on the class or property which you want to ignore. For example:
-```
+```csharp
 public class Friend
 {
    [GraphQLFieldNameAttribute("fullname")
@@ -76,7 +76,7 @@ public class Friend
 ```
 
 Example for ignoring a class
-```
+```csharp
 public class Friend
 {
    [GraphQLFieldNameAttribute("fullname")
