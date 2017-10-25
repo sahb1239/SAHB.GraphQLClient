@@ -60,14 +60,24 @@ public class Friend
 }
 ```
 
-This will remap the field fullname over to the property Name ```Name:fullname```.
+This will generate the query:
+```
+{"query":"query{Hero:hero{Name:fullname"}
+```
+
+Note: For generating this you need to remember to add a extra Query class
+```csharp
+public class Query
+{
+   public Hero Hero { get; set; }
+}
+```
 
 ### Ignoring a field
 To ignore a field use the property ```GraphQLFieldIgnoreAttribute``` on the class or property which you want to ignore. For example:
 ```csharp
-public class Friend
+public class Hero
 {
-   [GraphQLFieldNameAttribute("fullname")
    public string Name { get; set; }
 
    [GraphQLFieldIgnoreAttribute]
@@ -77,9 +87,8 @@ public class Friend
 
 Example for ignoring a class
 ```csharp
-public class Friend
+public class Hero
 {
-   [GraphQLFieldNameAttribute("fullname")
    public string Name { get; set; }
 
    public IgnoredClass IgnoredField { get; set; }
@@ -89,6 +98,19 @@ public class Friend
 public class IgnoredClass
 {
    public string SomeProperty { get; set; }
+}
+```
+
+This will generate the query:
+```
+{"query":"query{Hero:hero{Name:name"}
+```
+
+Note: For generating this you need to remember to add a extra Query class
+```csharp
+public class Query
+{
+   public Hero Hero { get; set; }
 }
 ```
 
