@@ -55,5 +55,19 @@ pipeline {
 		}
 	  }
 	}
+	stage("Publish (SAHB)") {
+	  steps {
+		script {
+		  withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'nuget.sahbdev.dk', usernameVariable: 'username', passwordVariable: 'password']]) {
+			if (isUnix()) {
+			  sh "./build.sh --target NugetPush-CI --nuget_push_source=\"https://nuget.sahbdev.dk/api/v2/package\" --nuget_push_apikey=\"%password%\""
+			}
+			else {
+			  bat "powershell -ExecutionPolicy Bypass -File Build.ps1 -target NugetPush-CI --nuget_push_source=\"https://nuget.sahbdev.dk/api/v2/package\" --nuget_push_apikey=\"%password%\""
+			}
+		  }
+		}
+	  }
+	}
   }
 }
