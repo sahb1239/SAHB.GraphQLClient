@@ -6,11 +6,6 @@ namespace SAHB.GraphQLClient.FieldBuilder.Attributes
     // ReSharper disable once InconsistentNaming
     public class GraphQLArgumentsAttribute : Attribute
     {
-        [Obsolete]
-        public GraphQLArgumentsAttribute(string argumentName) : this(argumentName, argumentName)
-        {
-        }
-
         public GraphQLArgumentsAttribute(string argumentName, string variableName)
         {
             VariableName = variableName ?? throw new ArgumentException(nameof(variableName));
