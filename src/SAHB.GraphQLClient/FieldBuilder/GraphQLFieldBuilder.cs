@@ -22,7 +22,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
             foreach (var property in properties)
             {
                 // Check if property is ignored
-                if (property.GetCustomAttribute<GraphQLFieldIgnoreAttribute>() != null)
+                if (TypeIgnored(property))
                     continue;
 
                 // Get the type of the property
@@ -61,7 +61,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                 else
                 {
                     // Check if class is ignored
-                    if (propertyType.GetTypeInfo().GetCustomAttribute<GraphQLFieldIgnoreAttribute>() != null)
+                    if (TypeIgnored(propertyType))
                         continue;
 
                     fields.Add(GetGraphQLFieldWithSubfields(type, property));
@@ -74,11 +74,11 @@ namespace SAHB.GraphQLClient.FieldBuilder
 
         private bool TypeIgnored(Type type) => TypeIgnored(type.GetTypeInfo());
 
-        private bool TypeIgnored(TypeInfo typeInfo)
+        private bool TypeIgnored(MemberInfo memberInfo)
         {
-            return typeInfo.GetCustomAttribute<GraphQLFieldIgnoreAttribute>() != null;
+            return memberInfo.GetCustomAttribute<GraphQLFieldIgnoreAttribute>() != null;
         }
-
+        
         private GraphQLField GetGraphQLField(Type type, PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property), null,
