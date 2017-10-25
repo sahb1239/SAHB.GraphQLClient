@@ -71,5 +71,21 @@ pipeline {
 		}
 	  }
 	}
+	stage("Publish (Nuget)") {
+	  steps {
+		script {
+		  withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'nuget.org', usernameVariable: 'username', passwordVariable: 'password']]) {
+			dir('build') {
+			if (isUnix()) {
+			  sh "./build.sh --target NugetPush-CI --nuget_push_source=\"https://www.nuget.org/api/v2/package\" --nuget_push_apikey=\"%password%\""
+			}
+			else {
+			  bat "powershell -ExecutionPolicy Bypass -File Build.ps1 -target NugetPush-CI --nuget_push_source=\"https://www.nuget.org/api/v2/package\" --nuget_push_apikey=\"%password%\""
+			}
+			}
+		  }
+		}
+	  }
+	}
   }
 }
