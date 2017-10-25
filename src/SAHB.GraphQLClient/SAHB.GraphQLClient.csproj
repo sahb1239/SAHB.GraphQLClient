@@ -3,7 +3,7 @@
   <Import Project="../Common.props" />
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.2</TargetFramework>
+    <TargetFrameworks>netstandard1.2;net452</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
