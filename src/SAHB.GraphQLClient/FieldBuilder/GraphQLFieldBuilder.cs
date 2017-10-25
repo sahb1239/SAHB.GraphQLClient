@@ -32,7 +32,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                 if (propertyType.GetTypeInfo().IsPrimitive || propertyType.GetTypeInfo().IsValueType)
                 {
                     // Check if class is ignored
-                    if (propertyType.GetTypeInfo().GetCustomAttribute<GraphQLFieldIgnoreAttribute>() != null)
+                    if (TypeIgnored(propertyType))
                         continue;
 
                     fields.Add(GetGraphQLField(type, property));
@@ -43,8 +43,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                          !GetIEnumerableType(propertyType).GetTypeInfo().Name.StartsWith(nameof(System)))
                 {
                     // Check if class is ignored
-                    if (GetIEnumerableType(propertyType).GetTypeInfo()
-                            .GetCustomAttribute<GraphQLFieldIgnoreAttribute>() != null)
+                    if (TypeIgnored(GetIEnumerableType(propertyType)))
                         continue;
 
                     fields.Add(GetGraphQLIEnumerableType(type, property));
@@ -53,7 +52,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                 else if (propertyType.GetTypeInfo().Namespace.StartsWith(nameof(System)))
                 {
                     // Check if class is ignored
-                    if (propertyType.GetTypeInfo().GetCustomAttribute<GraphQLFieldIgnoreAttribute>() != null)
+                    if (TypeIgnored(propertyType))
                         continue;
 
                     fields.Add(GetGraphQLField(type, property));
@@ -71,6 +70,13 @@ namespace SAHB.GraphQLClient.FieldBuilder
 
             // Return fields
             return fields;
+        }
+
+        private bool TypeIgnored(Type type) => TypeIgnored(type.GetTypeInfo());
+
+        private bool TypeIgnored(TypeInfo typeInfo)
+        {
+            return typeInfo.GetCustomAttribute<GraphQLFieldIgnoreAttribute>() != null;
         }
 
         private GraphQLField GetGraphQLField(Type type, PropertyInfo property)
