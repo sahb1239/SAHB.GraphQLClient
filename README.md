@@ -25,7 +25,7 @@ var client = new SAHB.GraphQLClient.GraphQLClient(httpClient, queryBuilder);
 var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql");
 
 // Get name etc.
-response.Hero.Name
+response.Hero.Name;
 
 // The query class used is
 public class Query
