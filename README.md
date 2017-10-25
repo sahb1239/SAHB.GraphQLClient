@@ -50,6 +50,7 @@ The following code requests the endpoint with the following query
 {"query":"query{Hero:hero{Name:name Friends:friends{Name:name}}}"} 
 ```
 
+### Renaming of a field
 To rename a field name use the attribute ```GraphQLFieldNameAttribute``` on the class or property which you want to remap. For example request the field Fullname on the property Name do the follwing.
 ```
 public class Friend
@@ -60,3 +61,36 @@ public class Friend
 ```
 
 This will remap the field fullname over to the property Name ```Name:fullname```.
+
+### Ignoring a field
+To ignore a field use the property ```GraphQLFieldIgnoreAttribute``` on the class or property which you want to ignore. For example:
+```
+public class Friend
+{
+   [GraphQLFieldNameAttribute("fullname")
+   public string Name { get; set; }
+
+   [GraphQLFieldIgnoreAttribute]
+   public string IgnoredField { get; set; }
+}
+```
+
+Example for ignoring a class
+```
+public class Friend
+{
+   [GraphQLFieldNameAttribute("fullname")
+   public string Name { get; set; }
+
+   public IgnoredClass IgnoredField { get; set; }
+}
+
+[GraphQLFieldIgnoreAttribute]
+public class IgnoredClass
+{
+   public string SomeProperty { get; set; }
+}
+```
+
+### Arguments
+TODO
