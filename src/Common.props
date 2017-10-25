@@ -10,6 +10,8 @@
 		<RepositoryUrl>https://github.com/sahb1239/SAHB.GraphQLClient</RepositoryUrl>
 		<PackageTags>graphql object mapper</PackageTags>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	  <DebugType>embedded</DebugType>
+    <SourceLinkCreate>true</SourceLinkCreate>
 	</PropertyGroup>
 
   <ItemGroup>
