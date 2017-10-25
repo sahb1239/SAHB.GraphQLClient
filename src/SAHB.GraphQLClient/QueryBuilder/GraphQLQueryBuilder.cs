@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
@@ -7,6 +8,7 @@ using SAHB.GraphQLClient.FieldBuilder;
 namespace SAHB.GraphQLClient.QueryBuilder
 {
     // ReSharper disable once InconsistentNaming
+    /// <inheritdoc />
     public class GraphQLQueryBuilder : IGraphQLQueryBuilder
     {
         private readonly IGraphQLFieldBuilder _graphQlFieldBuilder;
@@ -16,14 +18,16 @@ namespace SAHB.GraphQLClient.QueryBuilder
             _graphQlFieldBuilder = graphQlFieldBuilder;
         }
 
-        public string GetQuery<T>(params GraphQLQueryArgument[] arguments)
+        /// <inheritdoc />
+        public string GetQuery(Type type, params GraphQLQueryArgument[] arguments)
         {
-            return GetQuery(_graphQlFieldBuilder.GetFields(typeof(T)), arguments);
+            return GetQuery(_graphQlFieldBuilder.GetFields(type), arguments);
         }
 
-        public string GetMutation<T>(params GraphQLQueryArgument[] arguments)
+        /// <inheritdoc />
+        public string GetMutation(Type type, params GraphQLQueryArgument[] arguments)
         {
-            return GetMutation(_graphQlFieldBuilder.GetFields(typeof(T)), arguments);
+            return GetMutation(_graphQlFieldBuilder.GetFields(type), arguments);
         }
 
         public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)

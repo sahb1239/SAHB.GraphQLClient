@@ -11,6 +11,7 @@ using SAHB.GraphQLClient.Result;
 namespace SAHB.GraphQLClient
 {
     // ReSharper disable once InconsistentNaming
+    /// <inheritdoc />
     public class GraphQLClient : IGraphQLClient
     {
         private readonly IHttpClient _client;
@@ -22,18 +23,21 @@ namespace SAHB.GraphQLClient
             _queryBuilder = queryBuilder;
         }
 
+        /// <inheritdoc />
         public Task<T> Query<T>(string url, string authorizationToken = null, string authorizationMethod = "Bearer",
             params GraphQLQueryArgument[] arguments) where T : class
         {
             return Query<T>(url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
         }
 
+        /// <inheritdoc />
         public Task<T> Mutate<T>(string url, string authorizationToken = null, string authorizationMethod = "Bearer",
             params GraphQLQueryArgument[] arguments) where T : class
         {
             return Mutate<T>(url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
         }
 
+        /// <inheritdoc />
         public async Task<T> Query<T>(string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
@@ -44,6 +48,7 @@ namespace SAHB.GraphQLClient
             return result.Data;
         }
 
+        /// <inheritdoc />
         public async Task<T> Mutate<T>(string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer",
             params GraphQLQueryArgument[] arguments) where T : class
         {

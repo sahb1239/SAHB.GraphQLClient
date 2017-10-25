@@ -6,6 +6,9 @@ using System.Reflection;
 namespace SAHB.GraphQLClient.FieldBuilder
 {
     // ReSharper disable once InconsistentNaming
+    /// <summary>
+    /// GraphQL field used to contain metadata which can be used for generating a GraphQL query
+    /// </summary>
     public class GraphQLField
     {
         public GraphQLField(string alias, string field, IEnumerable<GraphQLField> fields,
@@ -20,9 +23,24 @@ namespace SAHB.GraphQLClient.FieldBuilder
             PropertyInfo = propertyInfo;
         }
 
+        /// <summary>
+        /// GraphQL alias
+        /// </summary>
         public string Alias { get; }
+        
+        /// <summary>
+        /// GraphQL field
+        /// </summary>
         public string Field { get; }
+
+        /// <summary>
+        /// Subfields
+        /// </summary>
         public IEnumerable<GraphQLField> Fields { get; }
+
+        /// <summary>
+        /// Arguments for the current field
+        /// </summary>
         public IEnumerable<GraphQLFieldArguments> Arguments { get; }
 
         internal Type Type { get; }

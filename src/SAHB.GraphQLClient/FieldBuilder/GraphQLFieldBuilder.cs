@@ -8,8 +8,10 @@ using SAHB.GraphQLClient.FieldBuilder.Attributes;
 namespace SAHB.GraphQLClient.FieldBuilder
 {
     // ReSharper disable once InconsistentNaming
+    /// <inheritdoc />
     public class GraphQLFieldBuilder : IGraphQLFieldBuilder
     {
+        /// <inheritdoc />
         public IEnumerable<GraphQLField> GetFields(Type type)
         {
             // Initilize list with fields and arguments
