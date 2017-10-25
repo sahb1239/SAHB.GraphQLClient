@@ -19,27 +19,40 @@ namespace SAHB.GraphQLClient
             _queryBuilder = queryBuilder;
         }
 
-        public async Task<T> Get<T>(string url, string authorizationToken = null, string authorizationMethod = "Bearer",
+        public Task<T> Get<T>(string url, string authorizationToken = null, string authorizationMethod = "Bearer",
             params GraphQLQueryArgument[] arguments) where T : class
         {
-            var result = await ExecuteQuery<T>(_queryBuilder.GetQuery<T>(arguments), url, authorizationToken, authorizationMethod);
+            return Get<T>(url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
+        }
+
+        public Task<T> Mutate<T>(string url, string authorizationToken = null, string authorizationMethod = "Bearer",
+            params GraphQLQueryArgument[] arguments) where T : class
+        {
+            return Mutate<T>(url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
+        }
+
+        public async Task<T> Get<T>(string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer",
+            params GraphQLQueryArgument[] arguments) where T : class
+        {
+            var result = await ExecuteQuery<T>(_queryBuilder.GetQuery<T>(arguments), url, httpMethod, authorizationToken, authorizationMethod);
             return result.Data;
         }
 
-        public async Task<T> Mutate<T>(string url, string authorizationToken = null, string authorizationMethod = "Bearer",
+        public async Task<T> Mutate<T>(string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer",
             params GraphQLQueryArgument[] arguments) where T : class
         {
-            var result = await ExecuteQuery<T>(_queryBuilder.GetMutation<T>(arguments), url, authorizationToken, authorizationMethod);
+            var result = await ExecuteQuery<T>(_queryBuilder.GetMutation<T>(arguments), url, httpMethod, authorizationToken, authorizationMethod);
             return result.Data;
         }
 
-        private async Task<GraphQLDataResult<T>> ExecuteQuery<T>(string query, string url, string authorizationToken, string authorizationMethod) where T : class
+        private async Task<GraphQLDataResult<T>> ExecuteQuery<T>(string query, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod) where T : class
         {
             if (query == null) throw new ArgumentNullException(nameof(query));
             if (url == null) throw new ArgumentNullException(nameof(url));
+            if (httpMethod == null) throw new ArgumentNullException(nameof(httpMethod));
 
             // Send request
-            HttpResponseMessage response = await _client.SendItemAsync(HttpMethod.Post, url, query, authorizationToken, authorizationMethod);
+            HttpResponseMessage response = await _client.SendItemAsync(httpMethod, url, query, authorizationToken, authorizationMethod);
             response.EnsureSuccessStatusCode();
 
             // Deserilize response
