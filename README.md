@@ -55,7 +55,7 @@ To rename a field name use the attribute ```GraphQLFieldNameAttribute``` on the 
 ```csharp
 public class Friend
 {
-   [GraphQLFieldNameAttribute("fullname")
+   [GraphQLFieldName("fullname")
    public string Name { get; set; }
 }
 ```
@@ -80,7 +80,7 @@ public class Hero
 {
    public string Name { get; set; }
 
-   [GraphQLFieldIgnoreAttribute]
+   [GraphQLFieldIgnore]
    public string IgnoredField { get; set; }
 }
 ```
@@ -94,7 +94,7 @@ public class Hero
    public IgnoredClass IgnoredField { get; set; }
 }
 
-[GraphQLFieldIgnoreAttribute]
+[GraphQLFieldIgnore]
 public class IgnoredClass
 {
    public string SomeProperty { get; set; }
@@ -115,4 +115,28 @@ public class Query
 ```
 
 ### Arguments
-TODO
+It's also possible to add arguments to queries. This can be done with the attribute ```GraphQLArgumentAttribute```. This attribute takes 2 arguments where the first is argument name used on the GraphQL server. The second argument is the varible name which should be used when the query is requested.
+
+```csharp
+public class Query
+{
+   [GraphQLArgumentAttribute("argumentName", "variableName")]
+   public Hero Hero { get; set; }
+}
+```
+
+The client is requested as shown here:
+```csharp
+var response = await client.Get<Query>("https://mpjk0plp9.lp.gql.zone/graphql", 
+   arguments: new GraphQLQueryArgument
+   {
+      VariableName = "variableName",
+      ArgumentType = "String",
+      ArgumentValue = "valueToBeSent"
+   });
+```
+
+This will generate the query (Hero contains here only the Name property):
+```
+{"query":"query($variableName:String){Hero:hero(argumentName:$variableName){Name:name}}","Variables":"{\"variableName\":\"valueToBeSent\"}"}
+```
