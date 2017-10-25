@@ -11,4 +11,52 @@ Install-Package SAHB.GraphQLClient
 ```
 
 ## Examples
-TODO
+An example for the Starwars API.
+
+```
+// TODO: Use dependency injection (services.AddGraphQLClient()) (IServiceCollection)
+// Initilize GraphQLClient
+var fieldBuilder = new GraphQLFieldBuilder();
+var queryBuilder = new GraphQLQueryBuilder(fieldBuilder);
+var httpClient = new Http.HttpClient();
+var client = new SAHB.GraphQLClient.GraphQLClient(httpClient, queryBuilder);
+
+// Get response from url
+var response = await client.Get<Query>("https://mpjk0plp9.lp.gql.zone/graphql");
+
+// Get name etc.
+response.Hero.Name
+
+// The query class used is
+public class Query
+{
+   public CharacterOrPerson Hero { get; set; }
+}
+        
+public class CharacterOrPerson
+{
+   public string Name { get; set; }
+   public IEnumerable<Friend> Friends { get; set; }
+}
+
+public class Friend
+{
+   public string Name { get; set; }
+}
+```
+
+The following code requests the endpoint with the following query
+```
+{"query":"query{Hero:hero{Name:name Friends:friends{Name:name}}}"} 
+```
+
+To rename a field name use the attribute ```GraphQLFieldNameAttribute``` on the class or property which you want to remap. For example request the field Fullname on the property Name do the follwing.
+```
+public class Friend
+{
+   [GraphQLFieldNameAttribute("fullname")
+   public string Name { get; set; }
+}
+```
+
+This will remap the field fullname over to the property Name ```Name:fullname```.
