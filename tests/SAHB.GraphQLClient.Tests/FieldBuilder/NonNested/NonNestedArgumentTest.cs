@@ -14,6 +14,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
             _fieldBuilder = new GraphQLFieldBuilder();
         }
 
+        [Fact]
         public void Test_Single_Usage_Argument()
         {
             // Get all fields for the type QueryToTest
@@ -25,6 +26,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
                              argument.ArgumentName == "min1" && argument.VariableName == "var1"));
         }
 
+        [Fact]
         public void Test_Multiple_Usage_Argument()
         {
             // Get all fields for the type QueryToTest
@@ -38,6 +40,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
                 field.Arguments.Any(argument => argument.ArgumentName == "max2" && argument.VariableName == "var3"));
         }
 
+        [Fact]
         public void Test_Multiple_Same_Name_Usage()
         {
             // Get all fields for the type QueryToTest
@@ -52,6 +55,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
                     field.Arguments.Any(argument => argument.ArgumentName == "max" && argument.VariableName == "var6"));
         }
 
+        [Fact]
         public void Test_Correct_Number_Of_Arguments()
         {
             // Get all fields for the type QueryToTest
