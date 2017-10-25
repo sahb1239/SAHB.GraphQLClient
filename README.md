@@ -22,7 +22,7 @@ var httpClient = new Http.HttpClient();
 var client = new SAHB.GraphQLClient.GraphQLClient(httpClient, queryBuilder);
 
 // Get response from url
-var response = await client.Get<Query>("https://mpjk0plp9.lp.gql.zone/graphql");
+var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql");
 
 // Get name etc.
 response.Hero.Name
@@ -127,7 +127,7 @@ public class Query
 
 The client is requested as shown here:
 ```csharp
-var response = await client.Get<Query>("https://mpjk0plp9.lp.gql.zone/graphql", 
+var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql", 
    arguments: new GraphQLQueryArgument
    {
       VariableName = "variableName",
