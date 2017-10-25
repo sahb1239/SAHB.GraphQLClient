@@ -128,12 +128,7 @@ public class Query
 The client is requested as shown here:
 ```csharp
 var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql", 
-   arguments: new GraphQLQueryArgument
-   {
-      VariableName = "variableName",
-      ArgumentType = "String",
-      ArgumentValue = "valueToBeSent"
-   });
+   arguments: new GraphQLQueryArgument("variableName", "String", "valueToBeSent"});
 ```
 
 This will generate the query (Hero contains here only the Name property):
