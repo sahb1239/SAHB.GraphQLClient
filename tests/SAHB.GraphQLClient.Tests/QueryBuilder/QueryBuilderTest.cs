@@ -6,7 +6,7 @@ namespace SAHB.GraphQLClient.Tests.QueryBuilder
 {
     public class QueryBuilderTest
     {
-        private readonly IGraphQLQueryBuilder _queryBuilder;
+        private readonly GraphQLQueryBuilder _queryBuilder;
 
         public QueryBuilderTest()
         {
