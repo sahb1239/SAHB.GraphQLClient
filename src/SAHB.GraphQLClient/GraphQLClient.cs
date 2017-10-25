@@ -22,12 +22,6 @@ namespace SAHB.GraphQLClient
             _queryBuilder = queryBuilder;
         }
 
-        public Task<T> Get<T>(string url, string authorizationToken = null, string authorizationMethod = "Bearer",
-            params GraphQLQueryArgument[] arguments) where T : class
-        {
-            return Query<T>(url, authorizationToken, authorizationMethod, arguments);
-        }
-
         public Task<T> Query<T>(string url, string authorizationToken = null, string authorizationMethod = "Bearer",
             params GraphQLQueryArgument[] arguments) where T : class
         {
@@ -38,12 +32,6 @@ namespace SAHB.GraphQLClient
             params GraphQLQueryArgument[] arguments) where T : class
         {
             return Mutate<T>(url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
-        }
-
-        public Task<T> Get<T>(string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer",
-            params GraphQLQueryArgument[] arguments) where T : class
-        {
-            return Query<T>(url, httpMethod, authorizationToken, authorizationMethod, arguments);
         }
 
         public async Task<T> Query<T>(string url, HttpMethod httpMethod, string authorizationToken = null,

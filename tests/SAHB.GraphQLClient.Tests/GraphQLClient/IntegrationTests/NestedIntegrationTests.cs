@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryBuilder;
 using Xunit;
@@ -26,7 +23,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
             var client = new SAHB.GraphQLClient.GraphQLClient(httpClient, _queryBuilder);
 
             // Act
-            var response = await client.Get<QueryToTest>("");
+            var response = await client.Query<QueryToTest>("");
 
             // Assert
             Assert.Equal("Søren", response.Me.Firstname);
