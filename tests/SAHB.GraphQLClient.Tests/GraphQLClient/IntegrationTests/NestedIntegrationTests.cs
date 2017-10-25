@@ -22,7 +22,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
         public async Task TestGraphQLClient()
         {
             var responseContent = "{\"data\":{\"Me\":{\"Firstname\":\"Søren\", Age:\"24\", \"lastname\": \"Bjergmark\"}}}";
-            var httpClient = new HttpClientMock.HttpClientMock(responseContent, "{\"Query\":\"query{Me:me{Firstname:firstname Age:age lastname}}\"}");
+            var httpClient = new HttpClientMock.HttpClientMock(responseContent, "{\"query\":\"query{Me:me{Firstname:firstname Age:age lastname}}\"}");
             var client = new SAHB.GraphQLClient.GraphQLClient(httpClient, _queryBuilder);
 
             // Act

@@ -20,7 +20,7 @@ namespace SAHB.GraphQLClient.Tests.QueryBuilder
             {
                 new GraphQLField("alias", "field", null, null, null, null),
             };
-            var expected = "{\"Query\":\"query{alias:field}\"}";
+            var expected = "{\"query\":\"query{alias:field}\"}";
 
             var actual = _queryBuilder.GetQuery(fields);
 
@@ -35,7 +35,7 @@ namespace SAHB.GraphQLClient.Tests.QueryBuilder
                 new GraphQLField("alias", "field", null, null, null, null),
                 new GraphQLField("alias2", "field2", null, null, null, null),
             };
-            var expected = "{\"Query\":\"query{alias:field alias2:field2}\"}";
+            var expected = "{\"query\":\"query{alias:field alias2:field2}\"}";
 
             var actual = _queryBuilder.GetQuery(fields);
 
@@ -65,7 +65,7 @@ namespace SAHB.GraphQLClient.Tests.QueryBuilder
                     type: null, 
                     propertyInfo: null),
             };
-            var expected = "{\"Query\":\"query{alias:field{alias2:field2}}\"}";
+            var expected = "{\"query\":\"query{alias:field{alias2:field2}}\"}";
 
             var actual = _queryBuilder.GetQuery(fields);
 
@@ -111,7 +111,7 @@ namespace SAHB.GraphQLClient.Tests.QueryBuilder
                     propertyInfo: null
                 )
             };
-            var expected = "{\"Query\":\"query{alias:field{alias2:field2 alias3:field3} alias4:field4}\"}";
+            var expected = "{\"query\":\"query{alias:field{alias2:field2 alias3:field3} alias4:field4}\"}";
 
             var actual = _queryBuilder.GetQuery(fields);
 
