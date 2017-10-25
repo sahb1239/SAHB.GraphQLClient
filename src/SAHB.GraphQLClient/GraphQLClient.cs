@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Http;
 using SAHB.GraphQLClient.QueryBuilder;
+using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient
 {
@@ -47,6 +50,9 @@ namespace SAHB.GraphQLClient
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             var result = await ExecuteQuery<T>(_queryBuilder.GetQuery<T>(arguments), url, httpMethod, authorizationToken, authorizationMethod);
+            if (result?.Errors?.Any() ?? false)
+                throw new GraphQLErrorException(result.Errors);
+
             return result.Data;
         }
 
@@ -54,6 +60,9 @@ namespace SAHB.GraphQLClient
             params GraphQLQueryArgument[] arguments) where T : class
         {
             var result = await ExecuteQuery<T>(_queryBuilder.GetMutation<T>(arguments), url, httpMethod, authorizationToken, authorizationMethod);
+            if (result?.Errors?.Any() ?? false)
+                throw new GraphQLErrorException(result.Errors);
+
             return result.Data;
         }
 
