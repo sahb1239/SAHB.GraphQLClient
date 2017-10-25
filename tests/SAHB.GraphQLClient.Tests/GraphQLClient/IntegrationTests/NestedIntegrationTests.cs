@@ -30,6 +30,8 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
 
             // Assert
             Assert.Equal("Søren", response.Me.Firstname);
+            Assert.Equal("Bjergmark", response.Me.lastname);
+            Assert.Equal(24u, response.Me.Age);
         }
 
         public class QueryToTest
