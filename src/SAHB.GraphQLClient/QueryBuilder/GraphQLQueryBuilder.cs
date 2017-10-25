@@ -30,12 +30,12 @@ namespace SAHB.GraphQLClient.QueryBuilder
             return GetMutation(_graphQlFieldBuilder.GetFields(type), arguments);
         }
 
-        public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
+        private string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
             return GetQuery("query", fields, arguments);
         }
 
-        public string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
+        private string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
             return GetQuery("mutation", fields, arguments);
         }
