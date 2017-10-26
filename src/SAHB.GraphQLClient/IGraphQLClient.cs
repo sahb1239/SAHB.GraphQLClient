@@ -10,6 +10,7 @@ namespace SAHB.GraphQLClient
     /// <summary>
     /// GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/>
     /// </summary>
+    [Obsolete]
     public interface IGraphQLClient
     {
         /// <summary>

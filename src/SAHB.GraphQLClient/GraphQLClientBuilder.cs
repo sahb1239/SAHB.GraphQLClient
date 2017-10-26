@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
+using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.Http;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryBuilder;
@@ -13,10 +15,11 @@ namespace SAHB.GraphQLClient
     {
         // ReSharper disable once InconsistentNaming
         /// <summary>
-        /// Registrer the default <see cref="IGraphQLFieldBuilder"/>, <see cref="IGraphQLQueryBuilder"/>, <see cref="IGraphQLHttpClient"/> and the default <see cref="IGraphQLHttpExecutor"/> in the specified <see cref="IServiceCollection"/>
+        /// Registrer the default <see cref="IGraphQLFieldBuilder"/>, <see cref="IGraphQLQueryBuilder"/>, <see cref="IGraphQLHttpClient"/> and the default <see cref="IHttpClient"/> in the specified <see cref="IServiceCollection"/>
         /// </summary>
         /// <param name="services">The service collection to registrer in</param>
         /// <returns>Returns the service collection</returns>
+        [Obsolete]
         public static IServiceCollection AddGraphQLClient(this IServiceCollection services)
         {
             // GraphQL

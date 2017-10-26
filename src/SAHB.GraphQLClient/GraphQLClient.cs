@@ -12,6 +12,7 @@ namespace SAHB.GraphQLClient
 {
     // ReSharper disable once InconsistentNaming
     /// <inheritdoc />
+    [Obsolete]
     public class GraphQLClient : IGraphQLClient
     {
         private readonly IHttpClient _client;
