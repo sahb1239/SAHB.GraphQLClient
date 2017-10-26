@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.Http;
 using SAHB.GraphQLClient.QueryBuilder;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
         public async Task ExampleGraphQL()
         {
             // TODO: Use dependency injection (services.AddGraphQLClient()) (IServiceCollection)
-            var client = new SAHB.GraphQLClient.GraphQLClient(new HttpClient(),
+            var client = new GraphQLHttpClient(new GraphQLHttpExecutor(),
                 new GraphQLQueryBuilder(new GraphQLFieldBuilder()));
 
             var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql");
