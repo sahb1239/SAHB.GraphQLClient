@@ -10,10 +10,14 @@ using SAHB.GraphQLClient.Result;
 namespace SAHB.GraphQLClient.Executor
 {
     // ReSharper disable once InconsistentNaming
+    /// <inheritdoc />
     public class GraphQLHttpExecutor : IGraphQLHttpExecutor
     {
         private readonly HttpClient _client;
 
+        /// <summary>
+        /// Initilizes a new instance of a GraphQL executor which executes a query against a http GraphQL server
+        /// </summary>
         public GraphQLHttpExecutor()
         {
             // Add httpClient
@@ -21,6 +25,7 @@ namespace SAHB.GraphQLClient.Executor
             _client.DefaultRequestHeaders.Connection.Add("keep-alive");
         }
 
+        /// <inheritdoc />
         public async Task<GraphQLDataResult<T>> ExecuteQuery<T>(string query, string url, HttpMethod method, string authorizationToken = null, string authorizationMethod = "Bearer") where T : class
         {
             // Check parameters for null

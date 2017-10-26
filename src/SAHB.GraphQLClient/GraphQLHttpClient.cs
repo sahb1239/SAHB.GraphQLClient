@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.QueryBuilder;
@@ -17,6 +16,11 @@ namespace SAHB.GraphQLClient
         private readonly IGraphQLHttpExecutor _executor;
         private readonly IGraphQLQueryBuilder _queryBuilder;
 
+        /// <summary>
+        /// Initilizes a new instance of GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/>
+        /// </summary>
+        /// <param name="executor">The <see cref="IGraphQLHttpExecutor"/> to use for the GraphQL client</param>
+        /// <param name="queryBuilder">The <see cref="IGraphQLQueryBuilder"/> used for the GraphQL client</param>
         public GraphQLHttpClient(IGraphQLHttpExecutor executor, IGraphQLQueryBuilder queryBuilder)
         {
             _executor = executor ?? throw new ArgumentNullException(nameof(executor));
