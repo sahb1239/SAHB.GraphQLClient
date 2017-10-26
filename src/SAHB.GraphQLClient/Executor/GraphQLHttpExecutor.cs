@@ -23,6 +23,11 @@ namespace SAHB.GraphQLClient.Executor
 
         public async Task<GraphQLDataResult<T>> ExecuteQuery<T>(string query, string url, HttpMethod method, string authorizationToken = null, string authorizationMethod = "Bearer") where T : class
         {
+            // Check parameters for null
+            if (query == null) throw new ArgumentNullException(nameof(query));
+            if (url == null) throw new ArgumentNullException(nameof(url));
+            if (method == null) throw new ArgumentNullException(nameof(method));
+
             // Initilizes request message
             var requestMessage = new HttpRequestMessage(method, url)
             {

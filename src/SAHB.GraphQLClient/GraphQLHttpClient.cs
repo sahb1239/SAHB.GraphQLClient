@@ -19,8 +19,8 @@ namespace SAHB.GraphQLClient
 
         public GraphQLHttpClient(IGraphQLHttpExecutor executor, IGraphQLQueryBuilder queryBuilder)
         {
-            _executor = executor;
-            _queryBuilder = queryBuilder;
+            _executor = executor ?? throw new ArgumentNullException(nameof(executor));
+            _queryBuilder = queryBuilder ?? throw new ArgumentNullException(nameof(queryBuilder));
         }
 
         /// <inheritdoc />
