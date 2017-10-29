@@ -13,14 +13,14 @@ pipeline {
 		script {
 		  if (isUnix()) {
 			sh "git fetch --tags"
-			sh "git fetch origin/develop"
-			sh "git fetch origin/master"
+			sh "git fetch origin develop"
+			sh "git fetch origin master"
 			sh "git submodule update --init"
 		  }
 		  else {
 			bat "git fetch --tags"
-			bat "git fetch origin/develop"
-			bat "git fetch origin/master"
+			bat "git fetch origin develop"
+			bat "git fetch origin master"
 			bat "git submodule update --init"
 		  }
 		}
