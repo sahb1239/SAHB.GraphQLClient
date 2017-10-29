@@ -12,11 +12,11 @@ pipeline {
 	  steps {
 		script {
 		  if (isUnix()) {
-			sh "git fetch origin --tags"
+			sh "git fetch --all --tags"
 			sh "git submodule update --init"
 		  }
 		  else {
-			bat "git fetch origin --tags"
+			bat "git fetch --all --tags"
 			bat "git submodule update --init"
 		  }
 		}
