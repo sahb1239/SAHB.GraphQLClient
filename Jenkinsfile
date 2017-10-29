@@ -56,6 +56,9 @@ pipeline {
 	  }
 	}
 	stage("Publish (SAHB)") {
+	  when {
+		branch "develop"
+      }
 	  steps {
 		script {
 		  withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'nuget.sahbdev.dk', usernameVariable: 'username', passwordVariable: 'password']]) {
@@ -72,6 +75,9 @@ pipeline {
 	  }
 	}
 	stage("Publish (Nuget)") {
+	  when {
+		branch "master"
+      }
 	  steps {
 		script {
 		  withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'nuget.org', usernameVariable: 'username', passwordVariable: 'password']]) {
