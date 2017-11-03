@@ -1,0 +1,9 @@
+version: '{build}'
+image: Visual Studio 2017
+init:
+  - ps: git submodule update --init --recursive
+build_script:
+  - ps: .\Build\build.ps1 -Target "Test"
+artifacts:
+- path: src\**\*.nupkg
+  name: NuGet
