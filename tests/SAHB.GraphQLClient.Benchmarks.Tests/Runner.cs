@@ -6,7 +6,7 @@ namespace SAHB.GraphQLClient.Benchmarks.Tests
 {
     public class Runner
     {
-        [Fact]
+        [Fact(Skip = "Run without any other unit tests")]
         public void RunBenchmarks()
         {
             new BenchmarkSwitcher(typeof(Runner).GetTypeInfo().Assembly).RunAll();
