@@ -81,7 +81,7 @@ public class Query
 ```
 
 ### Ignoring a field
-To ignore a field use the property ```GraphQLFieldIgnoreAttribute``` on the class or property which you want to ignore. For example:
+To ignore a field use the attribute ```GraphQLFieldIgnoreAttribute``` on the class or property which you want to ignore. For example:
 ```csharp
 public class Hero
 {
