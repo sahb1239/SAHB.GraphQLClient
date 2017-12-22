@@ -9,7 +9,7 @@ namespace SAHB.GraphQLClient.QueryBuilder
 {
     // ReSharper disable once InconsistentNaming
     /// <inheritdoc />
-    public class GraphQLQueryBuilder : IGraphQLQueryBuilder
+    public class GraphQLQueryBuilder : IGraphQLQueryBuilder, IGraphQLQueryBuilderFromFields
     {
         private readonly IGraphQLFieldBuilder _graphQlFieldBuilder;
 
@@ -30,12 +30,12 @@ namespace SAHB.GraphQLClient.QueryBuilder
             return GetMutation(_graphQlFieldBuilder.GetFields(type), arguments);
         }
 
-        private string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
+        public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
             return GetQuery("query", fields, arguments);
         }
 
-        private string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
+        public string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
             return GetQuery("mutation", fields, arguments);
         }
