@@ -31,7 +31,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
 
         public class QueryToTest1
         {
-            [GraphQLArguments("argument1", "variable1")]
+            [GraphQLArguments("argument1", "String", "variable1")]
             public string Field1 { get; set; }
         }
 
@@ -52,8 +52,8 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
 
         public class QueryToTest2
         {
-            [GraphQLArguments("argument1", "variable1")]
-            [GraphQLArguments("argument2", "variable2")]
+            [GraphQLArguments("argument1", "String", "variable1")]
+            [GraphQLArguments("argument2", "String", "variable2")]
             public string Field1 { get; set; }
         }
 
@@ -77,12 +77,12 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
 
         public class QueryToTest3
         {
-            [GraphQLArguments("argument1", "variable1")]
-            [GraphQLArguments("argument2", "variable2")]
+            [GraphQLArguments("argument1", "String", "variable1")]
+            [GraphQLArguments("argument2", "String", "variable2")]
             public SubQueryToTest3 Field1 { get; set; }
         }
 
-        [GraphQLArguments("argument3", "variable3")]
+        [GraphQLArguments("argument3", "String", "variable3")]
         public class SubQueryToTest3
         {
             

@@ -69,16 +69,16 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
 
         public class QueryToTest
         {
-            [GraphQLArguments("min1", "var1")]
+            [GraphQLArguments("min1", "String", "var1")]
             public string Field1 { get; set; }
 
-            [GraphQLArguments("min2", "var2")]
-            [GraphQLArguments("max2", "var3")]
+            [GraphQLArguments("min2", "String", "var2")]
+            [GraphQLArguments("max2", "String", "var3")]
             public string Field2 { get; set; }
 
-            [GraphQLArguments("min", "var4")]
-            [GraphQLArguments("min", "var5")]
-            [GraphQLArguments("max", "var6")]
+            [GraphQLArguments("min", "String", "var4")]
+            [GraphQLArguments("min", "String", "var5")]
+            [GraphQLArguments("max", "String", "var6")]
             public string Field3 { get; set; }
         }
     }

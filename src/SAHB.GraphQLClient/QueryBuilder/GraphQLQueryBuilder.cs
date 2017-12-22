@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
@@ -8,7 +9,7 @@ using SAHB.GraphQLClient.FieldBuilder;
 namespace SAHB.GraphQLClient.QueryBuilder
 {
     // ReSharper disable once InconsistentNaming
-    /// <inheritdoc />
+    /// <inheritdoc cref="IGraphQLQueryBuilder" />
     public class GraphQLQueryBuilder : GraphQLQueryBuilderFromFields, IGraphQLQueryBuilder, IGraphQLQueryBuilderFromFields
     {
         private readonly IGraphQLFieldBuilder _graphQlFieldBuilder;
