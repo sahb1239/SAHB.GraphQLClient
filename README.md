@@ -14,12 +14,12 @@ Install-Package SAHB.GraphQLClient
 An example for the Starwars API.
 
 ```csharp
-// TODO: Use dependency injection (services.AddGraphQLClient()) (IServiceCollection)
+// TODO: Use dependency injection (services.AddGraphQLHttpClient()) (IServiceCollection)
 // Initilize GraphQLClient
-var fieldBuilder = new GraphQLFieldBuilder();
-var queryBuilder = new GraphQLQueryBuilder(fieldBuilder);
-var httpClient = new Http.HttpClient();
-var client = new SAHB.GraphQLClient.GraphQLClient(httpClient, queryBuilder);
+IGraphQLFieldBuilder fieldBuilder = new GraphQLFieldBuilder();
+IGraphQLQueryBuilder queryBuilder = new GraphQLQueryBuilder(fieldBuilder);
+IGraphQLHttpExecutor executor = new GraphQLHttpExecutor();
+IGraphQLHttpClient client = new GraphQLHttpClient(executor, queryBuilder);
 
 // Get response from url
 var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql");
@@ -48,6 +48,13 @@ public class Friend
 The following code requests the endpoint with the following query
 ```
 {"query":"query{Hero:hero{Name:name Friends:friends{Name:name}}}"} 
+```
+
+The following using statements is required
+```csharp
+using SAHB.GraphQLClient.Executor;
+using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQLClient.QueryBuilder;
 ```
 
 ### Renaming of a field

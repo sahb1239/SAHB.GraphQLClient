@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryBuilder;
 using Xunit;
@@ -19,8 +20,8 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
         public async Task TestGraphQLClient()
         {
             var responseContent = "{\"data\":{\"Me\":{\"Firstname\":\"Søren\", Age:\"24\", \"lastname\": \"Bjergmark\"}}}";
-            var httpClient = new HttpClientMock.HttpClientMock(responseContent, "{\"query\":\"query{Me:me{Firstname:firstname Age:age lastname}}\"}");
-            var client = new SAHB.GraphQLClient.GraphQLClient(httpClient, _queryBuilder);
+            var httpClient = new HttpClientMock.GraphQLHttpExecutorMock(responseContent, "{\"query\":\"query{Me:me{Firstname:firstname Age:age lastname}}\"}");
+            var client = new GraphQLHttpClient(httpClient, _queryBuilder);
 
             // Act
             var response = await client.Query<QueryToTest>("");

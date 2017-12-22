@@ -10,8 +10,7 @@ namespace SAHB.GraphQLClient
     /// <summary>
     /// GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/>
     /// </summary>
-    [Obsolete]
-    public interface IGraphQLClient
+    public interface IGraphQLHttpClient
     {
         /// <summary>
         /// Sends a query to a GraphQL server using a specified type, the specified URL and the HttpMethod Post

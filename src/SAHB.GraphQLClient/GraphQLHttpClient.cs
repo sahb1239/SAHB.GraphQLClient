@@ -2,9 +2,8 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using SAHB.GraphQLClient.Exceptions;
-using SAHB.GraphQLClient.Http;
+using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.QueryBuilder;
 using SAHB.GraphQLClient.Result;
 
@@ -12,16 +11,20 @@ namespace SAHB.GraphQLClient
 {
     // ReSharper disable once InconsistentNaming
     /// <inheritdoc />
-    [Obsolete]
-    public class GraphQLClient : IGraphQLClient
+    public class GraphQLHttpClient : IGraphQLHttpClient
     {
-        private readonly IHttpClient _client;
+        private readonly IGraphQLHttpExecutor _executor;
         private readonly IGraphQLQueryBuilder _queryBuilder;
 
-        public GraphQLClient(IHttpClient client, IGraphQLQueryBuilder queryBuilder)
+        /// <summary>
+        /// Initilizes a new instance of GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/>
+        /// </summary>
+        /// <param name="executor">The <see cref="IGraphQLHttpExecutor"/> to use for the GraphQL client</param>
+        /// <param name="queryBuilder">The <see cref="IGraphQLQueryBuilder"/> used for the GraphQL client</param>
+        public GraphQLHttpClient(IGraphQLHttpExecutor executor, IGraphQLQueryBuilder queryBuilder)
         {
-            _client = client;
-            _queryBuilder = queryBuilder;
+            _executor = executor ?? throw new ArgumentNullException(nameof(executor));
+            _queryBuilder = queryBuilder ?? throw new ArgumentNullException(nameof(queryBuilder));
         }
 
         /// <inheritdoc />
@@ -60,19 +63,13 @@ namespace SAHB.GraphQLClient
             return result.Data;
         }
 
-        private async Task<GraphQLDataResult<T>> ExecuteQuery<T>(string query, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod) where T : class
+        private Task<GraphQLDataResult<T>> ExecuteQuery<T>(string query, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod) where T : class
         {
             if (query == null) throw new ArgumentNullException(nameof(query));
             if (url == null) throw new ArgumentNullException(nameof(url));
             if (httpMethod == null) throw new ArgumentNullException(nameof(httpMethod));
 
-            // Send request
-            HttpResponseMessage response = await _client.SendItemAsync(httpMethod, url, query, authorizationToken, authorizationMethod);
-            response.EnsureSuccessStatusCode();
-
-            // Deserilize response
-            string stringResponse = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<GraphQLDataResult<T>>(stringResponse);
+            return _executor.ExecuteQuery<T>(query, url, httpMethod, authorizationToken, authorizationMethod);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace SAHB.GraphQLClient.Http
 {
+    [Obsolete]
     public static class HttpClientExtentions
     {
         [Obsolete]
