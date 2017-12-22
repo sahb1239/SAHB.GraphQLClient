@@ -11,6 +11,15 @@ namespace SAHB.GraphQLClient.FieldBuilder
     /// </summary>
     public class GraphQLField
     {
+        /// <summary>
+        /// Initilizes a GraphQL field used to contain metadata which can be used for generating a GraphQL query
+        /// </summary>
+        /// <param name="alias">GraphQL alias</param>
+        /// <param name="field">GraphQL field</param>
+        /// <param name="fields">Subfields</param>
+        /// <param name="arguments">Arguments for the current field</param>
+        /// <param name="type">The type</param>
+        /// <param name="propertyInfo">The propertyinfo for the property which corrosponds to this field</param>
         public GraphQLField(string alias, string field, IEnumerable<GraphQLField> fields,
             IEnumerable<GraphQLFieldArguments> arguments, Type type, PropertyInfo propertyInfo)
         {

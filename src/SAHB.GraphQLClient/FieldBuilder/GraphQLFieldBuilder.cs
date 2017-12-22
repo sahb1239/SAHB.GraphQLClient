@@ -42,7 +42,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                 // Check if IEnumerable type and the enumerable type is not a System type (String is a IEnumerable type and therefore would otherwise go into this case)
                 else if (IsIEnumerableType(propertyType) &&
                          !GetIEnumerableType(propertyType).GetTypeInfo().IsValueType &&
-                         !GetIEnumerableType(propertyType).GetTypeInfo().Name.StartsWith(nameof(System)))
+                         !GetIEnumerableType(propertyType).GetTypeInfo().Name.StartsWith(nameof(System), StringComparison.Ordinal))
                 {
                     // Check if class is ignored
                     if (TypeIgnored(GetIEnumerableType(propertyType)))
@@ -51,7 +51,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                     fields.Add(GetGraphQLIEnumerableType(type, property));
                 }
                 // Check if System type
-                else if (propertyType.GetTypeInfo().Namespace.StartsWith(nameof(System)))
+                else if (propertyType.GetTypeInfo().Namespace.StartsWith(nameof(System), StringComparison.Ordinal))
                 {
                     // Check if class is ignored
                     if (TypeIgnored(propertyType))
@@ -124,7 +124,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
             // Detect if it's a IEnumerable type
             if (IsIEnumerableType(propertyType) &&
                 !GetIEnumerableType(propertyType).GetTypeInfo().IsValueType &&
-                !GetIEnumerableType(propertyType).GetTypeInfo().Name.StartsWith(nameof(System)))
+                !GetIEnumerableType(propertyType).GetTypeInfo().Name.StartsWith(nameof(System), StringComparison.Ordinal))
             {
                 classAttribute = GetIEnumerableType(propertyType).GetTypeInfo()
                     .GetCustomAttribute<GraphQLFieldNameAttribute>();
