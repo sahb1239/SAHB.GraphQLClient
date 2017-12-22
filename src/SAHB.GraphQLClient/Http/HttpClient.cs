@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace SAHB.GraphQLClient.Http
 {
+    [Obsolete]
     public class HttpClient : IHttpClient
     {
         private readonly System.Net.Http.HttpClient _client;
