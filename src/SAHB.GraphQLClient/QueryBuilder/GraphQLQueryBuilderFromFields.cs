@@ -11,11 +11,13 @@ namespace SAHB.GraphQLClient.QueryBuilder
     /// <inheritdoc />
     public class GraphQLQueryBuilderFromFields : IGraphQLQueryBuilderFromFields
     {
+        /// <inheritdoc />
         public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
             return GetQuery("query", fields, arguments);
         }
 
+        /// <inheritdoc />
         public string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
             return GetQuery("mutation", fields, arguments);
@@ -23,10 +25,20 @@ namespace SAHB.GraphQLClient.QueryBuilder
 
         private string GetQuery(string queryType, IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
-            var query = GetGraphQLQuery(queryType, arguments, GetFields(fields));
+            var query = GetGraphQLQuery(queryType, GetArguments(fields), GetFields(fields));
             var request = GetQueryRequest(query, arguments);
 
             return request;
+        }
+
+        private string GetArguments(IEnumerable<GraphQLField> fields)
+        {
+            return string.Join(" ", GetAllArguments(fields).Select(e => $"${e.VariableName}:{e.ArgumentType}"));
+        }
+
+        private IEnumerable<GraphQLFieldArguments> GetAllArguments(IEnumerable<GraphQLField> fields)
+        {
+            return fields?.SelectMany(field => field.Arguments.Concat(GetAllArguments(field.Fields))) ?? Enumerable.Empty<GraphQLFieldArguments>();
         }
 
         private string GetFields(IEnumerable<GraphQLField> fields)
@@ -74,10 +86,9 @@ namespace SAHB.GraphQLClient.QueryBuilder
             return builder.ToString();
         }
 
-        private string GetGraphQLQuery(string queryType, IEnumerable<GraphQLQueryArgument> arguments, string fields)
+        private string GetGraphQLQuery(string queryType, string argument, string fields)
         {
             // Get argument string
-            var argument = string.Join(" ", arguments.Select(e => "$" + e.VariableName + ":" + e.ArgumentType));
             if (!string.IsNullOrEmpty(argument))
             {
                 argument = $"({argument})";
