@@ -1,7 +1,7 @@
 ﻿using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryBuilder;
 
-namespace SAHB.GraphQLClient.Benchmarks.Tests
+namespace SAHB.GraphQLClient.Tests.Benchmarks.GeneralBenchmarks
 {
     public class QueryBuilderBenchmarks : GeneralFieldBenchmark
     {

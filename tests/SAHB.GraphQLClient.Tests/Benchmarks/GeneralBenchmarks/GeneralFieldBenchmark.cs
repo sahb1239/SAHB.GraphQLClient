@@ -5,16 +5,13 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Toolchains.CsProj;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 
-namespace SAHB.GraphQLClient.Benchmarks.Tests
+namespace SAHB.GraphQLClient.Tests.Benchmarks.GeneralBenchmarks
 {
     public class MultipleRuntimes : ManualConfig
     {
         public MultipleRuntimes()
         {
             Add(Job.Default.With(CsProjCoreToolchain.NetCoreApp20)); // .NET Core 2.0
-            Add(Job.Default.With(CsProjCoreToolchain.NetCoreApp11)); // .NET Core 1.1
-            
-            Add(Job.Default.With(CsProjClassicNetToolchain.Net462)); // NET 4.6.2
         }
     }
 

@@ -1,6 +1,6 @@
 ﻿using SAHB.GraphQLClient.FieldBuilder;
 
-namespace SAHB.GraphQLClient.Benchmarks.Tests
+namespace SAHB.GraphQLClient.Tests.Benchmarks.GeneralBenchmarks
 {
     public class FieldBuilderBenchmarks : GeneralFieldBenchmark
     {

@@ -2,7 +2,7 @@
 using BenchmarkDotNet.Running;
 using Xunit;
 
-namespace SAHB.GraphQLClient.Benchmarks.Tests
+namespace SAHB.GraphQLClient.Tests.Benchmarks
 {
     public class Runner
     {
