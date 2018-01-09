@@ -22,7 +22,9 @@ namespace SAHB.GraphQLClient
         {
             // GraphQL
             services.AddSingleton<IGraphQLFieldBuilder, GraphQLFieldBuilder>();
-            services.AddSingleton<IGraphQLQueryBuilder, GraphQLQueryBuilder>();
+            services.AddSingleton<GraphQLQueryBuilder>();
+            services.AddSingleton<IGraphQLQueryBuilder>(serviceProvider => serviceProvider.GetService<GraphQLQueryBuilder>());
+            services.AddSingleton<IGraphQLQueryBuilderFromFields>(serviceProvider => serviceProvider.GetService<GraphQLQueryBuilder>());
             services.AddSingleton<IGraphQLHttpExecutor, GraphQLHttpExecutor>();
             services.AddSingleton<IGraphQLHttpClient, GraphQLHttpClient>();
             return services;
