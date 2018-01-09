@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
+using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryBuilder;
@@ -19,7 +21,18 @@ namespace SAHB.GraphQLClient.Batching.Internal
         /// <inheritdoc />
         public IGraphQLQuery<T> Query<T>(params GraphQLQueryArgument[] arguments) where T : class
         {
+            if (_batch.Executed)
+            {
+                throw new GraphQLBatchAlreadyExecutedException();
+            }
+
             return _batch.AddQuery<T>(arguments);
+        }
+
+        /// <inheritdoc />
+        public bool IsExecuted()
+        {
+            return _batch.Executed;
         }
     }
 }
