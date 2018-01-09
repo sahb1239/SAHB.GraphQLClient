@@ -76,18 +76,5 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClientBuilder
                 Assert.NotNull(scope.ServiceProvider.GetService<IGraphQLFieldBuilder>());
             }
         }
-
-        [Fact]
-        public void Test_GetService_GraphQLBatchHttpClient()
-        {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddGraphQLHttpClient();
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-
-            using (var scope = serviceProvider.CreateScope())
-            {
-                Assert.NotNull(scope.ServiceProvider.GetService<IGraphQLBatchHttpClient>());
-            }
-        }
     }
 }

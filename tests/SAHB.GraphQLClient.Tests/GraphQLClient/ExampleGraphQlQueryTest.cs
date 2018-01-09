@@ -17,8 +17,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
         public async Task ExampleGraphQL()
         {
             // TODO: Use dependency injection (services.AddGraphQLClient()) (IServiceCollection)
-            var client = new GraphQLHttpClient(new GraphQLHttpExecutor(),
-                new GraphQLQueryBuilder(new GraphQLFieldBuilder()));
+            var client = GraphQLHttpClient.Default();
 
             var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql");
 

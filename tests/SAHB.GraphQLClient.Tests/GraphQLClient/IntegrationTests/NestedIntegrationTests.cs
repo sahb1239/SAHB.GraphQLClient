@@ -8,12 +8,13 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
 {
     public class NestedIntegrationTests
     {
-        private readonly GraphQLQueryBuilder _queryBuilder;
+        private readonly IGraphQLQueryBuilderFromFields _queryBuilder;
+        private readonly IGraphQLFieldBuilder _fieldBuilder;
 
         public NestedIntegrationTests()
         {
-            var fieldBuilder = new GraphQLFieldBuilder();
-            _queryBuilder = new GraphQLQueryBuilder(fieldBuilder);
+            _queryBuilder = new GraphQLQueryBuilderFromFields();
+            _fieldBuilder = new GraphQLFieldBuilder();
         }
 
         [Fact]
@@ -21,7 +22,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
         {
             var responseContent = "{\"data\":{\"Me\":{\"Firstname\":\"Søren\", Age:\"24\", \"lastname\": \"Bjergmark\"}}}";
             var httpClient = new HttpClientMock.GraphQLHttpExecutorMock(responseContent, "{\"query\":\"query{Me:me{Firstname:firstname Age:age lastname}}\"}");
-            var client = new GraphQLHttpClient(httpClient, _queryBuilder);
+            var client = new GraphQLHttpClient(httpClient, _fieldBuilder, _queryBuilder);
 
             // Act
             var response = await client.Query<QueryToTest>("");
