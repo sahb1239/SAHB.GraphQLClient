@@ -51,7 +51,9 @@ namespace SAHB.GraphQLClient.Batching.Internal
             // Add fields
             _fields.Add(identifier,
                 _fieldBuilder.GetFields(typeof(T)).Select(field =>
-                    new GraphQLFieldWithOverridedAlias(identifier + "_" + field.Alias, field)));
+                    new GraphQLFieldWithOverridedAlias(
+                        identifier + "_" + (string.IsNullOrWhiteSpace(field.Alias) ? field.Field : field.Alias),
+                        field)));
             _arguments.Add(identifier, arguments);
 
             return new GraphQLBatchQuery<T>(this, identifier);
