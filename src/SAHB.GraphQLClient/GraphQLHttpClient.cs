@@ -49,7 +49,7 @@ namespace SAHB.GraphQLClient
             if (result?.Errors?.Any() ?? false)
                 throw new GraphQLErrorException(result.Errors);
 
-            return result.Data;
+            return result?.Data;
         }
 
         /// <inheritdoc />
@@ -60,7 +60,7 @@ namespace SAHB.GraphQLClient
             if (result?.Errors?.Any() ?? false)
                 throw new GraphQLErrorException(result.Errors);
 
-            return result.Data;
+            return result?.Data;
         }
 
         private Task<GraphQLDataResult<T>> ExecuteQuery<T>(string query, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod) where T : class
