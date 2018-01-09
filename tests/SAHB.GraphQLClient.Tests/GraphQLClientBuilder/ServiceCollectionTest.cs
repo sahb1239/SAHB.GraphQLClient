@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryBuilder;
+using SAHB.GraphQLClient.Batching;
 using Xunit;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClientBuilder
@@ -72,7 +73,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClientBuilder
 
             using (var scope = serviceProvider.CreateScope())
             {
-                scope.ServiceProvider.GetService<IGraphQLFieldBuilder>();
+                Assert.NotNull(scope.ServiceProvider.GetService<IGraphQLFieldBuilder>());
             }
         }
     }

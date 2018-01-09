@@ -25,12 +25,12 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <summary>
         /// GraphQL argument name
         /// </summary>
-        public string ArgumentName { get; set; }
+        public string ArgumentName { get; }
 
         /// <summary>
         /// The argument type of the variable
         /// </summary>
-        public string ArgumentType { get; set; }
+        public string ArgumentType { get; }
 
         /// <summary>
         /// GraphQL variable name
