@@ -104,6 +104,8 @@ namespace SAHB.GraphQLClient.Batching.Internal
             throw new NotImplementedException("Arguments with same variable names is not supported at the moment");
         }
 
+        public bool Executed => _isExecuted;
+
         // ReSharper disable once InconsistentNaming
         /// <inheritdoc />
         private class GraphQLFieldWithOverridedAlias : GraphQLField

@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
-using SAHB.GraphQLClient.Batching.Internal;
 
-namespace SAHB.GraphQLClient.Batching
+namespace SAHB.GraphQLClient.Batching.Internal
 {
     // ReSharper disable once InconsistentNaming
     /// <inheritdoc />

@@ -1,10 +1,9 @@
 ﻿using System.Net.Http;
-using SAHB.GraphQLClient.Batching.Internal;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryBuilder;
 
-namespace SAHB.GraphQLClient.Batching
+namespace SAHB.GraphQLClient.Batching.Internal
 {
     // ReSharper disable once InconsistentNaming
     /// <inheritdoc />

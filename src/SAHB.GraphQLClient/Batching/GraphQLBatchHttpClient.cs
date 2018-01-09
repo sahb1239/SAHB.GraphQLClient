@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using SAHB.GraphQLClient.Batching.Internal;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryBuilder;
@@ -14,11 +15,11 @@ namespace SAHB.GraphQLClient.Batching
         private readonly IGraphQLQueryBuilderFromFields _queryBuilder;
 
         /// <summary>
-        /// 
+        /// Initilizes a new instance of a GraphQLBatchHttpClient which supports generating batched queries
         /// </summary>
-        /// <param name="executor"></param>
-        /// <param name="fieldBuilder"></param>
-        /// <param name="queryBuilder"></param>
+        /// <param name="executor">The <see cref="IGraphQLHttpExecutor"/> used to execute the GraphQL request</param>
+        /// <param name="fieldBuilder">The <see cref="IGraphQLFieldBuilder"/> used for generating the fields used for generating the query</param>
+        /// <param name="queryBuilder">The <see cref="IGraphQLQueryBuilder"/> used for generating the queries</param>
         public GraphQLBatchHttpClient(IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryBuilderFromFields queryBuilder)
         {
             _executor = executor;
