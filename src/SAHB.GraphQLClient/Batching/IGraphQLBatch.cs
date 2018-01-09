@@ -1,6 +1,5 @@
-﻿using SAHB.GraphQLClient.QueryBuilder;
-
-namespace SAHB.GraphQLClient.Batching
+﻿using SAHB.GraphQLClient.QueryGenerator;
+namespace SAHB.GraphQLClient.Batching
 {
     // ReSharper disable once InconsistentNaming
     /// <summary>

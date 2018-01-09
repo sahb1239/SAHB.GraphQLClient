@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.QueryBuilder;
+using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient.Batching.Internal
@@ -20,14 +20,14 @@ namespace SAHB.GraphQLClient.Batching.Internal
         private readonly string _authorizationMethod;
         private readonly IGraphQLHttpExecutor _executor;
         private readonly IGraphQLFieldBuilder _fieldBuilder;
-        private readonly IGraphQLQueryBuilderFromFields _queryBuilder;
+        private readonly IGraphQLQueryGeneratorFromFields _queryGenerator;
         private readonly IDictionary<string, IEnumerable<GraphQLFieldWithOverridedAlias>> _fields;
         private readonly IDictionary<string, GraphQLQueryArgument[]> _arguments;
         private int _identifierCount = 0;
         private bool _isExecuted = false;
         private GraphQLDataResult<JObject> _result;
 
-        public GraphQLBatchMerger(string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryBuilderFromFields queryBuilder)
+        public GraphQLBatchMerger(string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator)
         {
             _url = url;
             _httpMethod = httpMethod;
@@ -35,7 +35,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             _authorizationMethod = authorizationMethod;
             _executor = executor;
             _fieldBuilder = fieldBuilder;
-            _queryBuilder = queryBuilder;
+            _queryGenerator = queryGenerator;
             _fields = new Dictionary<string, IEnumerable<GraphQLFieldWithOverridedAlias>>();
             _arguments = new Dictionary<string, GraphQLQueryArgument[]>();
         }
@@ -93,7 +93,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             }
 
             // Generate query
-            var query = _queryBuilder.GetQuery(_fields.SelectMany(e => e.Value),
+            var query = _queryGenerator.GetQuery(_fields.SelectMany(e => e.Value),
                 _arguments.SelectMany(e => e.Value).ToArray());
 
             // Execute query

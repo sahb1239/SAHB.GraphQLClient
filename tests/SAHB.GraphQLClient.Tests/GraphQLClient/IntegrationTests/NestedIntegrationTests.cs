@@ -1,19 +1,19 @@
 ﻿using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.QueryBuilder;
+using SAHB.GraphQLClient.QueryGenerator;
 using Xunit;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
 {
     public class NestedIntegrationTests
     {
-        private readonly IGraphQLQueryBuilderFromFields _queryBuilder;
+        private readonly IGraphQLQueryGeneratorFromFields _queryGenerator;
         private readonly IGraphQLFieldBuilder _fieldBuilder;
 
         public NestedIntegrationTests()
         {
-            _queryBuilder = new GraphQLQueryBuilderFromFields();
+            _queryGenerator = new GraphQLQueryGeneratorFromFields();
             _fieldBuilder = new GraphQLFieldBuilder();
         }
 
@@ -22,7 +22,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
         {
             var responseContent = "{\"data\":{\"Me\":{\"Firstname\":\"Søren\", Age:\"24\", \"lastname\": \"Bjergmark\"}}}";
             var httpClient = new HttpClientMock.GraphQLHttpExecutorMock(responseContent, "{\"query\":\"query{Me:me{Firstname:firstname Age:age lastname}}\"}");
-            var client = new GraphQLHttpClient(httpClient, _fieldBuilder, _queryBuilder);
+            var client = new GraphQLHttpClient(httpClient, _fieldBuilder, _queryGenerator);
 
             // Act
             var response = await client.Query<QueryToTest>("");

@@ -4,8 +4,8 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.QueryBuilder;
 using SAHB.GraphQLClient.Batching;
+using SAHB.GraphQLClient.QueryGenerator;
 using Xunit;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClientBuilder
@@ -39,7 +39,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClientBuilder
         }
 
         [Fact]
-        public void Test_GetService_GraphQLQueryBuilder()
+        public void Test_GetService_GraphQLQueryGenerator()
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddGraphQLHttpClient();
@@ -47,12 +47,12 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClientBuilder
 
             using (var scope = serviceProvider.CreateScope())
             {
-                Assert.NotNull(scope.ServiceProvider.GetService<IGraphQLQueryBuilder>());
+                Assert.NotNull(scope.ServiceProvider.GetService<IGraphQLQueryGenerator>());
             }
         }
 
         [Fact]
-        public void Test_GetService_GraphQLQueryBuilderFromFields()
+        public void Test_GetService_GraphQLQueryGeneratorFromFields()
         {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddGraphQLHttpClient();
@@ -60,7 +60,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClientBuilder
 
             using (var scope = serviceProvider.CreateScope())
             {
-                Assert.NotNull(scope.ServiceProvider.GetService<IGraphQLQueryBuilderFromFields>());
+                Assert.NotNull(scope.ServiceProvider.GetService<IGraphQLQueryGeneratorFromFields>());
             }
         }
 

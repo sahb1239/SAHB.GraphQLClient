@@ -3,7 +3,7 @@ using System.Net.Http;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.QueryBuilder;
+using SAHB.GraphQLClient.QueryGenerator;
 
 namespace SAHB.GraphQLClient.Batching.Internal
 {
@@ -13,9 +13,9 @@ namespace SAHB.GraphQLClient.Batching.Internal
     {
         private readonly GraphQLBatchMerger _batch;
 
-        internal GraphQLBatch(string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryBuilderFromFields queryBuilder)
+        internal GraphQLBatch(string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator)
         {
-            _batch = new GraphQLBatchMerger(url, httpMethod, authorizationToken, authorizationMethod, executor, fieldBuilder, queryBuilder);
+            _batch = new GraphQLBatchMerger(url, httpMethod, authorizationToken, authorizationMethod, executor, fieldBuilder, queryGenerator);
         }
 
         /// <inheritdoc />

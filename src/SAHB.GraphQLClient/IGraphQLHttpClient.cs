@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using SAHB.GraphQLClient.Batching;
 using SAHB.GraphQLClient.Exceptions;
-using SAHB.GraphQLClient.QueryBuilder;
+using SAHB.GraphQLClient.QueryGenerator;
 
 namespace SAHB.GraphQLClient
 {
