@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQLClient.FieldBuilder.Attributes;
 
 namespace SAHB.GraphQLClient.QueryBuilder
 {
