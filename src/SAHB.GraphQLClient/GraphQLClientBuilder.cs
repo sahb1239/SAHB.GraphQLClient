@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using SAHB.GraphQLClient.Batching;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryBuilder;
@@ -27,6 +28,7 @@ namespace SAHB.GraphQLClient
             services.AddSingleton<IGraphQLQueryBuilderFromFields>(serviceProvider => serviceProvider.GetService<GraphQLQueryBuilder>());
             services.AddSingleton<IGraphQLHttpExecutor, GraphQLHttpExecutor>();
             services.AddSingleton<IGraphQLHttpClient, GraphQLHttpClient>();
+            services.AddSingleton<IGraphQLBatchHttpClient, GraphQLBatchHttpClient>();
             return services;
         }
     }
