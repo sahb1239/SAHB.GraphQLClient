@@ -6,6 +6,18 @@ namespace SAHB.GraphQLClient
     /// <summary>
     /// Generated Query which supports executing the query
     /// </summary>
+    public interface IGraphQLQuery
+    {
+        /// <summary>
+        /// Execute the query
+        /// </summary>
+        Task<object> Execute();
+    }
+
+    // ReSharper disable once InconsistentNaming
+    /// <summary>
+    /// Generated Query which supports executing the query
+    /// </summary>
     /// <typeparam name="T">The type of the query</typeparam>
     public interface IGraphQLQuery<T>
         where T : class
