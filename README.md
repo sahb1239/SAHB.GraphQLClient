@@ -16,10 +16,7 @@ An example for the Starwars API.
 ```csharp
 // TODO: Use dependency injection (services.AddGraphQLHttpClient()) (IServiceCollection)
 // Initilize GraphQLClient
-IGraphQLFieldBuilder fieldBuilder = new GraphQLFieldBuilder();
-IGraphQLQueryBuilder queryBuilder = new GraphQLQueryBuilder(fieldBuilder);
-IGraphQLHttpExecutor executor = new GraphQLHttpExecutor();
-IGraphQLHttpClient client = new GraphQLHttpClient(executor, queryBuilder);
+IGraphQLHttpClient client = GraphQLHttpClient.Default();
 
 // Get response from url
 var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql");

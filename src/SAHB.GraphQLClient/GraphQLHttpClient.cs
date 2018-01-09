@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
+using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryBuilder;
 using SAHB.GraphQLClient.Result;
 
@@ -25,6 +26,15 @@ namespace SAHB.GraphQLClient
         {
             _executor = executor ?? throw new ArgumentNullException(nameof(executor));
             _queryBuilder = queryBuilder ?? throw new ArgumentNullException(nameof(queryBuilder));
+        }
+
+        /// <summary>
+        /// Initilizes a new instance of GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/> using the default <see cref="IGraphQLHttpExecutor"/> and the default <see cref="IGraphQLQueryBuilder"/>
+        /// </summary>
+        /// <returns>A new instance of the GraphQL client</returns>
+        public static IGraphQLHttpClient Default()
+        {
+            return new GraphQLHttpClient(new GraphQLHttpExecutor(), new GraphQLQueryBuilder(new GraphQLFieldBuilder()));
         }
 
         /// <inheritdoc />
