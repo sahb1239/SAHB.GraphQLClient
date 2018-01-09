@@ -11,7 +11,7 @@ namespace SAHB.GraphQLClient.Tests.QueryBuilder
         {
             var fields = new[]
             {
-                new GraphQLField("alias", "field", null, null, null, null),
+                new GraphQLField("alias", "field", null, null),
             };
             var fieldBuilder = new FieldBuilderMock(fields);
             var queryBuilder = new GraphQLQueryBuilder(fieldBuilder);
@@ -27,8 +27,8 @@ namespace SAHB.GraphQLClient.Tests.QueryBuilder
         {
             var fields = new[]
             {
-                new GraphQLField("alias", "field", null, null, null, null),
-                new GraphQLField("alias2", "field2", null, null, null, null),
+                new GraphQLField("alias", "field", null, null),
+                new GraphQLField("alias2", "field2", null, null),
             };
             var fieldBuilder = new FieldBuilderMock(fields);
             var queryBuilder = new GraphQLQueryBuilder(fieldBuilder);
@@ -53,14 +53,10 @@ namespace SAHB.GraphQLClient.Tests.QueryBuilder
                             alias: "alias2", 
                             field: "field2", 
                             fields: null, 
-                            arguments: null, 
-                            type: null, 
-                            propertyInfo: null
+                            arguments: null
                         ), 
                     }, 
-                    arguments: null, 
-                    type: null, 
-                    propertyInfo: null),
+                    arguments: null),
             };
             var fieldBuilder = new FieldBuilderMock(fields);
             var queryBuilder = new GraphQLQueryBuilder(fieldBuilder);
@@ -85,29 +81,21 @@ namespace SAHB.GraphQLClient.Tests.QueryBuilder
                             alias: "alias2",
                             field: "field2",
                             fields: null,
-                            arguments: null,
-                            type: null,
-                            propertyInfo: null
+                            arguments: null
                         ),
                         new GraphQLField(
                             alias: "alias3",
                             field: "field3",
                             fields: null,
-                            arguments: null,
-                            type: null,
-                            propertyInfo: null
+                            arguments: null
                         ),
                     },
-                    arguments: null,
-                    type: null,
-                    propertyInfo: null),
+                    arguments: null),
                 new GraphQLField(
                     alias: "alias4",
                     field: "field4",
                     fields: null,
-                    arguments: null,
-                    type: null,
-                    propertyInfo: null
+                    arguments: null
                 )
             };
             var fieldBuilder = new FieldBuilderMock(fields);

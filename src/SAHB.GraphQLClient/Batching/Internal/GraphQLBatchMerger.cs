@@ -114,8 +114,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
         {
             public GraphQLFieldWithOverridedAlias(string alias, GraphQLField field)
                 : base(alias, field: field.Field, fields: field.Fields,
-                    arguments: field.Arguments, type: field.Type,
-                    propertyInfo: field.PropertyInfo)
+                    arguments: field.Arguments)
             {
                 Inner = field;
             }

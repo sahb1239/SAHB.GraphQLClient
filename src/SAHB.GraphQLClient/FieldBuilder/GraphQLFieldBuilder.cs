@@ -84,19 +84,19 @@ namespace SAHB.GraphQLClient.FieldBuilder
         private GraphQLField GetGraphQLField(Type type, PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property), null,
-                GetPropertyArguments(property), type, property);
+                GetPropertyArguments(property));
         }
 
         private GraphQLField GetGraphQLFieldWithSubfields(Type type, PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),
-                GetFields(property.PropertyType), GetPropertyArguments(property), type, property);
+                GetFields(property.PropertyType), GetPropertyArguments(property));
         }
 
         private GraphQLField GetGraphQLIEnumerableType(Type type, PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),
-                GetFields(GetIEnumerableType(property.PropertyType)), GetPropertyArguments(property), type, property);
+                GetFields(GetIEnumerableType(property.PropertyType)), GetPropertyArguments(property));
         }
 
         protected virtual string GetPropertyAlias(PropertyInfo property)
