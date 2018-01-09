@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
-using SAHB.GraphQLClient.QueryBuilder;
+using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock;
 using Xunit;
 
@@ -29,7 +29,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
                         batch1_Part2Field4 = "Value4"
                     }
                 }), expected);
-            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryBuilderFromFields());
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields());
 
             // Act
             var batch = client.CreateBatch("");

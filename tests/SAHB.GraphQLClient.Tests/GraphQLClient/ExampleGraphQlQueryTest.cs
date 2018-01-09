@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.QueryBuilder;
 using Xunit;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient

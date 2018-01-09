@@ -8,7 +8,7 @@ using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Internal;
-using SAHB.GraphQLClient.QueryBuilder;
+using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient
@@ -19,28 +19,28 @@ namespace SAHB.GraphQLClient
     {
         private readonly IGraphQLHttpExecutor _executor;
         private readonly IGraphQLFieldBuilder _fieldBuilder;
-        private readonly IGraphQLQueryBuilderFromFields _queryBuilder;
+        private readonly IGraphQLQueryGeneratorFromFields _queryGenerator;
 
         /// <summary>
         /// Initilizes a new instance of GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/>
         /// </summary>
         /// <param name="executor">The <see cref="IGraphQLHttpExecutor"/> to use for the GraphQL client</param>
         /// <param name="fieldBuilder">The <see cref="IGraphQLFieldBuilder"/> used for generating the fields used for generating the query</param>
-        /// <param name="queryBuilder">The <see cref="IGraphQLQueryBuilderFromFields"/> used for the GraphQL client</param>
-        public GraphQLHttpClient(IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryBuilderFromFields queryBuilder)
+        /// <param name="queryGenerator">The <see cref="IGraphQLQueryGeneratorFromFields"/> used for the GraphQL client</param>
+        public GraphQLHttpClient(IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator)
         {
             _executor = executor ?? throw new ArgumentNullException(nameof(executor));
             _fieldBuilder = fieldBuilder ?? throw new ArgumentNullException(nameof(fieldBuilder));
-            _queryBuilder = queryBuilder ?? throw new ArgumentNullException(nameof(queryBuilder));
+            _queryGenerator = queryGenerator ?? throw new ArgumentNullException(nameof(queryGenerator));
         }
 
         /// <summary>
-        /// Initilizes a new instance of GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/> using the default <see cref="IGraphQLHttpExecutor"/> and the default <see cref="IGraphQLQueryBuilder"/>
+        /// Initilizes a new instance of GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/> using the default <see cref="IGraphQLHttpExecutor"/> and the default <see cref="IGraphQLQueryGenerator"/>
         /// </summary>
         /// <returns>A new instance of the GraphQL client</returns>
         public static IGraphQLHttpClient Default()
         {
-            return new GraphQLHttpClient(new GraphQLHttpExecutor(), new GraphQLFieldBuilder(), new GraphQLQueryBuilderFromFields());
+            return new GraphQLHttpClient(new GraphQLHttpExecutor(), new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields());
         }
 
         /// <inheritdoc />
@@ -91,7 +91,7 @@ namespace SAHB.GraphQLClient
         public IGraphQLQuery<T> CreateMutation<T>(string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
-            var query = _queryBuilder.GetMutation(_fieldBuilder.GetFields(typeof(T)), arguments);
+            var query = _queryGenerator.GetMutation(_fieldBuilder.GetFields(typeof(T)), arguments);
             return GetGraphQLQuery<T>(query, url, httpMethod, authorizationToken, authorizationMethod, arguments);
         }
 
@@ -99,7 +99,7 @@ namespace SAHB.GraphQLClient
         public IGraphQLQuery<T> CreateQuery<T>(string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
-            var query = _queryBuilder.GetQuery(_fieldBuilder.GetFields(typeof(T)), arguments);
+            var query = _queryGenerator.GetQuery(_fieldBuilder.GetFields(typeof(T)), arguments);
             return GetGraphQLQuery<T>(query, url, httpMethod, authorizationToken, authorizationMethod, arguments);
         }
 
@@ -113,7 +113,7 @@ namespace SAHB.GraphQLClient
         public IGraphQLBatch CreateBatch(string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer")
         {
-            return new GraphQLBatch(url, httpMethod, authorizationToken, authorizationMethod, _executor, _fieldBuilder, _queryBuilder);
+            return new GraphQLBatch(url, httpMethod, authorizationToken, authorizationMethod, _executor, _fieldBuilder, _queryGenerator);
         }
 
         private IGraphQLQuery<T> GetGraphQLQuery<T>(string query, string url, HttpMethod httpMethod,

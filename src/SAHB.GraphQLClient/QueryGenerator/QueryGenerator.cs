@@ -1,15 +1,15 @@
 ﻿using System;
 using SAHB.GraphQLClient.FieldBuilder;
 
-namespace SAHB.GraphQLClient.QueryBuilder
+namespace SAHB.GraphQLClient.QueryGenerator
 {
     // ReSharper disable once InconsistentNaming
-    /// <inheritdoc cref="IGraphQLQueryBuilder" />
-    public class GraphQLQueryBuilder : GraphQLQueryBuilderFromFields, IGraphQLQueryBuilder, IGraphQLQueryBuilderFromFields
+    /// <inheritdoc cref="IGraphQLQueryGenerator" />
+    public class GraphQLQueryGenerator : GraphQLQueryGeneratorFromFields, IGraphQLQueryGenerator, IGraphQLQueryGeneratorFromFields
     {
         private readonly IGraphQLFieldBuilder _graphQlFieldBuilder;
 
-        public GraphQLQueryBuilder(IGraphQLFieldBuilder graphQlFieldBuilder)
+        public GraphQLQueryGenerator(IGraphQLFieldBuilder graphQlFieldBuilder)
         {
             _graphQlFieldBuilder = graphQlFieldBuilder;
         }

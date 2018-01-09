@@ -4,11 +4,11 @@ using System.Text;
 using Newtonsoft.Json;
 using SAHB.GraphQLClient.FieldBuilder;
 
-namespace SAHB.GraphQLClient.QueryBuilder
+namespace SAHB.GraphQLClient.QueryGenerator
 {
     // ReSharper disable once InconsistentNaming
     /// <inheritdoc />
-    public class GraphQLQueryBuilderFromFields : IGraphQLQueryBuilderFromFields
+    public class GraphQLQueryGeneratorFromFields : IGraphQLQueryGeneratorFromFields
     {
         /// <inheritdoc />
         public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
