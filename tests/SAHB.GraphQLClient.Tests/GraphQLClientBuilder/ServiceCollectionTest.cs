@@ -20,7 +20,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClientBuilder
 
             using (var scope = serviceProvider.CreateScope())
             {
-                scope.ServiceProvider.GetService<IGraphQLHttpClient>();
+                Assert.NotNull(scope.ServiceProvider.GetService<IGraphQLHttpClient>());
             }
         }
 
@@ -33,7 +33,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClientBuilder
 
             using (var scope = serviceProvider.CreateScope())
             {
-                scope.ServiceProvider.GetService<IGraphQLHttpExecutor>();
+                Assert.NotNull(scope.ServiceProvider.GetService<IGraphQLHttpExecutor>());
             }
         }
 
@@ -46,7 +46,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClientBuilder
 
             using (var scope = serviceProvider.CreateScope())
             {
-                scope.ServiceProvider.GetService<IGraphQLQueryBuilder>();
+                Assert.NotNull(scope.ServiceProvider.GetService<IGraphQLQueryBuilder>());
             }
         }
 
@@ -59,7 +59,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClientBuilder
 
             using (var scope = serviceProvider.CreateScope())
             {
-                scope.ServiceProvider.GetService<IGraphQLQueryBuilderFromFields>();
+                Assert.NotNull(scope.ServiceProvider.GetService<IGraphQLQueryBuilderFromFields>());
             }
         }
 
