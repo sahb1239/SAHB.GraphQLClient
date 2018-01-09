@@ -46,7 +46,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             if (_isExecuted)
                 throw new NotSupportedException("Cannot add query to already executed batch");
 
-            var identifier = $"{_identifierCount++}";
+            var identifier = $"batch{_identifierCount++}";
 
             // Add fields
             _fields.Add(identifier,
