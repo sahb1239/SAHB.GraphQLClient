@@ -15,7 +15,7 @@ namespace SAHB.GraphQLClient
     {
         // ReSharper disable once InconsistentNaming
         /// <summary>
-        /// Registrer the default <see cref="IGraphQLFieldBuilder"/>, <see cref="IGraphQLQueryGenerator"/>, <see cref="IGraphQLHttpClient"/> and the default <see cref="IGraphQLHttpExecutor"/> in the specified <see cref="IServiceCollection"/>
+        /// Registrer the default <see cref="IGraphQLFieldBuilder"/>, <see cref="IGraphQLHttpClient"/> and the default <see cref="IGraphQLHttpExecutor"/> in the specified <see cref="IServiceCollection"/>
         /// </summary>
         /// <param name="services">The service collection to registrer in</param>
         /// <returns>Returns the service collection</returns>
@@ -23,9 +23,7 @@ namespace SAHB.GraphQLClient
         {
             // GraphQL
             services.AddSingleton<IGraphQLFieldBuilder, GraphQLFieldBuilder>();
-            services.AddSingleton<GraphQLQueryGenerator>();
-            services.AddSingleton<IGraphQLQueryGenerator>(serviceProvider => serviceProvider.GetService<GraphQLQueryGenerator>());
-            services.AddSingleton<IGraphQLQueryGeneratorFromFields>(serviceProvider => serviceProvider.GetService<GraphQLQueryGenerator>());
+            services.AddSingleton<IGraphQLQueryGeneratorFromFields, GraphQLQueryGeneratorFromFields>();
             services.AddSingleton<IGraphQLHttpExecutor, GraphQLHttpExecutor>();
             services.AddSingleton<IGraphQLHttpClient, GraphQLHttpClient>();
             return services;

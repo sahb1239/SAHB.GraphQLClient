@@ -1,26 +1,30 @@
 ﻿using System;
+using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 
 namespace SAHB.GraphQLClient.QueryGenerator
 {
     // ReSharper disable once InconsistentNaming
     /// <summary>
-    /// Extentions for the <see cref="IGraphQLQueryGenerator"/> interface
+    /// Extentions for the <see cref="IGraphQLQueryGeneratorFromFields"/> interface
     /// </summary>
-    public static class GraphQLQueryGeneratorExtentions
+    public static class GraphQLQueryGeneratorFromFieldsExtentions
     {
         /// <summary>
         /// Builds a GraphQL query from the specified <see cref="Type"/> and the <see cref="GraphQLQueryArgument"/>s
         /// </summary>
         /// <typeparam name="T">The type to generate the query from</typeparam>
         /// <param name="queryGenerator">The queryGenerator used to generate the query</param>
+        /// <param name="fieldBuilder">The fieldBuilder used for examining the type</param>
         /// <param name="arguments">The argument values which is inserted using a variable on specified arguments with the <see cref="GraphQLArgumentsAttribute"/></param>
         /// <returns>The generated query</returns>
-        public static string GetQuery<T>(this IGraphQLQueryGenerator queryGenerator,
+        public static string GetQuery<T>(this IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLFieldBuilder fieldBuilder,
             params GraphQLQueryArgument[] arguments)
         {
             if (queryGenerator == null) throw new ArgumentNullException(nameof(queryGenerator));
-            return queryGenerator.GetQuery(typeof(T), arguments);
+            if (fieldBuilder == null) throw new ArgumentNullException(nameof(fieldBuilder));
+            var fields = fieldBuilder.GetFields(typeof(T));
+            return queryGenerator.GetQuery(fields, arguments);
         }
 
         /// <summary>
@@ -28,13 +32,16 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// </summary>
         /// <typeparam name="T">The type to generate the mutation from</typeparam>
         /// <param name="queryGenerator">The queryGenerator used to generate the query</param>
+        /// <param name="fieldBuilder">The fieldBuilder used for examining the type</param>
         /// <param name="arguments">The argument values which is inserted using a variable on specified arguments with the <see cref="GraphQLArgumentsAttribute"/></param>
         /// <returns>The generated mutation</returns>
-        public static string GetMutation<T>(this IGraphQLQueryGenerator queryGenerator,
+        public static string GetMutation<T>(this IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLFieldBuilder fieldBuilder,
             params GraphQLQueryArgument[] arguments)
         {
             if (queryGenerator == null) throw new ArgumentNullException(nameof(queryGenerator));
-            return queryGenerator.GetMutation(typeof(T), arguments);
+            if (fieldBuilder == null) throw new ArgumentNullException(nameof(fieldBuilder));
+            var fields = fieldBuilder.GetFields(typeof(T));
+            return queryGenerator.GetMutation(fields, arguments);
         }
     }
 }

@@ -39,19 +39,6 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClientBuilder
         }
 
         [Fact]
-        public void Test_GetService_GraphQLQueryGenerator()
-        {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddGraphQLHttpClient();
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-
-            using (var scope = serviceProvider.CreateScope())
-            {
-                Assert.NotNull(scope.ServiceProvider.GetService<IGraphQLQueryGenerator>());
-            }
-        }
-
-        [Fact]
         public void Test_GetService_GraphQLQueryGeneratorFromFields()
         {
             var serviceCollection = new ServiceCollection();
