@@ -45,36 +45,6 @@ namespace SAHB.GraphQLClient
             return new GraphQLHttpClient(new GraphQLHttpExecutor(), new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields());
         }
 
-        /// <inheritdoc />
-        public Task<T> Query<T>(string url, string authorizationToken = null, string authorizationMethod = "Bearer",
-            params GraphQLQueryArgument[] arguments) where T : class
-        {
-            return Query<T>(url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
-        }
-
-        /// <inheritdoc />
-        public Task<T> Mutate<T>(string url, string authorizationToken = null, string authorizationMethod = "Bearer",
-            params GraphQLQueryArgument[] arguments) where T : class
-        {
-            return Mutate<T>(url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
-        }
-
-        /// <inheritdoc />
-        public Task<T> Query<T>(string url, HttpMethod httpMethod, string authorizationToken = null,
-            string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
-        {
-            var query = CreateQuery<T>(url, httpMethod, authorizationToken, authorizationMethod, arguments);
-            return query.Execute();
-        }
-
-        /// <inheritdoc />
-        public Task<T> Mutate<T>(string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer",
-            params GraphQLQueryArgument[] arguments) where T : class
-        {
-            var query = CreateMutation<T>(url, httpMethod, authorizationToken, authorizationMethod, arguments);
-            return query.Execute();
-        }
-
         public IGraphQLQuery CreateQuery(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {

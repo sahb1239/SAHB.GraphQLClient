@@ -49,9 +49,8 @@ The following code requests the endpoint with the following query
 
 The following using statements is required
 ```csharp
-using SAHB.GraphQLClient.Executor;
-using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.QueryBuilder;
+using SAHB.GraphQLClient;
+using SAHB.GraphQLClient.Extentions;
 ```
 
 ### Renaming of a field

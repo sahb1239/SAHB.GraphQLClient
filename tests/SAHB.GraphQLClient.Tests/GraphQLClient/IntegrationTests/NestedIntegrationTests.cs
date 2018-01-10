@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
+using SAHB.GraphQLClient.Extentions;
 using Xunit;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
