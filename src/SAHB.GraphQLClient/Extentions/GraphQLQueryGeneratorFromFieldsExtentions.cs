@@ -1,8 +1,9 @@
 ﻿using System;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
+using SAHB.GraphQLClient.QueryGenerator;
 
-namespace SAHB.GraphQLClient.QueryGenerator
+namespace SAHB.GraphQLClient.Extentions
 {
     // ReSharper disable once InconsistentNaming
     /// <summary>
