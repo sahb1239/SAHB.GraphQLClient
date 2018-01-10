@@ -9,11 +9,18 @@ namespace SAHB.GraphQLClient.Builder.Internal
     internal class GraphQLBuilder : IGraphQLBuilder
     {
         protected List<GraphQLQueryFieldBuilder> Fields = new List<GraphQLQueryFieldBuilder>();
-        
+
+        /// <inheritdoc />
+        public IGraphQLBuilder Field(string field)
+        {
+            return Field(field, null);
+        }
+
+        /// <inheritdoc />
         public IGraphQLBuilder Field(string field, Action<IGraphQLQueryFieldBuilder> generator)
         {
             var fieldGen = new GraphQLQueryFieldBuilder(field);
-            generator(fieldGen);
+            generator?.Invoke(fieldGen);
             Fields.Add(fieldGen);
             return this;
         }

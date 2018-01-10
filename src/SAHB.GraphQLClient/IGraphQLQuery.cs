@@ -11,7 +11,7 @@ namespace SAHB.GraphQLClient
         /// <summary>
         /// Execute the query
         /// </summary>
-        Task<object> Execute();
+        Task<dynamic> Execute();
     }
 
     // ReSharper disable once InconsistentNaming
