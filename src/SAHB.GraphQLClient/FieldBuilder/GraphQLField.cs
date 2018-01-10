@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace SAHB.GraphQLClient.FieldBuilder
 {
@@ -18,18 +17,14 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <param name="field">GraphQL field</param>
         /// <param name="fields">Subfields</param>
         /// <param name="arguments">Arguments for the current field</param>
-        /// <param name="type">The type</param>
-        /// <param name="propertyInfo">The propertyinfo for the property which corrosponds to this field</param>
         public GraphQLField(string alias, string field, IEnumerable<GraphQLField> fields,
-            IEnumerable<GraphQLFieldArguments> arguments, Type type, PropertyInfo propertyInfo)
+            IEnumerable<GraphQLFieldArguments> arguments)
         {
             Field = field ?? throw new ArgumentNullException(nameof(field));
 
             Alias = alias;
             Fields = fields ?? Enumerable.Empty<GraphQLField>();
             Arguments = arguments ?? Enumerable.Empty<GraphQLFieldArguments>();
-            Type = type;
-            PropertyInfo = propertyInfo;
         }
 
         /// <summary>
@@ -51,8 +46,5 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// Arguments for the current field
         /// </summary>
         public IEnumerable<GraphQLFieldArguments> Arguments { get; }
-
-        internal Type Type { get; }
-        internal PropertyInfo PropertyInfo { get; }
     }
 }

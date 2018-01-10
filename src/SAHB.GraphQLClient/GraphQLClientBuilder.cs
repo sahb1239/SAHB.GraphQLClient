@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using SAHB.GraphQLClient.Batching;
 using SAHB.GraphQLClient.Executor;
-using SAHB.GraphQLClient.Http;
 using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.QueryBuilder;
+using SAHB.GraphQLClient.QueryGenerator;
 
 namespace SAHB.GraphQLClient
 {
@@ -15,24 +15,7 @@ namespace SAHB.GraphQLClient
     {
         // ReSharper disable once InconsistentNaming
         /// <summary>
-        /// Registrer the default <see cref="IGraphQLFieldBuilder"/>, <see cref="IGraphQLQueryBuilder"/>, <see cref="IGraphQLHttpClient"/> and the default <see cref="IHttpClient"/> in the specified <see cref="IServiceCollection"/>
-        /// </summary>
-        /// <param name="services">The service collection to registrer in</param>
-        /// <returns>Returns the service collection</returns>
-        [Obsolete]
-        public static IServiceCollection AddGraphQLClient(this IServiceCollection services)
-        {
-            // GraphQL
-            services.AddSingleton<IGraphQLFieldBuilder, GraphQLFieldBuilder>();
-            services.AddSingleton<IGraphQLQueryBuilder, GraphQLQueryBuilder>();
-            services.AddSingleton<IGraphQLClient, GraphQLClient>();
-            services.AddSingleton<IHttpClient, HttpClient>();
-            return services;
-        }
-
-        // ReSharper disable once InconsistentNaming
-        /// <summary>
-        /// Registrer the default <see cref="IGraphQLFieldBuilder"/>, <see cref="IGraphQLQueryBuilder"/>, <see cref="IGraphQLHttpClient"/> and the default <see cref="IGraphQLHttpExecutor"/> in the specified <see cref="IServiceCollection"/>
+        /// Registrer the default <see cref="IGraphQLFieldBuilder"/>, <see cref="IGraphQLHttpClient"/> and the default <see cref="IGraphQLHttpExecutor"/> in the specified <see cref="IServiceCollection"/>
         /// </summary>
         /// <param name="services">The service collection to registrer in</param>
         /// <returns>Returns the service collection</returns>
@@ -40,7 +23,7 @@ namespace SAHB.GraphQLClient
         {
             // GraphQL
             services.AddSingleton<IGraphQLFieldBuilder, GraphQLFieldBuilder>();
-            services.AddSingleton<IGraphQLQueryBuilder, GraphQLQueryBuilder>();
+            services.AddSingleton<IGraphQLQueryGeneratorFromFields, GraphQLQueryGeneratorFromFields>();
             services.AddSingleton<IGraphQLHttpExecutor, GraphQLHttpExecutor>();
             services.AddSingleton<IGraphQLHttpClient, GraphQLHttpClient>();
             return services;

@@ -1,19 +1,20 @@
 ﻿using System.Collections.Generic;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
-using SAHB.GraphQLClient.QueryBuilder;
+using SAHB.GraphQLClient.QueryGenerator;
 using Xunit;
 
-namespace SAHB.GraphQLClient.Tests.QueryBuilder.IntegrationTests
+namespace SAHB.GraphQLClient.Tests.QueryGenerator.IntegrationTests
 {
     public class NestedIntegrationTests
     {
-        private readonly IGraphQLQueryBuilder _queryBuilder;
+        private readonly IGraphQLQueryGeneratorFromFields _queryGenerator;
+        private readonly IGraphQLFieldBuilder _fieldBuilder;
 
         public NestedIntegrationTests()
         {
-            var fieldBuilder = new GraphQLFieldBuilder();
-            _queryBuilder = new GraphQLQueryBuilder(fieldBuilder);
+            _fieldBuilder = new GraphQLFieldBuilder();
+            _queryGenerator = new GraphQLQueryGeneratorFromFields();
         }
 
         public class Query1
@@ -41,7 +42,7 @@ namespace SAHB.GraphQLClient.Tests.QueryBuilder.IntegrationTests
         {
             var expected = "{\"query\":\"query{Me:me{Name:name Age:age lastname}}\"}";
 
-            var actual = _queryBuilder.GetQuery<Query1>();
+            var actual = _queryGenerator.GetQuery<Query1>(_fieldBuilder);
 
             Assert.Equal(expected, actual);
         }
@@ -51,7 +52,7 @@ namespace SAHB.GraphQLClient.Tests.QueryBuilder.IntegrationTests
         {
             var expected = "{\"query\":\"query{Me:me{Name:name Age:age lastname} Others:other{Name:name Age:age lastname}}\"}";
 
-            var actual = _queryBuilder.GetQuery<Query2>();
+            var actual = _queryGenerator.GetQuery<Query2>(_fieldBuilder);
 
             Assert.Equal(expected, actual);
         }
@@ -67,7 +68,7 @@ namespace SAHB.GraphQLClient.Tests.QueryBuilder.IntegrationTests
         {
             var expected = "{\"query\":\"query{Others:other{Name:name Age:age lastname} Me:me{Name:name Age:age lastname}}\"}";
 
-            var actual = _queryBuilder.GetQuery<Query3>();
+            var actual = _queryGenerator.GetQuery<Query3>(_fieldBuilder);
 
             Assert.Equal(expected, actual);
         }
@@ -85,7 +86,7 @@ namespace SAHB.GraphQLClient.Tests.QueryBuilder.IntegrationTests
         {
             var expected = "{\"query\":\"query{Me:me{Name:name Age:age lastname}}\"}";
 
-            var actual = _queryBuilder.GetQuery<Query4>();
+            var actual = _queryGenerator.GetQuery<Query4>(_fieldBuilder);
 
             Assert.Equal(expected, actual);
         }

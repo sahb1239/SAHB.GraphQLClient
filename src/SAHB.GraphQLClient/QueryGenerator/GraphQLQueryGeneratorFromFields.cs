@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using SAHB.GraphQLClient.FieldBuilder;
 
-namespace SAHB.GraphQLClient.QueryBuilder
+namespace SAHB.GraphQLClient.QueryGenerator
 {
     // ReSharper disable once InconsistentNaming
     /// <inheritdoc />
-    public class GraphQLQueryBuilderFromFields : IGraphQLQueryBuilderFromFields
+    public class GraphQLQueryGeneratorFromFields : IGraphQLQueryGeneratorFromFields
     {
+        /// <inheritdoc />
         public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
             return GetQuery("query", fields, arguments);
         }
 
+        /// <inheritdoc />
         public string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
             return GetQuery("mutation", fields, arguments);
@@ -23,10 +24,20 @@ namespace SAHB.GraphQLClient.QueryBuilder
 
         private string GetQuery(string queryType, IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
-            var query = GetGraphQLQuery(queryType, arguments, GetFields(fields));
+            var query = GetGraphQLQuery(queryType, GetArguments(fields), GetFields(fields));
             var request = GetQueryRequest(query, arguments);
 
             return request;
+        }
+
+        private string GetArguments(IEnumerable<GraphQLField> fields)
+        {
+            return string.Join(" ", GetAllArguments(fields).Select(e => $"${e.VariableName}:{e.ArgumentType}"));
+        }
+
+        private IEnumerable<GraphQLFieldArguments> GetAllArguments(IEnumerable<GraphQLField> fields)
+        {
+            return fields?.SelectMany(field => field.Arguments.Concat(GetAllArguments(field.Fields))) ?? Enumerable.Empty<GraphQLFieldArguments>();
         }
 
         private string GetFields(IEnumerable<GraphQLField> fields)
@@ -39,7 +50,7 @@ namespace SAHB.GraphQLClient.QueryBuilder
                 var fieldBuilder = new StringBuilder();
 
                 // Append alias and field
-                if (field.Alias == field.Field)
+                if (field.Alias == field.Field || field.Alias == null)
                 {
                     fieldBuilder.Append(field.Field);
                 }
@@ -74,10 +85,9 @@ namespace SAHB.GraphQLClient.QueryBuilder
             return builder.ToString();
         }
 
-        private string GetGraphQLQuery(string queryType, IEnumerable<GraphQLQueryArgument> arguments, string fields)
+        private string GetGraphQLQuery(string queryType, string argument, string fields)
         {
             // Get argument string
-            var argument = string.Join(" ", arguments.Select(e => "$" + e.VariableName + ":" + e.ArgumentType));
             if (!string.IsNullOrEmpty(argument))
             {
                 argument = $"({argument})";

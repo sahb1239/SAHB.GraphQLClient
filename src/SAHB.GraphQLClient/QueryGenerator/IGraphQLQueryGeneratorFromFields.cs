@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQLClient.FieldBuilder.Attributes;
 
-namespace SAHB.GraphQLClient.QueryBuilder
+namespace SAHB.GraphQLClient.QueryGenerator
 {
     // ReSharper disable once InconsistentNaming
     /// <summary>
     /// Builds a GraphQL query or mutation from the specified <see cref="GraphQLField"/>s and the <see cref="GraphQLQueryArgument"/>s
     /// </summary>
-    public interface IGraphQLQueryBuilderFromFields
+    public interface IGraphQLQueryGeneratorFromFields
     {
         /// <summary>
         /// Builds a GraphQL query from the specified <see cref="GraphQLField"/>s and the <see cref="GraphQLQueryArgument"/>s

@@ -16,10 +16,7 @@ An example for the Starwars API.
 ```csharp
 // TODO: Use dependency injection (services.AddGraphQLHttpClient()) (IServiceCollection)
 // Initilize GraphQLClient
-IGraphQLFieldBuilder fieldBuilder = new GraphQLFieldBuilder();
-IGraphQLQueryBuilder queryBuilder = new GraphQLQueryBuilder(fieldBuilder);
-IGraphQLHttpExecutor executor = new GraphQLHttpExecutor();
-IGraphQLHttpClient client = new GraphQLHttpClient(executor, queryBuilder);
+IGraphQLHttpClient client = GraphQLHttpClient.Default();
 
 // Get response from url
 var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql");
@@ -52,9 +49,8 @@ The following code requests the endpoint with the following query
 
 The following using statements is required
 ```csharp
-using SAHB.GraphQLClient.Executor;
-using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.QueryBuilder;
+using SAHB.GraphQLClient;
+using SAHB.GraphQLClient.Extentions;
 ```
 
 ### Renaming of a field
@@ -122,12 +118,12 @@ public class Query
 ```
 
 ### Arguments
-It's also possible to add arguments to queries. This can be done with the attribute ```GraphQLArgumentAttribute```. This attribute takes 2 arguments where the first is argument name used on the GraphQL server. The second argument is the varible name which should be used when the query is requested.
+It's also possible to add arguments to queries. This can be done with the attribute ```GraphQLArgumentAttribute```. This attribute takes 3 arguments where the first is argument name used on the GraphQL server. The second is the argument type, for example String. The third argument is the varible name which should be used when the query is requested.
 
 ```csharp
 public class Query
 {
-   [GraphQLArgumentAttribute("argumentName", "variableName")]
+   [GraphQLArgumentAttribute("argumentName", "ArgumentType", "variableName")]
    public Hero Hero { get; set; }
 }
 ```
@@ -135,7 +131,7 @@ public class Query
 The client is requested as shown here:
 ```csharp
 var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql", 
-   arguments: new GraphQLQueryArgument("variableName", "String", "valueToBeSent"});
+   arguments: new GraphQLQueryArgument("variableName", "valueToBeSent"});
 ```
 
 This will generate the query (Hero contains here only the Name property):
