@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SAHB.GraphQLClient.Result;
 
@@ -33,6 +34,12 @@ namespace SAHB.GraphQLClient.Executor
             if (url == null) throw new ArgumentNullException(nameof(url));
             if (method == null) throw new ArgumentNullException(nameof(method));
 
+            // Logging
+            if (Logger != null && Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation($"Sending query {query} to GraphQL server on {url} with method {method}");
+            }
+
             // Initilizes request message
             var requestMessage = new HttpRequestMessage(method, url)
             {
@@ -51,9 +58,52 @@ namespace SAHB.GraphQLClient.Executor
             // Ensure success response
             response.EnsureSuccessStatusCode();
 
-            // Deserilize response
+            // Get response
             string stringResponse = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<GraphQLDataResult<T>>(stringResponse);
+            
+            // Logging
+            if (Logger != null && Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation($"Response: {stringResponse}");
+            }
+
+            // Deserilize response
+            var result = JsonConvert.DeserializeObject<GraphQLDataResult<T>>(stringResponse);
+
+            // Logging errors
+            if (result.ContainsErrors && Logger != null && Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogError($"GraphQL error from query {query} and url {url}", result.Errors);
+            }
+
+            return result;
         }
+        
+        #region Logging
+
+        private ILoggerFactory _loggerFactory;
+
+        /// <summary>
+        /// Contains a logger factory for the GraphQLHttpClient
+        /// </summary>
+        public ILoggerFactory LoggerFactory
+        {
+            internal get { return _loggerFactory; }
+            set
+            {
+                _loggerFactory = value;
+                if (_loggerFactory != null)
+                {
+                    Logger = _loggerFactory.CreateLogger<GraphQLHttpExecutor>();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Contains the logger for the class
+        /// </summary>
+        private ILogger<GraphQLHttpExecutor> Logger { get; set; }
+
+        #endregion
     }
 }

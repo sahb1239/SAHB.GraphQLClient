@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Internal;
@@ -14,19 +16,25 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// <inheritdoc />
         public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
-            return GetQuery("query", fields, arguments);
+            return GetQuery("query", fields.ToList(), arguments);
         }
 
         /// <inheritdoc />
         public string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
-            return GetQuery("mutation", fields, arguments);
+            return GetQuery("mutation", fields.ToList(), arguments);
         }
 
-        private string GetQuery(string queryType, IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
+        private string GetQuery(string queryType, ICollection<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
             var query = GetGraphQLQuery(queryType, GetArguments(fields), GetFields(fields));
             var request = GetQueryRequest(query, arguments);
+
+            // Logging
+            if (Logger != null && Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation($"Generated the GraphQL query {request} from the fields:{Environment.NewLine + string.Join(Environment.NewLine, fields)}");
+            }
 
             return request;
         }
@@ -102,5 +110,32 @@ namespace SAHB.GraphQLClient.QueryGenerator
 
             return JsonConvert.SerializeObject(new { query = query });
         }
+
+        #region Logging
+
+        private ILoggerFactory _loggerFactory;
+
+        /// <summary>
+        /// Contains a logger factory for the GraphQLHttpClient
+        /// </summary>
+        public ILoggerFactory LoggerFactory
+        {
+            internal get { return _loggerFactory; }
+            set
+            {
+                _loggerFactory = value;
+                if (_loggerFactory != null)
+                {
+                    Logger = _loggerFactory.CreateLogger<GraphQLQueryGeneratorFromFields>();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Contains the logger for the class
+        /// </summary>
+        private ILogger<GraphQLQueryGeneratorFromFields> Logger { get; set; }
+
+        #endregion
     }
 }

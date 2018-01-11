@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SAHB.GraphQLClient.Batching;
 using SAHB.GraphQLClient.Batching.Internal;
 using SAHB.GraphQLClient.Builder;
@@ -22,6 +23,28 @@ namespace SAHB.GraphQLClient
         private readonly IGraphQLHttpExecutor _executor;
         private readonly IGraphQLFieldBuilder _fieldBuilder;
         private readonly IGraphQLQueryGeneratorFromFields _queryGenerator;
+        private ILoggerFactory _loggerFactory;
+
+        /// <summary>
+        /// Contains a logger factory for the GraphQLHttpClient
+        /// </summary>
+        public ILoggerFactory LoggerFactory
+        {
+            internal get { return _loggerFactory; }
+            set
+            {
+                _loggerFactory = value;
+                if (_loggerFactory != null)
+                {
+                    Logger = _loggerFactory.CreateLogger<GraphQLHttpClient>();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Contains the logger for the class
+        /// </summary>
+        private ILogger<GraphQLHttpClient> Logger { get; set; }
 
         /// <summary>
         /// Initilizes a new instance of GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/>
