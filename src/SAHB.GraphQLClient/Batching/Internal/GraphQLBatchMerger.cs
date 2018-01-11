@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQLClient.Internal;
 using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Result;
 
@@ -48,12 +49,13 @@ namespace SAHB.GraphQLClient.Batching.Internal
 
             var identifier = $"batch{_identifierCount++}";
 
+            // Get fields
+            var fields = _fieldBuilder.GetFields(typeof(T)).Select(field =>
+                new GraphQLFieldWithOverridedAlias(string.IsNullOrWhiteSpace(field.Alias) ? field.Field : field.Alias,
+                    field)).ToList();
+
             // Add fields
-            _fields.Add(identifier,
-                _fieldBuilder.GetFields(typeof(T)).Select(field =>
-                    new GraphQLFieldWithOverridedAlias(
-                        identifier + "_" + (string.IsNullOrWhiteSpace(field.Alias) ? field.Field : field.Alias),
-                        field)));
+            _fields.Add(identifier, fields);
             _arguments.Add(identifier, arguments);
 
             return new GraphQLBatchQuery<T>(this, identifier);
@@ -86,11 +88,11 @@ namespace SAHB.GraphQLClient.Batching.Internal
 
             _isExecuted = true;
 
-            // Check if all variable names for arguments which contains dublicates
-            if (_arguments.SelectMany(e => e.Value).GroupBy(e => e.VariableName).Any(e => e.Count() > 1))
-            {
-                UpdateArguments();
-            }
+            // Update fields so they don't conflict
+            UpdateAlias();
+
+            // Update arguments so they don't conflict
+            UpdateArguments();
 
             // Generate query
             var query = _queryGenerator.GetQuery(_fields.SelectMany(e => e.Value),
@@ -101,9 +103,37 @@ namespace SAHB.GraphQLClient.Batching.Internal
                 await _executor.ExecuteQuery<JObject>(query, _url, _httpMethod, _authorizationToken, _authorizationMethod);
         }
 
+        private void UpdateAlias()
+        {
+            // Update fields
+            foreach (var fieldsWithIdentifier in _fields)
+            {
+                foreach (var field in fieldsWithIdentifier.Value)
+                {
+                    field.Alias = fieldsWithIdentifier.Key + "_" + field.Alias;
+                }
+            }
+        }
+
         private void UpdateArguments()
         {
-            throw new NotImplementedException("Arguments with same variable names is not supported at the moment");
+            // Update arguments
+            foreach (var fieldsWithIdentifier in _fields)
+            {
+                foreach (var argument in Helper.GetAllArgumentsFromFields(fieldsWithIdentifier.Value))
+                {
+                    argument.VariableName = fieldsWithIdentifier.Key + "_" + argument.VariableName;
+                }
+            }
+
+            // Update recieved arguments
+            foreach (var argumentsWithIdentitfier in _arguments)
+            {
+                foreach (var argument in argumentsWithIdentitfier.Value)
+                {
+                    argument.VariableName = argumentsWithIdentitfier.Key + "_" +  argument.VariableName;
+                }
+            }
         }
 
         public bool Executed => _isExecuted;
