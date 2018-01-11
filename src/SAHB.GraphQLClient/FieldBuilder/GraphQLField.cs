@@ -23,8 +23,8 @@ namespace SAHB.GraphQLClient.FieldBuilder
             Field = field ?? throw new ArgumentNullException(nameof(field));
 
             Alias = alias;
-            Fields = fields ?? Enumerable.Empty<GraphQLField>();
-            Arguments = arguments ?? Enumerable.Empty<GraphQLFieldArguments>();
+            Fields = (fields ?? Enumerable.Empty<GraphQLField>()).ToList();
+            Arguments = (arguments ?? Enumerable.Empty<GraphQLFieldArguments>()).ToList();
         }
 
         /// <summary>
@@ -40,11 +40,11 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <summary>
         /// Subfields
         /// </summary>
-        public IEnumerable<GraphQLField> Fields { get; }
+        public ICollection<GraphQLField> Fields { get; }
 
         /// <summary>
         /// Arguments for the current field
         /// </summary>
-        public IEnumerable<GraphQLFieldArguments> Arguments { get; }
+        public ICollection<GraphQLFieldArguments> Arguments { get; }
     }
 }
