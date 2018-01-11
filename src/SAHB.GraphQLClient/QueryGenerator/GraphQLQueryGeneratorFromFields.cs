@@ -97,7 +97,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
         {
             if (arguments.Any())
             {
-                return JsonConvert.SerializeObject(new { query = query, Variables = JsonConvert.SerializeObject(arguments.ToDictionary(e => e.VariableName, e => e.ArgumentValue)) });
+                return JsonConvert.SerializeObject(new { query = query, variables = JsonConvert.SerializeObject(arguments.ToDictionary(e => e.VariableName, e => e.ArgumentValue)) });
             }
 
             return JsonConvert.SerializeObject(new { query = query });
