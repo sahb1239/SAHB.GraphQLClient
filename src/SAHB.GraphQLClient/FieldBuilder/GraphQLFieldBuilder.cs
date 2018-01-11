@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 
 namespace SAHB.GraphQLClient.FieldBuilder
@@ -68,6 +69,12 @@ namespace SAHB.GraphQLClient.FieldBuilder
 
                     fields.Add(GetGraphQLFieldWithSubfields(type, property));
                 }
+            }
+
+            // Logging
+            if (Logger != null && Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation($"Generated the following fields from the type {type.FullName}", fields);
             }
 
             // Return fields
@@ -263,6 +270,33 @@ namespace SAHB.GraphQLClient.FieldBuilder
             return enumerableType.IsGenericType
                    && enumerableType.GetGenericTypeDefinition() == typeof(IAsyncEnumerable<>);
         }
+
+        #endregion
+
+        #region Logging
+
+        private ILoggerFactory _loggerFactory;
+
+        /// <summary>
+        /// Contains a logger factory for the GraphQLHttpClient
+        /// </summary>
+        public ILoggerFactory LoggerFactory
+        {
+            internal get { return _loggerFactory; }
+            set
+            {
+                _loggerFactory = value;
+                if (_loggerFactory != null)
+                {
+                    Logger = _loggerFactory.CreateLogger<GraphQLFieldBuilder>();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Contains the logger for the class
+        /// </summary>
+        private ILogger<GraphQLFieldBuilder> Logger { get; set; }
 
         #endregion
     }

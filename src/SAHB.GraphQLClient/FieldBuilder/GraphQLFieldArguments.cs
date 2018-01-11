@@ -36,5 +36,11 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// GraphQL variable name
         /// </summary>
         public string VariableName { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return "Name: " + ArgumentName + " Type: " + ArgumentType + " VariableName: " + (VariableName ?? "null");
+        }
     }
 }

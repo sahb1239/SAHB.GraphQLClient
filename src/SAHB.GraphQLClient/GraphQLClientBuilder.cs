@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SAHB.GraphQLClient.Batching;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
@@ -22,10 +23,19 @@ namespace SAHB.GraphQLClient
         public static IServiceCollection AddGraphQLHttpClient(this IServiceCollection services)
         {
             // GraphQL
-            services.AddSingleton<IGraphQLFieldBuilder, GraphQLFieldBuilder>();
-            services.AddSingleton<IGraphQLQueryGeneratorFromFields, GraphQLQueryGeneratorFromFields>();
-            services.AddSingleton<IGraphQLHttpExecutor, GraphQLHttpExecutor>();
-            services.AddSingleton<IGraphQLHttpClient, GraphQLHttpClient>();
+            services.AddSingleton<IGraphQLFieldBuilder>(provider =>
+                new GraphQLFieldBuilder() {LoggerFactory = provider.GetService<ILoggerFactory>()});
+            services.AddSingleton<IGraphQLQueryGeneratorFromFields>(provider =>
+                new GraphQLQueryGeneratorFromFields() { LoggerFactory = provider.GetService<ILoggerFactory>() });
+            services.AddSingleton<IGraphQLHttpExecutor>(provider =>
+                new GraphQLHttpExecutor() { LoggerFactory = provider.GetService<ILoggerFactory>() });
+            services.AddSingleton<IGraphQLHttpClient>(provider =>
+                new GraphQLHttpClient(provider.GetRequiredService<IGraphQLHttpExecutor>(),
+                    provider.GetRequiredService<IGraphQLFieldBuilder>(),
+                    provider.GetRequiredService<IGraphQLQueryGeneratorFromFields>())
+                {
+                    LoggerFactory = provider.GetService<ILoggerFactory>()
+                });
             return services;
         }
     }

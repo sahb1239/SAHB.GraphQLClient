@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Internal;
@@ -27,6 +28,12 @@ namespace SAHB.GraphQLClient.QueryGenerator
         {
             var query = GetGraphQLQuery(queryType, GetArguments(fields), GetFields(fields));
             var request = GetQueryRequest(query, arguments);
+
+            // Logging
+            if (Logger != null && Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation($"Generated the GraphQL query {request} from the fields", fields);
+            }
 
             return request;
         }
@@ -102,5 +109,32 @@ namespace SAHB.GraphQLClient.QueryGenerator
 
             return JsonConvert.SerializeObject(new { query = query });
         }
+
+        #region Logging
+
+        private ILoggerFactory _loggerFactory;
+
+        /// <summary>
+        /// Contains a logger factory for the GraphQLHttpClient
+        /// </summary>
+        public ILoggerFactory LoggerFactory
+        {
+            internal get { return _loggerFactory; }
+            set
+            {
+                _loggerFactory = value;
+                if (_loggerFactory != null)
+                {
+                    Logger = _loggerFactory.CreateLogger<GraphQLQueryGeneratorFromFields>();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Contains the logger for the class
+        /// </summary>
+        private ILogger<GraphQLQueryGeneratorFromFields> Logger { get; set; }
+
+        #endregion
     }
 }
