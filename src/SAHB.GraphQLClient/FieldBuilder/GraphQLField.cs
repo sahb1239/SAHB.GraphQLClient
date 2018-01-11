@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace SAHB.GraphQLClient.FieldBuilder
 {
@@ -46,5 +47,27 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// Arguments for the current field
         /// </summary>
         public ICollection<GraphQLFieldArguments> Arguments { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine($"Field: {Field}");
+            builder.AppendLine($"Alias: {(Alias ?? "null")}");
+            if (Arguments.Any())
+            {
+                builder.AppendLine($"Arguments: {IndentAndAddStart(String.Join(Environment.NewLine, Arguments))}");
+            }
+            if (Fields.Any())
+            {
+                builder.AppendLine($"Fields: {IndentAndAddStart(String.Join(Environment.NewLine, Fields))}");
+            }
+            return builder.ToString();
+        }
+
+        private string IndentAndAddStart(string text)
+        {
+            return (Environment.NewLine + text).Replace(Environment.NewLine, Environment.NewLine + "   ");
+        }
     }
 }
