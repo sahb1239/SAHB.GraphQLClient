@@ -30,7 +30,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <summary>
         /// GraphQL alias
         /// </summary>
-        public string Alias { get; }
+        public string Alias { get; internal set; }
         
         /// <summary>
         /// GraphQL field
