@@ -157,6 +157,13 @@ var queryId1001Result = await queryId1001.Execute();
 // Get result
 Console.WriteLine(queryId1000Result.Human.Name);
 Console.WriteLine(queryId1001Result.Human.Name);
+
+// Class used
+public class HumanQuery
+{
+	[GraphQLArguments("id", "ID!", "humanID")]
+	public CharacterOrPerson Human { get; set; }
+}
 ```
 
 The following methods will generate the query:
