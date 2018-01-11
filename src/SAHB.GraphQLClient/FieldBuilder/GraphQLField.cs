@@ -53,7 +53,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         {
             StringBuilder builder = new StringBuilder();
             builder.AppendLine($"Field: {Field}");
-            builder.AppendLine($"Alias: {Alias}");
+            builder.AppendLine($"Alias: {(Alias ?? "null")}");
             if (Arguments.Any())
             {
                 builder.AppendLine($"Arguments: {IndentAndAddStart(String.Join(Environment.NewLine, Arguments))}");
@@ -67,7 +67,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
 
         private string IndentAndAddStart(string text)
         {
-            return Environment.NewLine + text.Replace(Environment.NewLine, Environment.NewLine + "   ");
+            return (Environment.NewLine + text).Replace(Environment.NewLine, Environment.NewLine + "   ");
         }
     }
 }

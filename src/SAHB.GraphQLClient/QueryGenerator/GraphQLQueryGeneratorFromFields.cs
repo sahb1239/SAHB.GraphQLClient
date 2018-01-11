@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
@@ -15,16 +16,16 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// <inheritdoc />
         public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
-            return GetQuery("query", fields, arguments);
+            return GetQuery("query", fields.ToList(), arguments);
         }
 
         /// <inheritdoc />
         public string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
-            return GetQuery("mutation", fields, arguments);
+            return GetQuery("mutation", fields.ToList(), arguments);
         }
 
-        private string GetQuery(string queryType, IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
+        private string GetQuery(string queryType, ICollection<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
             var query = GetGraphQLQuery(queryType, GetArguments(fields), GetFields(fields));
             var request = GetQueryRequest(query, arguments);
@@ -32,7 +33,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
             // Logging
             if (Logger != null && Logger.IsEnabled(LogLevel.Information))
             {
-                Logger.LogInformation($"Generated the GraphQL query {request} from the fields", fields);
+                Logger.LogInformation($"Generated the GraphQL query {request} from the fields:{Environment.NewLine + string.Join(Environment.NewLine, fields)}");
             }
 
             return request;

@@ -74,7 +74,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
             // Logging
             if (Logger != null && Logger.IsEnabled(LogLevel.Information))
             {
-                Logger.LogInformation($"Generated the following fields from the type {type.FullName}", fields);
+                Logger.LogInformation($"Generated the following fields from the type {type.FullName}{Environment.NewLine}{String.Join(Environment.NewLine, fields)}");
             }
 
             // Return fields
