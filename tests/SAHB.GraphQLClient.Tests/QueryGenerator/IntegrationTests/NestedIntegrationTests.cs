@@ -2,6 +2,7 @@
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.QueryGenerator;
+using SAHB.GraphQLClient.Extentions;
 using Xunit;
 
 namespace SAHB.GraphQLClient.Tests.QueryGenerator.IntegrationTests

@@ -1,5 +1,6 @@
 ﻿using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
+using SAHB.GraphQLClient.Extentions;
 
 namespace SAHB.GraphQLClient.Tests.Benchmarks.GeneralBenchmarks
 {

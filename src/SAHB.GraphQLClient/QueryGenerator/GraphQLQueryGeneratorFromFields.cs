@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQLClient.Internal;
 
 namespace SAHB.GraphQLClient.QueryGenerator
 {
@@ -32,12 +33,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
 
         private string GetArguments(IEnumerable<GraphQLField> fields)
         {
-            return string.Join(" ", GetAllArguments(fields).Select(e => $"${e.VariableName}:{e.ArgumentType}"));
-        }
-
-        private IEnumerable<GraphQLFieldArguments> GetAllArguments(IEnumerable<GraphQLField> fields)
-        {
-            return fields?.SelectMany(field => field.Arguments.Concat(GetAllArguments(field.Fields))) ?? Enumerable.Empty<GraphQLFieldArguments>();
+            return string.Join(" ", Helper.GetAllArgumentsFromFields(fields).Select(e => $"${e.VariableName}:{e.ArgumentType}"));
         }
 
         private string GetFields(IEnumerable<GraphQLField> fields)
