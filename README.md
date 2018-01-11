@@ -200,6 +200,7 @@ The generated query is the following.
 ```
 
 To include the aliases the following code can be used.
+```csharp
 var query = client.CreateQuery(builder => 
 	builder.Field("hero", 
 		hero => 
@@ -212,6 +213,7 @@ var query = client.CreateQuery(builder =>
 	"https://mpjk0plp9.lp.gql.zone/graphql");
 var builderResponse = await query.Execute();
 Console.WriteLine(builderResponse["Hero"]["Name"].Value);
+```
 
 The query generated is the following which is equal to the query generated in the first example:
 ```
@@ -229,8 +231,6 @@ var result = await executor.ExecuteQuery<HeroQuery>(@"{""query"":""query{Hero:he
 	"https://mpjk0plp9.lp.gql.zone/graphql", HttpMethod.Post);
 Console.WriteLine(result.Data.Hero.Name);
 ```
-
-## Default arguments
 
 ## Benchmarks
 Some benchmarks has been developed to see how much impact the GraphQL client has on the performance when generating queries. Theese are located under benchmarks.
