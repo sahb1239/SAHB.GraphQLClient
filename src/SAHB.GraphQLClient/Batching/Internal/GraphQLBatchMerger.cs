@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Internal;
@@ -66,6 +67,11 @@ namespace SAHB.GraphQLClient.Batching.Internal
         {
             if (!_isExecuted)
                 await Execute();
+            
+            if (_result.ContainsErrors)
+            {
+                throw new GraphQLErrorException(_result.Errors);
+            }
             
             // Create new JObject
             JObject deserilizeFrom = new JObject();
