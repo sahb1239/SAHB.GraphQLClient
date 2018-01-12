@@ -4,6 +4,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard1.2;net452</TargetFrameworks>
+    <PackageReleaseNotes>Please see https://github.com/sahb1239/SAHB.GraphQLClient/releases for release notes</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
