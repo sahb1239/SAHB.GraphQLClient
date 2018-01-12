@@ -71,7 +71,7 @@ namespace SAHB.GraphQLClient.Executor
             var result = JsonConvert.DeserializeObject<GraphQLDataResult<T>>(stringResponse);
 
             // Logging errors
-            if (result.ContainsErrors && Logger != null && Logger.IsEnabled(LogLevel.Information))
+            if (result.ContainsErrors && Logger != null && Logger.IsEnabled(LogLevel.Error))
             {
                 Logger.LogError($"GraphQL error from query {query} and url {url}", result.Errors);
             }
