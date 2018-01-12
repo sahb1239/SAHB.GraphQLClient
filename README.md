@@ -53,6 +53,8 @@ using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.Extentions;
 ```
 
+More examples can be found in [Examples.md](Examples.md)
+
 ### Renaming of a field
 To rename a field name use the attribute ```GraphQLFieldNameAttribute``` on the class or property which you want to remap. For example request the field Fullname on the property Name do the follwing.
 ```csharp
