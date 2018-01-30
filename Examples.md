@@ -39,7 +39,7 @@ public class PageInfo
 ### Query
 This generates the following query:
 ```
-{"query":"query{AllFilms:allFilms{Films:films{Title:title} PageInfo:pageInfo{HasNextPage:hasNextPage} TotalCount:totalCount}}"}
+{"query":"query{allFilms{films{title} pageInfo{hasNextPage} totalCount}}"}
 ```
 
 ## Film
@@ -63,5 +63,5 @@ public class Film
 ### Query
 This generates the following query:
 ```
-{"query":"query($filmIdVariable:ID){Film:film(filmID:$filmIdVariable){Title:title}}","variables":{"filmIdVariable":"6"}}
+{"query":"query($filmIdVariable:ID){film(filmID:$filmIdVariable){title}}","variables":{"filmIdVariable":"6"}}
 ```

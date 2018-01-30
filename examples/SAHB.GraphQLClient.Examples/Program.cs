@@ -26,14 +26,17 @@ namespace SAHB.GraphQLClient.Examples
                 builder.Field("hero", 
                     hero => 
                         hero
-                            .Alias("Hero")
-                            .Field("name", name => name.Alias("Name"))
+                            .Field("name")
                             .Field("friends", 
                                 friends => 
-                                    friends.Alias("Friends").Field("name", name => name.Alias("Name")))),
+                                    friends.Alias("MyFriends").Field("name"))),
                 "https://mpjk0plp9.lp.gql.zone/graphql");
             var builderResponse = await query.Execute();
-            Console.WriteLine(builderResponse["Hero"]["Name"].Value);
+            Console.WriteLine(builderResponse["hero"]["name"].Value);
+            foreach (var friend in builderResponse["hero"]["MyFriends"])
+            {
+                Console.WriteLine(friend["name"].Value);
+            }
 
             // Get response from url using a generated object without alias
             query = client.CreateQuery(builder =>
