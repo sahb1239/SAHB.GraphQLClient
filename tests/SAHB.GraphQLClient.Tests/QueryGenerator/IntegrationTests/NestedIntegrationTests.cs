@@ -41,7 +41,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator.IntegrationTests
         [Fact]
         public void NestedQueryTestWithFieldNames()
         {
-            var expected = "{\"query\":\"query{Me:me{Name:name Age:age lastname}}\"}";
+            var expected = "{\"query\":\"query{me{name age lastname}}\"}";
 
             var actual = _queryGenerator.GetQuery<Query1>(_fieldBuilder);
 
@@ -51,7 +51,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator.IntegrationTests
         [Fact]
         public void NestedQueryTestWithFieldNamesAndIEnumerable()
         {
-            var expected = "{\"query\":\"query{Me:me{Name:name Age:age lastname} Others:other{Name:name Age:age lastname}}\"}";
+            var expected = "{\"query\":\"query{me{name age lastname} Others:other{name age lastname}}\"}";
 
             var actual = _queryGenerator.GetQuery<Query2>(_fieldBuilder);
 
@@ -67,7 +67,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator.IntegrationTests
         [Fact]
         public void NestedQueryTestWithFieldNamesAndIEnumerableAndInherited()
         {
-            var expected = "{\"query\":\"query{Others:other{Name:name Age:age lastname} Me:me{Name:name Age:age lastname}}\"}";
+            var expected = "{\"query\":\"query{Others:other{name age lastname} me{name age lastname}}\"}";
 
             var actual = _queryGenerator.GetQuery<Query3>(_fieldBuilder);
 
@@ -85,7 +85,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator.IntegrationTests
         [Fact]
         public void NestedQueryTestWithFieldNamesWithIgnored()
         {
-            var expected = "{\"query\":\"query{Me:me{Name:name Age:age lastname}}\"}";
+            var expected = "{\"query\":\"query{me{name age lastname}}\"}";
 
             var actual = _queryGenerator.GetQuery<Query4>(_fieldBuilder);
 

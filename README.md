@@ -44,7 +44,7 @@ public class Friend
 
 The following code requests the endpoint with the following query
 ```
-{"query":"query{Hero:hero{Name:name Friends:friends{Name:name}}}"} 
+{"query":"query{hero{name friends{name}}}"} 
 ```
 
 The following using statements is required
@@ -52,6 +52,8 @@ The following using statements is required
 using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.Extentions;
 ```
+
+More examples can be found in [Examples.md](Examples.md)
 
 ### Renaming of a field
 To rename a field name use the attribute ```GraphQLFieldNameAttribute``` on the class or property which you want to remap. For example request the field Fullname on the property Name do the follwing.
@@ -65,7 +67,7 @@ public class Friend
 
 This will generate the query:
 ```
-{"query":"query{Hero:hero{Name:fullname"}
+{"query":"query{hero{Name:fullname"}
 ```
 
 Note: For generating this you need to remember to add a extra Query class
@@ -106,7 +108,7 @@ public class IgnoredClass
 
 This will generate the query:
 ```
-{"query":"query{Hero:hero{Name:name"}
+{"query":"query{hero{name}}"}
 ```
 
 Note: For generating this you need to remember to add a extra Query class
@@ -136,7 +138,7 @@ var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql"
 
 This will generate the query (Hero contains here only the Name property):
 ```
-{"query":"query($variableName:String){Hero:hero(argumentName:$variableName){Name:name}}","variables":{"variableName":"valueToBeSent"}}
+{"query":"query($variableName:String){hero(argumentName:$variableName){name}}","variables":{"variableName":"valueToBeSent"}}
 ```
 
 ### Merging multiple queries (batching)
@@ -212,11 +214,10 @@ var query = client.CreateQuery(builder =>
 	builder.Field("hero", 
 		hero => 
 			hero
-				.Alias("Hero")
-				.Field("name", name => name.Alias("Name"))
+				.Field("name")
 				.Field("friends", 
 					friends => 
-						friends.Alias("Friends").Field("name", name => name.Alias("Name")))),
+						friends.Alias("MyFriends").Field("name"))),
 	"https://mpjk0plp9.lp.gql.zone/graphql");
 var builderResponse = await query.Execute();
 Console.WriteLine(builderResponse["Hero"]["Name"].Value);
@@ -224,10 +225,12 @@ Console.WriteLine(builderResponse["Hero"]["Name"].Value);
 
 The query generated is the following which is equal to the query generated in the first example:
 ```
-{"query":"query{Hero:hero{Name:name Friends:friends{Name:name}}}"}
+{"query":"query{hero{name MyFriends:friends{name}}}"}
 ```
 
 The builder supports fields, subfields, alias and arguments.
+
+Note: If the alias and field name is case insensitive equal the alias is ignored
 
 ### Execute custom GraphQL query
 If a custom GraphQL query is required to be executed it's also possible using the IGraphQLHttpExecutor. An example is shown here:

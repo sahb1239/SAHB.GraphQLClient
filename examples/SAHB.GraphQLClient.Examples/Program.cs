@@ -26,14 +26,17 @@ namespace SAHB.GraphQLClient.Examples
                 builder.Field("hero", 
                     hero => 
                         hero
-                            .Alias("Hero")
-                            .Field("name", name => name.Alias("Name"))
+                            .Field("name")
                             .Field("friends", 
                                 friends => 
-                                    friends.Alias("Friends").Field("name", name => name.Alias("Name")))),
+                                    friends.Alias("MyFriends").Field("name"))),
                 "https://mpjk0plp9.lp.gql.zone/graphql");
             var builderResponse = await query.Execute();
-            Console.WriteLine(builderResponse["Hero"]["Name"].Value);
+            Console.WriteLine(builderResponse["hero"]["name"].Value);
+            foreach (var friend in builderResponse["hero"]["MyFriends"])
+            {
+                Console.WriteLine(friend["name"].Value);
+            }
 
             // Get response from url using a generated object without alias
             query = client.CreateQuery(builder =>
@@ -83,7 +86,50 @@ namespace SAHB.GraphQLClient.Examples
             response = await client.Query<HeroQuery>("https://mpjk0plp9.lp.gql.zone/graphql");
             Console.WriteLine(response.Hero.Name);
 
+            // Swapi
+            var swapiResponse = await client.Query<SwapiQuery>("https://swapi.apis.guru/");
+            foreach (var movie in swapiResponse.AllFilms.Films)
+            {
+                Console.WriteLine(movie.Title);
+            }
+
+            var filmResponse = await client.Query<FilmQuery>("https://swapi.apis.guru/",
+                arguments: new GraphQLQueryArgument("filmIdVariable", "6"));
+            Console.WriteLine(filmResponse.Film.Title);
+
             Console.ReadKey();
+        }
+
+        public class FilmQuery
+        {
+            [GraphQLArguments("filmID", "ID", "filmIdVariable")]
+            public Film Film { get; set; }
+        }
+
+        public class SwapiQuery
+        {
+            public FilmConnection AllFilms { get; set; }
+        }
+
+        public class FilmConnection : Connection
+        {
+            public IEnumerable<Film> Films { get; set; }
+        }
+
+        public class Film
+        {
+            public string Title { get; set; }
+        }
+
+        public abstract class Connection
+        {
+            public PageInfo PageInfo { get; set; }
+            public int TotalCount { get; set; }
+        }
+
+        public class PageInfo
+        {
+            public bool HasNextPage { get; set; }
         }
 
         public class HeroQuery

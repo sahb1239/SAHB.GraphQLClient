@@ -54,7 +54,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
                 var fieldBuilder = new StringBuilder();
 
                 // Append alias and field
-                if (field.Alias == field.Field || field.Alias == null)
+                if (field.Alias == null || field.Alias.Equals(field.Field, StringComparison.OrdinalIgnoreCase))
                 {
                     fieldBuilder.Append(field.Field);
                 }
