@@ -8,12 +8,13 @@ namespace SAHB.GraphQLClient.Exceptions
     // ReSharper disable once InconsistentNaming
     public class GraphQLErrorException : GraphQLException
     {
-        public GraphQLErrorException(IEnumerable<GraphQLDataError> errors) : this(errors, GetMessage(errors))
+        public GraphQLErrorException(string query, IEnumerable<GraphQLDataError> errors) : this(query, errors, GetMessage(errors))
         {
         }
 
-        public GraphQLErrorException(IEnumerable<GraphQLDataError> errors, string message) : base(message)
+        public GraphQLErrorException(string query, IEnumerable<GraphQLDataError> errors, string message) : base(message)
         {
+            Query = query;
             Errors = errors ?? throw new ArgumentNullException(nameof(errors));
         }
 
@@ -28,5 +29,6 @@ namespace SAHB.GraphQLClient.Exceptions
         }
 
         public IEnumerable<GraphQLDataError> Errors { get; }
+        public string Query { get; }
     }
 }
