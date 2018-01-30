@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
 using Xunit;
@@ -122,6 +123,26 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
 
             // Assert
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Test_Variable_Not_Set_Should_Throw()
+        {
+            // Arrange
+            var fields = new[]
+            {
+                new GraphQLField(alias: null, field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", true)
+                    })
+            };
+
+            // Act / assert
+            Assert.Throws(typeof(GraphQLArgumentsRequiredException), () =>
+            {
+                var query = _queryGenerator.GetQuery(fields);
+            });
         }
 
         public class StaticArgument
