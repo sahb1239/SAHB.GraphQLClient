@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient.Executor
@@ -55,8 +56,23 @@ namespace SAHB.GraphQLClient.Executor
             // Send request
             HttpResponseMessage response = await _client.SendAsync(requestMessage);
 
-            // Ensure success response
-            response.EnsureSuccessStatusCode();
+            // Detect if response was not successfully
+            if (!response.IsSuccessStatusCode)
+            {
+                string errorResponse = null;
+
+                // Try to read response
+                try
+                {
+                    errorResponse = await response.Content.ReadAsStringAsync();
+                }
+                catch (Exception)
+                {
+                    // ignored since if it cannot be read we intentionally just want to set errorResponse to null
+                }
+
+                throw new GraphQLHttpExecutorServerErrorStatusCodeException(response.StatusCode, query, errorResponse, "Response from server was not successfully");
+            }
 
             // Get response
             string stringResponse = await response.Content.ReadAsStringAsync();
