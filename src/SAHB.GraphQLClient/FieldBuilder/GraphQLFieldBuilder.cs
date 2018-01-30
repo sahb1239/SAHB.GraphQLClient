@@ -172,7 +172,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                 return null;
 
             return classAttributes.Concat(fieldAttribute).Select(attribute =>
-                new GraphQLFieldArguments(attribute.ArgumentName, attribute.ArgumentType, attribute.VariableName));
+                new GraphQLFieldArguments(attribute));
         }
 
         #region Helpers
