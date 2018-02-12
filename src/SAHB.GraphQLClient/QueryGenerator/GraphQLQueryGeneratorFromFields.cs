@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Internal;
 
@@ -27,7 +29,31 @@ namespace SAHB.GraphQLClient.QueryGenerator
 
         private string GetQuery(string queryType, ICollection<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
         {
-            var query = GetGraphQLQuery(queryType, GetArguments(fields), GetFields(fields));
+            // Get all the arguments from the fields
+            var fieldArguments = Helper.GetAllArgumentsFromFields(fields).ToList();
+            
+            // Validate that each argument is set
+            ICollection<GraphQLFieldArguments> argumentsNotSet = new Collection<GraphQLFieldArguments>();
+            foreach (var argument in fieldArguments)
+            {
+                // Validate if the argument is required and not specified in the arguments recieved in parameters
+                if (argument.IsRequired && arguments.All(e => e.VariableName != argument.VariableName))
+                {
+                    argumentsNotSet.Add(argument);
+                }
+            }
+
+            // If any arguments was detected not set
+            if (argumentsNotSet.Any())
+            {
+                throw new GraphQLArgumentsRequiredException(argumentsNotSet);
+            }
+
+            // Define filterArguments function
+            bool FilterArguments(GraphQLFieldArguments argument) => arguments.Any(e => e.VariableName == argument.VariableName);
+
+            // Get query
+            var query = GetGraphQLQuery(queryType, GetArguments(fieldArguments, FilterArguments), GetFields(fields, argument => arguments.Any(e => e.VariableName == argument.VariableName)));
             var request = GetQueryRequest(query, arguments);
 
             // Logging
@@ -39,12 +65,12 @@ namespace SAHB.GraphQLClient.QueryGenerator
             return request;
         }
 
-        private string GetArguments(IEnumerable<GraphQLField> fields)
+        private string GetArguments(IEnumerable<GraphQLFieldArguments> argumentsFromFields, Func<GraphQLFieldArguments, bool> filterArguments)
         {
-            return string.Join(" ", Helper.GetAllArgumentsFromFields(fields).Select(e => $"${e.VariableName}:{e.ArgumentType}"));
+            return string.Join(" ", argumentsFromFields.Where(filterArguments).Select(e => $"${e.VariableName}:{e.ArgumentType}"));
         }
 
-        private string GetFields(IEnumerable<GraphQLField> fields)
+        private string GetFields(IEnumerable<GraphQLField> fields, Func<GraphQLFieldArguments, bool> filterArguments)
         {
             StringBuilder builder = new StringBuilder();
             builder.Append("{");
@@ -65,12 +91,13 @@ namespace SAHB.GraphQLClient.QueryGenerator
 
                 // Append arguments
                 // Format: (argumentName:$VariableName argumentName:$VariableName)
-                if (field.Arguments?.Any() ?? false)
+                var fieldArguments = filterArguments == null ? field.Arguments : field.Arguments?.Where(filterArguments).ToList();
+                if (fieldArguments?.Any() ?? false)
                 {
                     fieldBuilder.Append("(");
 
                     fieldBuilder.Append(string.Join(" ",
-                        field.Arguments.Select(
+                        fieldArguments.Select(
                             argument => argument.ArgumentName + ":" + "$" + argument.VariableName)));
 
                     fieldBuilder.Append(")");
@@ -79,7 +106,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
                 // Append subquery
                 if (field.Fields?.Any() ?? false)
                 {
-                    fieldBuilder.Append(GetFields(field.Fields));
+                    fieldBuilder.Append(GetFields(field.Fields, filterArguments));
                 }
 
                 return fieldBuilder.ToString();
@@ -89,19 +116,19 @@ namespace SAHB.GraphQLClient.QueryGenerator
             return builder.ToString();
         }
 
-        private string GetGraphQLQuery(string queryType, string argument, string fields)
+        private string GetGraphQLQuery(string queryType, string argumentVariableDeclaration, string fields)
         {
             // Get argument string
-            if (!string.IsNullOrEmpty(argument))
+            if (!string.IsNullOrEmpty(argumentVariableDeclaration))
             {
-                argument = $"({argument})";
+                argumentVariableDeclaration = $"({argumentVariableDeclaration})";
             }
 
             // Return query
-            return queryType + argument + fields;
+            return queryType + argumentVariableDeclaration + fields;
         }
 
-        private string GetQueryRequest(string query, params GraphQLQueryArgument[] arguments)
+        private string GetQueryRequest(string query, GraphQLQueryArgument[] arguments)
         {
             if (arguments.Any())
             {
