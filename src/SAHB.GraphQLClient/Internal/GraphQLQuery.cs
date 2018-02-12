@@ -35,7 +35,7 @@ namespace SAHB.GraphQLClient.Internal
         {
             var result = await _executor.ExecuteQuery<dynamic>(_query, _url, _httpMethod, _authorizationToken, _authorizationMethod);
             if (result?.Errors?.Any() ?? false)
-                throw new GraphQLErrorException(result.Errors);
+                throw new GraphQLErrorException(query: _query, errors: result.Errors);
 
             return result?.Data;
         }
@@ -67,7 +67,7 @@ namespace SAHB.GraphQLClient.Internal
         {
             var result = await _executor.ExecuteQuery<T>(_query, _url, _httpMethod, _authorizationToken, _authorizationMethod);
             if (result?.Errors?.Any() ?? false)
-                throw new GraphQLErrorException(result.Errors);
+                throw new GraphQLErrorException(query: _query, errors: result.Errors);
 
             return result?.Data;
         }

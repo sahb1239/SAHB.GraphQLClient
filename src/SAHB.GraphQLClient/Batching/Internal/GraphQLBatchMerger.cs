@@ -28,6 +28,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
         private int _identifierCount = 0;
         private bool _isExecuted = false;
         private GraphQLDataResult<JObject> _result;
+        private string _executedQuery;
 
         public GraphQLBatchMerger(string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator)
         {
@@ -70,7 +71,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             
             if (_result.ContainsErrors)
             {
-                throw new GraphQLErrorException(_result.Errors);
+                throw new GraphQLErrorException(query: _executedQuery , errors: _result.Errors);
             }
             
             // Create new JObject
@@ -101,12 +102,12 @@ namespace SAHB.GraphQLClient.Batching.Internal
             UpdateArguments();
 
             // Generate query
-            var query = _queryGenerator.GetQuery(_fields.SelectMany(e => e.Value),
+            _executedQuery = _queryGenerator.GetQuery(_fields.SelectMany(e => e.Value),
                 _arguments.SelectMany(e => e.Value).ToArray());
 
             // Execute query
             _result =
-                await _executor.ExecuteQuery<JObject>(query, _url, _httpMethod, _authorizationToken, _authorizationMethod);
+                await _executor.ExecuteQuery<JObject>(_executedQuery, _url, _httpMethod, _authorizationToken, _authorizationMethod);
         }
 
         private void UpdateAlias()
