@@ -139,10 +139,69 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act / assert
-            Assert.Throws(typeof(GraphQLArgumentsRequiredException), () =>
+            Assert.Throws<GraphQLArgumentsRequiredException>(() =>
             {
                 var query = _queryGenerator.GetQuery(fields);
             });
+        }
+
+        [Fact]
+        public void Test_QueryGenerator_Should_Throw_When_No_Argument_Is_Supplied_To_Required_Argument()
+        {
+            // Arrange
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", true)
+                    })
+            };
+
+            // Act / Assert
+            Assert.Throws<GraphQLArgumentsRequiredException>(() => _queryGenerator.GetQuery(fields));
+        }
+
+        [Fact]
+        public void Test_QueryGenerator_Should_Not_Throw_When_Argument_Is_Supplied_To_Required_Argument()
+        {
+            // Arrange
+            var expected = "{\"query\":\"query($variableName:argumentType){alias:field(argumentName:$variableName)}\",\"variables\":{\"variableName\":\"value\"}}";
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", true)
+                    })
+            };
+
+            // Act
+            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", "value"));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Test_Argument_Should_Not_Be_Set_When_Not_Required_And_Not_Set()
+        {
+            // Arrange
+            var expected = "{\"query\":\"query{alias:field}\"}";
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", false)
+                    })
+            };
+
+            // Act
+            var actual = _queryGenerator.GetQuery(fields);
+
+            // Assert
+            Assert.Equal(expected, actual);
         }
 
         public class StaticArgument
