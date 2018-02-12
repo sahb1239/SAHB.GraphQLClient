@@ -5,6 +5,10 @@ using System.Text;
 
 namespace SAHB.GraphQLClient.Exceptions
 {
+    // ReSharper disable once InconsistentNaming
+    /// <summary>
+    /// Throws a new <see cref="GraphQLHttpExecutorServerErrorStatusCodeException"/> which indicates that the GraphQL request returned a non successfull server status code
+    /// </summary>
     public class GraphQLHttpExecutorServerErrorStatusCodeException : GraphQLException
     {
         public HttpStatusCode StatusCode { get; }

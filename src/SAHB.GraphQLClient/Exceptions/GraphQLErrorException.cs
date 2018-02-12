@@ -6,6 +6,9 @@ using SAHB.GraphQLClient.Result;
 namespace SAHB.GraphQLClient.Exceptions
 {
     // ReSharper disable once InconsistentNaming
+    /// <summary>
+    /// Throws a new <see cref="GraphQLErrorException"/> which indicates that the server returned one or more errors
+    /// </summary>
     public class GraphQLErrorException : GraphQLException
     {
         public GraphQLErrorException(string query, IEnumerable<GraphQLDataError> errors) : this(query, errors, GetMessage(errors))
