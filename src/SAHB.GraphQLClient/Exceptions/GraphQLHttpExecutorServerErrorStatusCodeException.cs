@@ -17,5 +17,12 @@ namespace SAHB.GraphQLClient.Exceptions
             Query = query;
             Response = response;
         }
+
+        public GraphQLHttpExecutorServerErrorStatusCodeException(HttpStatusCode statusCode, string query, string response, string message, Exception innerException) : base(message, innerException)
+        {
+            StatusCode = statusCode;
+            Query = query;
+            Response = response;
+        }
     }
 }

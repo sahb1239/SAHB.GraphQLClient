@@ -66,9 +66,9 @@ namespace SAHB.GraphQLClient.Executor
                 {
                     errorResponse = await response.Content.ReadAsStringAsync();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // ignored since if it cannot be read we intentionally just want to set errorResponse to null
+                    throw new GraphQLHttpExecutorServerErrorStatusCodeException(response.StatusCode, query, errorResponse, "Response from server was not successfully", ex);
                 }
 
                 throw new GraphQLHttpExecutorServerErrorStatusCodeException(response.StatusCode, query, errorResponse, "Response from server was not successfully");
