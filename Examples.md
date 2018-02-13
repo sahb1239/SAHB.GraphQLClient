@@ -63,5 +63,5 @@ public class Film
 ### Query
 This generates the following query:
 ```
-{"query":"query($filmIdVariable:ID){film(filmID:$filmIdVariable){title}}","variables":{"filmIdVariable":"6"}}
+{"query":"query{film(filmID:"6"){title}}"}
 ```

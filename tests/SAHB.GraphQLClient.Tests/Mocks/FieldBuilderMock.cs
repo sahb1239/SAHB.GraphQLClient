@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SAHB.GraphQLClient.FieldBuilder;
 
-namespace SAHB.GraphQLClient.Tests.QueryGenerator
+namespace SAHB.GraphQLClient.Tests.Mocks
 {
     public class FieldBuilderMock : IGraphQLFieldBuilder
     {

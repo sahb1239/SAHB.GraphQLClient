@@ -71,7 +71,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
         {
             // Arrange
             var expected =
-                @"{""query"":""query($batch0_argumentVariable:Int $batch1_argumentVariable2:Int){batch0_Part1Field1:part1_field1(argumentName:$batch0_argumentVariable) batch0_Part1Field2:part1Field2 batch1_Part2Field3:part2_field3(argumentName:$batch1_argumentVariable2) batch1_Part2Field4:part2Field4}"",""variables"":{""batch0_argumentVariable"":""1"",""batch1_argumentVariable2"":""2""}}";
+                @"{""query"":""query{batch0_Part1Field1:part1_field1(argumentName:\""1\"") batch0_Part1Field2:part1Field2 batch1_Part2Field3:part2_field3(argumentName:\""2\"") batch1_Part2Field4:part2Field4}""}";
             var httpClientMock = new GraphQLHttpExecutorMock(
                 JsonConvert.SerializeObject(new
                 {
@@ -125,7 +125,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
         {
             // Arrange
             var expected =
-                @"{""query"":""query($batch0_argumentVariable:Int $batch1_argumentVariable:Int){batch0_Part1Field1:part1_field1(argumentName:$batch0_argumentVariable) batch0_Part1Field2:part1Field2 batch1_Part2Field3:part2_field3(argumentName:$batch1_argumentVariable) batch1_Part2Field4:part2Field4}"",""variables"":{""batch0_argumentVariable"":""1"",""batch1_argumentVariable"":""2""}}";
+                @"{""query"":""query{batch0_Part1Field1:part1_field1(argumentName:\""1\"") batch0_Part1Field2:part1Field2 batch1_Part2Field3:part2_field3(argumentName:\""2\"") batch1_Part2Field4:part2Field4}""}";
             var httpClientMock = new GraphQLHttpExecutorMock(
                 JsonConvert.SerializeObject(new
                 {
@@ -179,7 +179,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
         {
             // Arrange
             var expected =
-                @"{""query"":""query($batch0_argumentVariable:Int){batch0_Part1Field1:part1_field1(argumentName:$batch0_argumentVariable) batch0_Part1Field2:part1Field2}"",""variables"":{""batch0_argumentVariable"":""1""}}";
+                @"{""query"":""query{batch0_Part1Field1:part1_field1(argumentName:\""1\"") batch0_Part1Field2:part1Field2}""}";
             var httpClientMock = new GraphQLHttpExecutorMock(
                 JsonConvert.SerializeObject(new
                 {
