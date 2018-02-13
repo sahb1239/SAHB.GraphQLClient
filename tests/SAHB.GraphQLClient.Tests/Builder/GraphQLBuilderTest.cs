@@ -191,5 +191,50 @@ namespace SAHB.GraphQLClient.Tests.Builder
             // Assert
             Assert.Equal(null, result);
         }
+
+        [Fact]
+        public async Task Test_GraphQL_Builder_Returns_Exception_When_Error_Occurs()
+        {
+            // Arrange
+            var expected =
+                "{\"query\":\"query{field}\"}";
+            var httpClientMock = new GraphQLHttpExecutorMock(
+                JsonConvert.SerializeObject(new
+                {
+                    Data = new
+                    {
+                        Field = "FieldValue"
+                    },
+                    Errors = new[]
+                    {
+                        new
+                        {
+                            message = "This is not a valid query!",
+                            locations = new []
+                            {
+                                new
+                                {
+                                    line = 1,
+                                    column = 0
+                                },
+                                new
+                                {
+                                    line = 1,
+                                    column = 1
+                                }
+                            }
+                        }
+                    }
+                }), expected);
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
+                new GraphQLQueryGeneratorFromFields());
+
+            // Act
+            var query = client.CreateQuery(builder =>
+                builder.Field("field"), "randomurl");
+
+            // Assert
+            await Assert.ThrowsAsync<GraphQLErrorException>(() => query.Execute());
+        }
     }
 }

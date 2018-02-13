@@ -175,6 +175,34 @@ namespace SAHB.GraphQLClient.Tests.Batching
         }
 
         [Fact]
+        public async Task Test_Execute_Should_Set_IsExecuted()
+        {
+            // Arrange
+            var expected =
+                @"{""query"":""query{batch0_Part1Field1:part1_field1(argumentName:\""1\"") batch0_Part1Field2:part1Field2}""}";
+            var httpClientMock = new GraphQLHttpExecutorMock(
+                JsonConvert.SerializeObject(new
+                {
+                    Data = new
+                    {
+                        batch0_Part1Field1 = "Value1",
+                        batch0_Part1Field2 = "Value2"
+                    }
+                }), expected);
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
+                new GraphQLQueryGeneratorFromFields());
+
+            // Act
+            var batch = client.CreateBatch("");
+            var query1 =
+                batch.Query<QueryBatchWithConflictingArgumentsPart1>(new GraphQLQueryArgument("argumentVariable", 1.ToString()));
+            var result1 = await query1.Execute();
+
+            // Assert isExecuted
+            Assert.True(batch.IsExecuted());
+        }
+
+        [Fact]
         public async Task Test_Execute_And_Add_After_Execute_Should_Throw_Exception()
         {
             // Arrange
@@ -205,6 +233,38 @@ namespace SAHB.GraphQLClient.Tests.Batching
                 batch.Query<QueryBatchWithConflictingArgumentsPart2>(
                     new GraphQLQueryArgument("argumentVariable", 2.ToString()));
             });
+        }
+
+        [Fact]
+        public async Task Test_Execute_Two_Times_Should_Not_Throw_Exception()
+        {
+            // Arrange
+            var expected =
+                @"{""query"":""query{batch0_Part1Field1:part1_field1(argumentName:\""1\"") batch0_Part1Field2:part1Field2}""}";
+            var httpClientMock = new GraphQLHttpExecutorMock(
+                JsonConvert.SerializeObject(new
+                {
+                    Data = new
+                    {
+                        batch0_Part1Field1 = "Value1",
+                        batch0_Part1Field2 = "Value2"
+                    }
+                }), expected);
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
+                new GraphQLQueryGeneratorFromFields());
+
+            // Act
+            var batch = client.CreateBatch("");
+            var query1 =
+                batch.Query<QueryBatchWithConflictingArgumentsPart1>(new GraphQLQueryArgument("argumentVariable", 1.ToString()));
+            var result1 = await query1.Execute();
+
+            //  Query should not throw but insted just return same output
+            var result2 = await query1.Execute();
+
+            // Assert
+            Assert.Equal(result1.Part1Field1, result2.Part1Field1);
+            Assert.Equal(result1.Part1Field2, result2.Part1Field2);
         }
     }
 }
