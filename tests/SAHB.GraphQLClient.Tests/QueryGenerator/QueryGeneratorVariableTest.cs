@@ -288,6 +288,89 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void Test_Inline_String_Argument_Explicit_Not_Inlined()
+        {
+            // Arrange
+            var expected = "{\"query\":\"query($variableName:argumentType){alias:field(argumentName:$variableName)}\",\"variables\":{\"variableName\":\"test\"}}";
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:false)
+                    })
+            };
+
+            // Act
+            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", "test"));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Test_One_Explicit_Not_Inlined_And_One_Implicit_Inlined()
+        {
+            // Arrange
+            var expected = "{\"query\":\"query($variableName:argumentType){alias:field(argumentName:$variableName argumentName1:\\\"test1\\\")}\",\"variables\":{\"variableName\":\"test\"}}";
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:false),
+                        new GraphQLFieldArguments("argumentName1", "argumentType1", "variableName1", isRequired:false)
+                    })
+            };
+
+            // Act
+            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", "test"), new GraphQLQueryArgument("variableName1", "test1"));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Test_One_Explicit_Not_Inlined_And_One_Implicit_Inlined_Same_Variable_Name()
+        {
+            // Arrange
+            var expected = "{\"query\":\"query($variableName:argumentType){alias:field(argumentName:$variableName argumentName1:\\\"test\\\")}\",\"variables\":{\"variableName\":\"test\"}}";
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:false),
+                        new GraphQLFieldArguments("argumentName1", "argumentType1", "variableName", isRequired:false)
+                    })
+            };
+
+            // Act
+            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", "test"));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Test_Should_Throw_When_Multiple_Same_Variables_Has_Been_Defined()
+        {
+            // Arrange
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false)
+                    })
+            };
+
+            // Act / Assert
+            Assert.Throws<GraphQLDuplicateVariablesException>(() => _queryGenerator.GetQuery(fields,
+                new GraphQLQueryArgument("variableName", "test"), new GraphQLQueryArgument("variableName", "test")));
+        }
+
         public class StaticArgument
         {
             public string Field1 { get; set; }
