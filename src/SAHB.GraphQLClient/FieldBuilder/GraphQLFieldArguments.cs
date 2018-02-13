@@ -37,11 +37,25 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <param name="variableName">GraphQL variable name</param>
         /// <param name="isRequired">Is the GraphQL argument required to execute the query</param>
         public GraphQLFieldArguments(string argumentName, string argumentType, string variableName, bool isRequired)
+            : this(argumentName: argumentName, argumentType: argumentType, variableName: variableName, isRequired: isRequired, inlineArgument: null)
+        {
+        }
+
+        /// <summary>
+        /// Initilizes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
+        /// </summary>
+        /// <param name="argumentName">GraphQL argument name</param>
+        /// <param name="argumentType">GraphQL argument type of the variable</param>
+        /// <param name="variableName">GraphQL variable name</param>
+        /// <param name="isRequired">Is the GraphQL argument required to execute the query</param>
+        /// <param name="inlineArgument">Should the GraphQL argument be inlined</param>
+        public GraphQLFieldArguments(string argumentName, string argumentType, string variableName, bool isRequired, bool? inlineArgument)
         {
             ArgumentName = argumentName ?? throw new ArgumentNullException(nameof(argumentName));
             ArgumentType = argumentType ?? throw new ArgumentNullException(nameof(argumentType));
             VariableName = variableName ?? throw new ArgumentNullException(nameof(variableName));
             IsRequired = isRequired;
+            InlineArgument = inlineArgument;
         }
 
         /// <summary>
@@ -63,6 +77,11 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// Is the argument required for execution of the query
         /// </summary>
         public bool IsRequired { get; set; }
+
+        /// <summary>
+        /// Should the argument be inlined
+        /// </summary>
+        public bool? InlineArgument { get; set; }
 
         /// <inheritdoc />
         public override string ToString()
