@@ -204,6 +204,48 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void Test_Inline_Int_Argument_Explicit()
+        {
+            // Arrange
+            var expected = "{\"query\":\"query{alias:field(argumentName:1)}\"}";
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:true)
+                    })
+            };
+
+            // Act
+            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", 1));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Test_Inline_String_Argument_Explicit()
+        {
+            // Arrange
+            var expected = "{\"query\":\"query{alias:field(argumentName:\\\"test\\\")}\"}";
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:true)
+                    })
+            };
+
+            // Act
+            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", "test"));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
         public class StaticArgument
         {
             public string Field1 { get; set; }
