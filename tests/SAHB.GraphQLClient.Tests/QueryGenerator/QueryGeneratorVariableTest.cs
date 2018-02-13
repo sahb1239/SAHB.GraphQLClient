@@ -19,7 +19,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         public void Test_Query_Generator_String_Variable()
         {
             // Arrange
-            var expected = "{\"query\":\"query($variableName:argumentType){alias:field(argumentName:$variableName)}\",\"variables\":{\"variableName\":\"value\"}}";
+            var expected = "{\"query\":\"query{alias:field(argumentName:\\\"value\\\")}\"}";
             var fields = new []
             {
                 new GraphQLField(alias: "alias", field: "field", fields: null,
@@ -41,7 +41,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         {
             // Arrange
             var expected =
-                "{\"query\":\"query($variableName1:argumentType1 $variableName2:argumentType2){alias:field(argumentName1:$variableName1 argumentName2:$variableName2)}\",\"variables\":{\"variableName1\":\"value1\",\"variableName2\":\"value2\"}}";
+                "{\"query\":\"query{alias:field(argumentName1:\\\"value1\\\" argumentName2:\\\"value2\\\")}\"}";
             var fields = new []
             {
                 new GraphQLField(alias: "alias", field: "field", fields: null,
@@ -64,7 +64,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         public void Test_Query_Generator_String_Converted_Variable()
         {
             // Arrange
-            var expected = "{\"query\":\"query($variableName:argumentType){alias:field(argumentName:$variableName)}\",\"variables\":{\"variableName\":\"{\\\"arg1\\\":\\\"value1\\\",\\\"arg2\\\":\\\"value2\\\"}\"}}";
+            var expected = "{\"query\":\"query{alias:field(argumentName:\\\"{\\\\\\\"arg1\\\\\\\":\\\\\\\"value1\\\\\\\",\\\\\\\"arg2\\\\\\\":\\\\\\\"value2\\\\\\\"}\\\")}\"}";
             var fields = new []
             {
                 new GraphQLField(alias: "alias", field: "field", fields: null,
@@ -166,7 +166,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         public void Test_QueryGenerator_Should_Not_Throw_When_Argument_Is_Supplied_To_Required_Argument()
         {
             // Arrange
-            var expected = "{\"query\":\"query($variableName:argumentType){alias:field(argumentName:$variableName)}\",\"variables\":{\"variableName\":\"value\"}}";
+            var expected = "{\"query\":\"query{alias:field(argumentName:\\\"value\\\")}\"}";
             var fields = new[]
             {
                 new GraphQLField(alias: "alias", field: "field", fields: null,
@@ -236,6 +236,48 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:true)
+                    })
+            };
+
+            // Act
+            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", "test"));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Test_Inline_Int_Argument_Implicit()
+        {
+            // Arrange
+            var expected = "{\"query\":\"query{alias:field(argumentName:1)}\"}";
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:null)
+                    })
+            };
+
+            // Act
+            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", 1));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Test_Inline_String_Argument_Implicit()
+        {
+            // Arrange
+            var expected = "{\"query\":\"query{alias:field(argumentName:\\\"test\\\")}\"}";
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:null)
                     })
             };
 
