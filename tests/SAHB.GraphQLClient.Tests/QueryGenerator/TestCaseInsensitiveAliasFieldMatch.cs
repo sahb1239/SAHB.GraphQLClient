@@ -4,6 +4,7 @@ using System.Text;
 using SAHB.GraphQLClient.Extentions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
+using SAHB.GraphQLClient.Tests.Mocks;
 using Xunit;
 
 namespace SAHB.GraphQLClient.Tests.QueryGenerator

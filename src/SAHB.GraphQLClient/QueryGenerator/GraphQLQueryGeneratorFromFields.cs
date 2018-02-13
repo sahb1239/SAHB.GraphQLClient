@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Internal;
 
@@ -25,10 +27,55 @@ namespace SAHB.GraphQLClient.QueryGenerator
             return GetQuery("mutation", fields.ToList(), arguments);
         }
 
-        private string GetQuery(string queryType, ICollection<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
+        private string GetQuery(string queryType, ICollection<GraphQLField> fields, params GraphQLQueryArgument[] queryArguments)
         {
-            var query = GetGraphQLQuery(queryType, GetArguments(fields), GetFields(fields));
-            var request = GetQueryRequest(query, arguments);
+            // Get all the arguments from the fields
+            var fieldArguments = Helper.GetAllArgumentsFromFields(fields).ToList();
+            
+            // Create mapping for each argument field
+            IDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments = new Dictionary<GraphQLFieldArguments, GraphQLQueryArgument>();
+            ICollection<GraphQLFieldArguments> argumentsNotSet = new Collection<GraphQLFieldArguments>();
+            List<string> duplicateVariableNames = new List<string>();
+            foreach (var fieldArgument in fieldArguments)
+            {
+                // Find matching query arguments
+                var queryArgument = queryArguments.Where(e => e.VariableName == fieldArgument.VariableName).Take(2).ToList();
+
+                switch (queryArgument.Count)
+                {
+                    case 0:
+                        if (fieldArgument.IsRequired)
+                        {
+                            argumentsNotSet.Add(fieldArgument);
+                        }
+                        break;
+                    case 1:
+                        arguments.Add(fieldArgument, queryArgument[0]);
+                        break;
+                    default:
+                        duplicateVariableNames.Add(queryArgument[0].VariableName);
+                        break;
+                }
+            }
+
+            // If any arguments was detected not set
+            if (argumentsNotSet.Any())
+            {
+                throw new GraphQLArgumentsRequiredException(argumentsNotSet);
+            }
+
+            // If duplicate variable names has been detected
+            if (duplicateVariableNames.Any())
+            {
+                throw new GraphQLDuplicateVariablesException(duplicateVariableNames);
+            }
+
+            // Get readonly arguments
+            var readonlyArguments = new ReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument>(arguments);
+
+            // Get query
+            var query = GetGraphQLQuery(queryType, GetArguments(readonlyArguments), GetFields(fields, readonlyArguments));
+            var request = GetQueryRequest(query, readonlyArguments);
 
             // Logging
             if (Logger != null && Logger.IsEnabled(LogLevel.Information))
@@ -39,12 +86,39 @@ namespace SAHB.GraphQLClient.QueryGenerator
             return request;
         }
 
-        private string GetArguments(IEnumerable<GraphQLField> fields)
+        private bool ShouldInlineArgument(KeyValuePair<GraphQLFieldArguments, GraphQLQueryArgument> keyValuePair) =>
+            ShouldInlineArgument(keyValuePair.Key, keyValuePair.Value);
+
+        private bool ShouldInlineArgument(GraphQLFieldArguments fieldArgument, GraphQLQueryArgument queryArgument)
         {
-            return string.Join(" ", Helper.GetAllArgumentsFromFields(fields).Select(e => $"${e.VariableName}:{e.ArgumentType}"));
+            // If inline is forced we should just inline
+            if (fieldArgument.InlineArgument.HasValue)
+            {
+                return fieldArgument.InlineArgument.Value;
+            }
+
+            // Else implicit inline if query argument is of specific types
+            switch (queryArgument.ArgumentValue)
+            {
+                case string _:
+                case bool _:
+                case int _:
+                case long _:
+                case float _:
+                case double _:
+                    return true;
+            }
+
+            // Else don't inline
+            return false;
         }
 
-        private string GetFields(IEnumerable<GraphQLField> fields)
+        private string GetArguments(IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        {
+            return string.Join(" ", arguments.Where(argument => !ShouldInlineArgument(argument)).Select(e => $"${e.Key.VariableName}:{e.Key.ArgumentType}"));
+        }
+
+        private string GetFields(IEnumerable<GraphQLField> fields, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
         {
             StringBuilder builder = new StringBuilder();
             builder.Append("{");
@@ -65,13 +139,18 @@ namespace SAHB.GraphQLClient.QueryGenerator
 
                 // Append arguments
                 // Format: (argumentName:$VariableName argumentName:$VariableName)
-                if (field.Arguments?.Any() ?? false)
+                var fieldArguments = field.Arguments?.ToDictionary(argument => argument,
+                    argument => arguments.FirstOrDefault(e => e.Key == argument).Value).Where(e => e.Value != null);
+                if (fieldArguments?.Any() ?? false)
                 {
                     fieldBuilder.Append("(");
 
                     fieldBuilder.Append(string.Join(" ",
-                        field.Arguments.Select(
-                            argument => argument.ArgumentName + ":" + "$" + argument.VariableName)));
+                        fieldArguments.Select(
+                            argument => argument.Key.ArgumentName + ":" +
+                                        (ShouldInlineArgument(argument)
+                                            ? JsonConvert.SerializeObject(argument.Value.ArgumentValue)
+                                            : "$" + argument.Key.VariableName))));
 
                     fieldBuilder.Append(")");
                 }
@@ -79,7 +158,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
                 // Append subquery
                 if (field.Fields?.Any() ?? false)
                 {
-                    fieldBuilder.Append(GetFields(field.Fields));
+                    fieldBuilder.Append(GetFields(field.Fields, arguments));
                 }
 
                 return fieldBuilder.ToString();
@@ -89,23 +168,24 @@ namespace SAHB.GraphQLClient.QueryGenerator
             return builder.ToString();
         }
 
-        private string GetGraphQLQuery(string queryType, string argument, string fields)
+        private string GetGraphQLQuery(string queryType, string argumentVariableDeclaration, string fields)
         {
             // Get argument string
-            if (!string.IsNullOrEmpty(argument))
+            if (!string.IsNullOrEmpty(argumentVariableDeclaration))
             {
-                argument = $"({argument})";
+                argumentVariableDeclaration = $"({argumentVariableDeclaration})";
             }
 
             // Return query
-            return queryType + argument + fields;
+            return queryType + argumentVariableDeclaration + fields;
         }
 
-        private string GetQueryRequest(string query, params GraphQLQueryArgument[] arguments)
+        private string GetQueryRequest(string query, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
         {
-            if (arguments.Any())
+            var variables = arguments.Where(e => !ShouldInlineArgument(e)).ToArray();
+            if (variables.Any())
             {
-                return JsonConvert.SerializeObject(new { query = query, variables = (arguments.ToDictionary(e => e.VariableName, e => e.ArgumentValue)) });
+                return JsonConvert.SerializeObject(new { query = query, variables = (variables.ToDictionary(e => e.Value.VariableName, e => e.Value.ArgumentValue)) });
             }
 
             return JsonConvert.SerializeObject(new { query = query });

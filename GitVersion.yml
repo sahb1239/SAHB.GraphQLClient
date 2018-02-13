@@ -1,6 +1,6 @@
 assembly-versioning-scheme: MajorMinorPatch
 branches:
   develop:
-    increment: Patch
+    increment: Minor
 ignore:
   sha: []

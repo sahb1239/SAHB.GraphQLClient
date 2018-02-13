@@ -2,7 +2,8 @@
 Query HTTP api using GraphQL. The client recieves a model as typeparameter and then queries the GraphQL api and deserilize the result.
 
 ## Nuget
-The library can be found on Nuget with the package name [SAHB.GraphQLClient](https://www.nuget.org/packages/SAHB.GraphQLClient/).
+The library can be found on NuGet with the package name [SAHB.GraphQLClient](https://www.nuget.org/packages/SAHB.GraphQLClient/).
+For pre release builds the NuGet package feed from [AppVeyor](https://ci.appveyor.com/nuget/sahb-graphqlclient-jry5sxi8qeq7) can be used.
 
 It can be installed using the following command in the Package Manager Console.
 
@@ -138,7 +139,7 @@ var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql"
 
 This will generate the query (Hero contains here only the Name property):
 ```
-{"query":"query($variableName:String){hero(argumentName:$variableName){name}}","variables":{"variableName":"valueToBeSent"}}
+{"query":"query{hero(argumentName:\"valueToBeSent\"){name}}"}
 ```
 
 ### Merging multiple queries (batching)
@@ -170,7 +171,7 @@ public class HumanQuery
 
 The following methods will generate the query:
 ```
-{"query":"query($batch0_humanID:ID! $batch1_humanID:ID!){batch0_Human:human(id:$batch0_humanID){Name:name Friends:friends{Name:name}} batch1_Human:human(id:$batch1_humanID){Name:name Friends:friends{Name:name}}}","variables":{"batch0_humanID":"1000","batch1_humanID":"1001"}}
+{"query":"query{batch0_Human:human(id:\"1000\"){Name:name Friends:friends{Name:name}} batch1_Human:human(id:\"1001\"){Name:name Friends:friends{Name:name}}}"}
 ```
 
 Note: when Execute is called on one result the batch does not support adding more request to it and will therefore throw if you try to add more requests to it. For example:

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.QueryGenerator;
@@ -70,7 +71,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
         {
             // Arrange
             var expected =
-                @"{""query"":""query($batch0_argumentVariable:Int $batch1_argumentVariable2:Int){batch0_Part1Field1:part1_field1(argumentName:$batch0_argumentVariable) batch0_Part1Field2:part1Field2 batch1_Part2Field3:part2_field3(argumentName:$batch1_argumentVariable2) batch1_Part2Field4:part2Field4}"",""variables"":{""batch0_argumentVariable"":""1"",""batch1_argumentVariable2"":""2""}}";
+                @"{""query"":""query{batch0_Part1Field1:part1_field1(argumentName:\""1\"") batch0_Part1Field2:part1Field2 batch1_Part2Field3:part2_field3(argumentName:\""2\"") batch1_Part2Field4:part2Field4}""}";
             var httpClientMock = new GraphQLHttpExecutorMock(
                 JsonConvert.SerializeObject(new
                 {
@@ -124,7 +125,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
         {
             // Arrange
             var expected =
-                @"{""query"":""query($batch0_argumentVariable:Int $batch1_argumentVariable:Int){batch0_Part1Field1:part1_field1(argumentName:$batch0_argumentVariable) batch0_Part1Field2:part1Field2 batch1_Part2Field3:part2_field3(argumentName:$batch1_argumentVariable) batch1_Part2Field4:part2Field4}"",""variables"":{""batch0_argumentVariable"":""1"",""batch1_argumentVariable"":""2""}}";
+                @"{""query"":""query{batch0_Part1Field1:part1_field1(argumentName:\""1\"") batch0_Part1Field2:part1Field2 batch1_Part2Field3:part2_field3(argumentName:\""2\"") batch1_Part2Field4:part2Field4}""}";
             var httpClientMock = new GraphQLHttpExecutorMock(
                 JsonConvert.SerializeObject(new
                 {
@@ -171,6 +172,39 @@ namespace SAHB.GraphQLClient.Tests.Batching
             public string Part2Field3 { get; set; }
 
             public string Part2Field4 { get; set; }
+        }
+
+        [Fact]
+        public async Task Test_Execute_And_Add_After_Execute_Should_Throw_Exception()
+        {
+            // Arrange
+            var expected =
+                @"{""query"":""query{batch0_Part1Field1:part1_field1(argumentName:\""1\"") batch0_Part1Field2:part1Field2}""}";
+            var httpClientMock = new GraphQLHttpExecutorMock(
+                JsonConvert.SerializeObject(new
+                {
+                    Data = new
+                    {
+                        batch0_Part1Field1 = "Value1",
+                        batch0_Part1Field2 = "Value2"
+                    }
+                }), expected);
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
+                new GraphQLQueryGeneratorFromFields());
+
+            // Act
+            var batch = client.CreateBatch("");
+            var query1 =
+                batch.Query<QueryBatchWithConflictingArgumentsPart1>(new GraphQLQueryArgument("argumentVariable", 1.ToString()));
+            var result1 = await query1.Execute();
+
+            // Assert Query should throw
+            // Get query2
+            Assert.Throws<GraphQLBatchAlreadyExecutedException>(() =>
+            {
+                batch.Query<QueryBatchWithConflictingArgumentsPart2>(
+                    new GraphQLQueryArgument("argumentVariable", 2.ToString()));
+            });
         }
     }
 }
