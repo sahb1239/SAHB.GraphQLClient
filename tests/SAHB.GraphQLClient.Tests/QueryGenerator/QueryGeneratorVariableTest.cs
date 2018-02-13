@@ -289,6 +289,27 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         }
 
         [Fact]
+        public void Test_Inline_DynamicType_Argument_Implicit_Not_Inlined()
+        {
+            // Arrange
+            var expected = "{\"query\":\"query($variableName:argumentType){alias:field(argumentName:$variableName)}\",\"variables\":{\"variableName\":{\"arg1\":\"val1\",\"arg2\":2}}}";
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:null)
+                    })
+            };
+
+            // Act
+            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", new {arg1 = "val1", arg2 = 2}));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void Test_Inline_String_Argument_Explicit_Not_Inlined()
         {
             // Arrange

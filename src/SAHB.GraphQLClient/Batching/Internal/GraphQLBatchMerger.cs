@@ -47,7 +47,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             where T : class
         {
             if (_isExecuted)
-                throw new NotSupportedException("Cannot add query to already executed batch");
+                throw new GraphQLBatchAlreadyExecutedException();
 
             var identifier = $"batch{_identifierCount++}";
 
@@ -91,7 +91,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
         public async Task Execute()
         {
             if (_isExecuted)
-                throw new NotSupportedException("Batch is already executed");
+                throw new GraphQLBatchAlreadyExecutedException();
 
             _isExecuted = true;
 
