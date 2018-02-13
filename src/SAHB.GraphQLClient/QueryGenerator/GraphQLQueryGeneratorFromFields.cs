@@ -182,9 +182,10 @@ namespace SAHB.GraphQLClient.QueryGenerator
 
         private string GetQueryRequest(string query, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
         {
-            if (arguments.Any(e => !ShouldInlineArgument(e)))
+            var variables = arguments.Where(e => !ShouldInlineArgument(e)).ToArray();
+            if (variables.Any())
             {
-                return JsonConvert.SerializeObject(new { query = query, variables = (arguments.ToDictionary(e => e.Value.VariableName, e => e.Value.ArgumentValue)) });
+                return JsonConvert.SerializeObject(new { query = query, variables = (variables.ToDictionary(e => e.Value.VariableName, e => e.Value.ArgumentValue)) });
             }
 
             return JsonConvert.SerializeObject(new { query = query });
