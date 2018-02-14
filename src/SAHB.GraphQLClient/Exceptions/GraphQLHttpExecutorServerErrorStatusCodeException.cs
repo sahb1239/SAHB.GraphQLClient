@@ -15,18 +15,31 @@ namespace SAHB.GraphQLClient.Exceptions
         public string Query { get; }
         public string Response { get; }
 
-        public GraphQLHttpExecutorServerErrorStatusCodeException(HttpStatusCode statusCode, string query, string response, string message) : base(message)
+        public GraphQLHttpExecutorServerErrorStatusCodeException(HttpStatusCode statusCode, string query, string response, string message) : base(GetMessage(statusCode, query, response, message))
         {
             StatusCode = statusCode;
             Query = query;
             Response = response;
         }
 
-        public GraphQLHttpExecutorServerErrorStatusCodeException(HttpStatusCode statusCode, string query, string response, string message, Exception innerException) : base(message, innerException)
+        public GraphQLHttpExecutorServerErrorStatusCodeException(HttpStatusCode statusCode, string query, string response, string message, Exception innerException) : base(GetMessage(statusCode, query, response, message), innerException)
         {
             StatusCode = statusCode;
             Query = query;
             Response = response;
+        }
+
+        private static string GetMessage(HttpStatusCode statusCode, string query, string response, string message)
+        {
+            StringBuilder builder = new StringBuilder();
+            if (!string.IsNullOrEmpty(message))
+                builder.AppendLine(message);
+            if (!string.IsNullOrEmpty(query))
+                builder.AppendLine("Query: " + query);
+            builder.AppendLine("StatusCode: " + statusCode);
+            if (!string.IsNullOrEmpty(response))
+                builder.AppendLine("Response: " + response);
+            return builder.ToString().TrimEnd();
         }
     }
 }
