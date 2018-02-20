@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SAHB.GraphQLClient.Batching;
 using SAHB.GraphQLClient.Batching.Internal;
 using SAHB.GraphQLClient.Builder;
 using SAHB.GraphQLClient.Builder.Internal;
-using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Internal;
 using SAHB.GraphQLClient.QueryGenerator;
-using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SAHB.GraphQLClient.Exceptions
+﻿namespace SAHB.GraphQLClient.Exceptions
 {
     // ReSharper disable once InconsistentNaming
     /// <summary>

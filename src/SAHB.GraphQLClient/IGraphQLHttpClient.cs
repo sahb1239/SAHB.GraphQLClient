@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using System.Threading.Tasks;
 using SAHB.GraphQLClient.Batching;
 using SAHB.GraphQLClient.Builder;
 using SAHB.GraphQLClient.Exceptions;
