@@ -67,7 +67,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             where T : class
         {
             if (!_isExecuted)
-                await Execute();
+                await Execute().ConfigureAwait(false);
             
             if (_result.ContainsErrors)
             {
@@ -107,7 +107,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
 
             // Execute query
             _result =
-                await _executor.ExecuteQuery<JObject>(_executedQuery, _url, _httpMethod, _authorizationToken, _authorizationMethod);
+                await _executor.ExecuteQuery<JObject>(_executedQuery, _url, _httpMethod, _authorizationToken, _authorizationMethod).ConfigureAwait(false);
         }
 
         private void UpdateAlias()

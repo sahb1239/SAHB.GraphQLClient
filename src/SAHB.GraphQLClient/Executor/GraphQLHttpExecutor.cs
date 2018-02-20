@@ -54,7 +54,7 @@ namespace SAHB.GraphQLClient.Executor
             }
 
             // Send request
-            HttpResponseMessage response = await _client.SendAsync(requestMessage);
+            HttpResponseMessage response = await _client.SendAsync(requestMessage).ConfigureAwait(false);
 
             // Detect if response was not successfully
             if (!response.IsSuccessStatusCode)
@@ -64,7 +64,7 @@ namespace SAHB.GraphQLClient.Executor
                 // Try to read response
                 try
                 {
-                    errorResponse = await response.Content.ReadAsStringAsync();
+                    errorResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -75,7 +75,7 @@ namespace SAHB.GraphQLClient.Executor
             }
 
             // Get response
-            string stringResponse = await response.Content.ReadAsStringAsync();
+            string stringResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             
             // Logging
             if (Logger != null && Logger.IsEnabled(LogLevel.Information))

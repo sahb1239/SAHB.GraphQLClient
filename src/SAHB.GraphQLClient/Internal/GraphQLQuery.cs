@@ -33,7 +33,7 @@ namespace SAHB.GraphQLClient.Internal
         /// <inheritdoc />
         public async Task<dynamic> Execute()
         {
-            var result = await _executor.ExecuteQuery<dynamic>(_query, _url, _httpMethod, _authorizationToken, _authorizationMethod);
+            var result = await _executor.ExecuteQuery<dynamic>(_query, _url, _httpMethod, _authorizationToken, _authorizationMethod).ConfigureAwait(false);
             if (result?.Errors?.Any() ?? false)
                 throw new GraphQLErrorException(query: _query, errors: result.Errors);
 
@@ -65,7 +65,7 @@ namespace SAHB.GraphQLClient.Internal
         /// <inheritdoc />
         public async Task<T> Execute()
         {
-            var result = await _executor.ExecuteQuery<T>(_query, _url, _httpMethod, _authorizationToken, _authorizationMethod);
+            var result = await _executor.ExecuteQuery<T>(_query, _url, _httpMethod, _authorizationToken, _authorizationMethod).ConfigureAwait(false);
             if (result?.Errors?.Any() ?? false)
                 throw new GraphQLErrorException(query: _query, errors: result.Errors);
 
