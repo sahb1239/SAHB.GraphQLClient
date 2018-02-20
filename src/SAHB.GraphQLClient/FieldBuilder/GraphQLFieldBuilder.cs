@@ -38,7 +38,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                     if (TypeIgnored(propertyType))
                         continue;
 
-                    fields.Add(GetGraphQLField(type, property));
+                    fields.Add(GetGraphQLField(property));
                 }
                 // Check if IEnumerable type and the enumerable type is not a System type (String is a IEnumerable type and therefore would otherwise go into this case)
                 else if (IsIEnumerableType(propertyType) &&
@@ -49,7 +49,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                     if (TypeIgnored(GetIEnumerableType(propertyType)))
                         continue;
 
-                    fields.Add(GetGraphQLIEnumerableType(type, property));
+                    fields.Add(GetGraphQLIEnumerableType(property));
                 }
                 // Check if System type
                 else if (propertyType.GetTypeInfo().Namespace.StartsWith(nameof(System), StringComparison.Ordinal))
@@ -58,7 +58,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                     if (TypeIgnored(propertyType))
                         continue;
 
-                    fields.Add(GetGraphQLField(type, property));
+                    fields.Add(GetGraphQLField(property));
                 }
                 // Else return subtypes
                 else
@@ -67,7 +67,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                     if (TypeIgnored(propertyType))
                         continue;
 
-                    fields.Add(GetGraphQLFieldWithSubfields(type, property));
+                    fields.Add(GetGraphQLFieldWithSubfields(property));
                 }
             }
 
@@ -88,19 +88,19 @@ namespace SAHB.GraphQLClient.FieldBuilder
             return memberInfo.GetCustomAttribute<GraphQLFieldIgnoreAttribute>() != null;
         }
         
-        private GraphQLField GetGraphQLField(Type type, PropertyInfo property)
+        private GraphQLField GetGraphQLField(PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property), null,
                 GetPropertyArguments(property));
         }
 
-        private GraphQLField GetGraphQLFieldWithSubfields(Type type, PropertyInfo property)
+        private GraphQLField GetGraphQLFieldWithSubfields(PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),
                 GetFields(property.PropertyType), GetPropertyArguments(property));
         }
 
-        private GraphQLField GetGraphQLIEnumerableType(Type type, PropertyInfo property)
+        private GraphQLField GetGraphQLIEnumerableType(PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),
                 GetFields(GetIEnumerableType(property.PropertyType)), GetPropertyArguments(property));

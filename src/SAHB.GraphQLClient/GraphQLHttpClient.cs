@@ -101,7 +101,7 @@ namespace SAHB.GraphQLClient
             var query = _queryGenerator.GetMutation(fields, arguments);
 
             // Get query
-            return GetGraphQLQuery(query, url, httpMethod, authorizationToken, authorizationMethod, arguments);
+            return GetGraphQLQuery(query, url, httpMethod, authorizationToken, authorizationMethod);
         }
 
         /// <inheritdoc />
@@ -109,7 +109,7 @@ namespace SAHB.GraphQLClient
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             var query = _queryGenerator.GetMutation(_fieldBuilder.GetFields(typeof(T)), arguments);
-            return GetGraphQLQuery<T>(query, url, httpMethod, authorizationToken, authorizationMethod, arguments);
+            return GetGraphQLQuery<T>(query, url, httpMethod, authorizationToken, authorizationMethod);
         }
 
         public IGraphQLQuery CreateQuery(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null,
@@ -123,7 +123,7 @@ namespace SAHB.GraphQLClient
             var query = _queryGenerator.GetQuery(fields, arguments);
 
             // Get query
-            return GetGraphQLQuery(query, url, httpMethod, authorizationToken, authorizationMethod, arguments);
+            return GetGraphQLQuery(query, url, httpMethod, authorizationToken, authorizationMethod);
         }
 
         /// <inheritdoc />
@@ -131,7 +131,7 @@ namespace SAHB.GraphQLClient
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             var query = _queryGenerator.GetQuery(_fieldBuilder.GetFields(typeof(T)), arguments);
-            return GetGraphQLQuery<T>(query, url, httpMethod, authorizationToken, authorizationMethod, arguments);
+            return GetGraphQLQuery<T>(query, url, httpMethod, authorizationToken, authorizationMethod);
         }
 
         /// <inheritdoc />
@@ -149,14 +149,14 @@ namespace SAHB.GraphQLClient
 
         private IGraphQLQuery GetGraphQLQuery(string query, string url, HttpMethod httpMethod,
             string authorizationToken = null,
-            string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
+            string authorizationMethod = "Bearer")
         {
             return new GraphQLQuery(query, url, httpMethod, authorizationToken, authorizationMethod, _executor);
         }
 
         private IGraphQLQuery<T> GetGraphQLQuery<T>(string query, string url, HttpMethod httpMethod,
             string authorizationToken = null,
-            string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
+            string authorizationMethod = "Bearer") where T : class
         {
             return new GraphQLQuery<T>(query, url, httpMethod, authorizationToken, authorizationMethod, _executor);
         }
