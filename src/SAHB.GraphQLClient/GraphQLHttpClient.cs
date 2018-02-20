@@ -56,7 +56,7 @@ namespace SAHB.GraphQLClient
         }
 
         /// <summary>
-        /// Initilizes a new instance of GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/> using the default <see cref="IGraphQLHttpExecutor"/> and the default <see cref="IGraphQLQueryGenerator"/>
+        /// Initilizes a new instance of GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/> using the default <see cref="IGraphQLHttpExecutor"/> and the default <see cref="IGraphQLQueryGeneratorFromFields"/>
         /// </summary>
         /// <returns>A new instance of the GraphQL client</returns>
         public static IGraphQLHttpClient Default()

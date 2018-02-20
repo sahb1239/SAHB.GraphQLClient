@@ -213,10 +213,9 @@ namespace SAHB.GraphQLClient.FieldBuilder
         }
 
         /// <summary>
-        ///     Gets type parameter from a <see cref="IEnumerable{T}" /> type <see cref="T" />
+        ///     Gets type parameter from a the type <param name="typeInfo"></param> which inherits from <see cref="IEnumerable{T}"/>
         /// </summary>
-        /// <typeparam name="T">The <see cref="IEnumerable{T}" /> type</typeparam>
-        /// <returns>Returns the typeparameter T from the <see cref="IEnumerable{T}" /></returns>
+        /// <returns>Returns the typeparameter from the <see cref="IEnumerable{T}" /></returns>
         private static Type GetIEnumerableType(Type typeInfo)
         {
             // Check if the type is a array
