@@ -88,18 +88,21 @@ namespace SAHB.GraphQLClient.FieldBuilder
             return memberInfo.GetCustomAttribute<GraphQLFieldIgnoreAttribute>() != null;
         }
         
+        // ReSharper disable once InconsistentNaming
         private GraphQLField GetGraphQLField(PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property), null,
                 GetPropertyArguments(property));
         }
 
+        // ReSharper disable once InconsistentNaming
         private GraphQLField GetGraphQLFieldWithSubfields(PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),
                 GetFields(property.PropertyType), GetPropertyArguments(property));
         }
 
+        // ReSharper disable once InconsistentNaming
         private GraphQLField GetGraphQLIEnumerableType(PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),

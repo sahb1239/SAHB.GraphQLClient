@@ -147,6 +147,7 @@ namespace SAHB.GraphQLClient
             return new GraphQLBatch(url, httpMethod, authorizationToken, authorizationMethod, _executor, _fieldBuilder, _queryGenerator);
         }
 
+        // ReSharper disable once InconsistentNaming
         private IGraphQLQuery GetGraphQLQuery(string query, string url, HttpMethod httpMethod,
             string authorizationToken = null,
             string authorizationMethod = "Bearer")
@@ -154,6 +155,7 @@ namespace SAHB.GraphQLClient
             return new GraphQLQuery(query, url, httpMethod, authorizationToken, authorizationMethod, _executor);
         }
 
+        // ReSharper disable once InconsistentNaming
         private IGraphQLQuery<T> GetGraphQLQuery<T>(string query, string url, HttpMethod httpMethod,
             string authorizationToken = null,
             string authorizationMethod = "Bearer") where T : class
