@@ -25,6 +25,22 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         }
 
         [Fact]
+        public void Check_Simple_Mutation_Single_Field()
+        {
+            var fields = new[]
+            {
+                new GraphQLField("alias", "field", null, null),
+            };
+            var fieldBuilder = new FieldBuilderMock(fields);
+            var queryGenerator = new GraphQLQueryGeneratorFromFields();
+            var expected = "{\"query\":\"mutation{alias:field}\"}";
+
+            var actual = queryGenerator.GetMutation<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void Check_Simple_Query_Multiple_Field()
         {
             var fields = new[]
@@ -37,6 +53,23 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             var expected = "{\"query\":\"query{alias:field alias2:field2}\"}";
 
             var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Check_Simple_Mutation_Multiple_Field()
+        {
+            var fields = new[]
+            {
+                new GraphQLField("alias", "field", null, null),
+                new GraphQLField("alias2", "field2", null, null),
+            };
+            var fieldBuilder = new FieldBuilderMock(fields);
+            var queryGenerator = new GraphQLQueryGeneratorFromFields();
+            var expected = "{\"query\":\"mutation{alias:field alias2:field2}\"}";
+
+            var actual = queryGenerator.GetMutation<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
 
             Assert.Equal(expected, actual);
         }
