@@ -185,10 +185,10 @@ namespace SAHB.GraphQLClient.QueryGenerator
             var variables = arguments.Where(e => !ShouldInlineArgument(e)).ToArray();
             if (variables.Any())
             {
-                return JsonConvert.SerializeObject(new { query = query, variables = (variables.ToDictionary(e => e.Value.VariableName, e => e.Value.ArgumentValue)) });
+                return JsonConvert.SerializeObject(new { query, variables = variables.ToDictionary(e => e.Value.VariableName, e => e.Value.ArgumentValue) });
             }
 
-            return JsonConvert.SerializeObject(new { query = query });
+            return JsonConvert.SerializeObject(new { query });
         }
 
         #region Logging
