@@ -78,9 +78,9 @@ namespace SAHB.GraphQLClient.QueryGenerator
             var request = GetQueryRequest(query, readonlyArguments);
 
             // Logging
-            if (Logger != null && Logger.IsEnabled(LogLevel.Information))
+            if (Logger != null && Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogInformation($"Generated the GraphQL query {request} from the fields:{Environment.NewLine + string.Join(Environment.NewLine, fields)}");
+                Logger.LogDebug($"Generated the GraphQL query {request} from the fields:{Environment.NewLine + string.Join(Environment.NewLine, fields)}");
             }
 
             return request;
