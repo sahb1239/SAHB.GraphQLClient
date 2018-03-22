@@ -8,7 +8,7 @@ namespace SAHB.GraphQLClient.Extentions
 {
     // ReSharper disable once InconsistentNaming
     /// <summary>
-    /// Contains extention methods for <see cref="GraphQLHttpClient"/>
+    /// Contains extention methods for <see cref="IGraphQLHttpClient"/>
     /// </summary>
     public static class GraphQLHttpClientExtentions
     {

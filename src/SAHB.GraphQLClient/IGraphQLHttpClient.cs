@@ -9,7 +9,7 @@ namespace SAHB.GraphQLClient
 {
     // ReSharper disable once InconsistentNaming
     /// <summary>
-    /// GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/>
+    /// GraphQL client which supports generating GraphQL queries and mutations from C# types
     /// </summary>
     public interface IGraphQLHttpClient
     {
