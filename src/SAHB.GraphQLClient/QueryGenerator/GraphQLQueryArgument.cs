@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 
 namespace SAHB.GraphQLClient.QueryGenerator
@@ -29,5 +31,15 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// The value which is inserted in the variables part of the GraphQL query
         /// </summary>
         public object ArgumentValue { get; set; }
+
+        public static GraphQLQueryArgument CreateFromFilter<T>(string variableName, Expression<Func<T, bool>> filter)
+        {
+            return new GraphQLQueryArgument(variableName, GetFilter(filter));
+        }
+
+        private static IDictionary<string, string> GetFilter<T>(Expression<Func<T, bool>> filter)
+        {
+            
+        }
     }
 }
