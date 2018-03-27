@@ -14,7 +14,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// </summary>
         /// <param name="argument">The argument to initilize from</param>
         internal GraphQLFieldArguments(GraphQLArgumentsAttribute argument) 
-            : this(argument.ArgumentName, argument.ArgumentType, argument.VariableName, argument.IsRequired, argument.InlineArgument)
+            : this(argument.ArgumentName, argument.ArgumentType, argument.VariableName, argument.IsRequired, argument.InlineArgument, argument.DefaultValue)
         {
         }
 
@@ -49,13 +49,31 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <param name="variableName">GraphQL variable name</param>
         /// <param name="isRequired">Is the GraphQL argument required to execute the query</param>
         /// <param name="inlineArgument">Should the GraphQL argument be inlined</param>
-        public GraphQLFieldArguments(string argumentName, string argumentType, string variableName, bool isRequired, bool? inlineArgument)
+        public GraphQLFieldArguments(string argumentName, string argumentType, string variableName, bool isRequired,
+            bool? inlineArgument)
+            : this(argumentName: argumentName, argumentType: argumentType, variableName: variableName,
+                isRequired: isRequired, inlineArgument: inlineArgument, defaultValue: null)
+        {
+
+        }
+
+        /// <summary>
+        /// Initilizes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
+        /// </summary>
+        /// <param name="argumentName">GraphQL argument name</param>
+        /// <param name="argumentType">GraphQL argument type of the variable</param>
+        /// <param name="variableName">GraphQL variable name</param>
+        /// <param name="isRequired">Is the GraphQL argument required to execute the query</param>
+        /// <param name="inlineArgument">Should the GraphQL argument be inlined</param>
+        /// <param name="defaultValue">The default value for the GraphQL argument</param>
+        public GraphQLFieldArguments(string argumentName, string argumentType, string variableName, bool isRequired, bool? inlineArgument, object defaultValue)
         {
             ArgumentName = argumentName ?? throw new ArgumentNullException(nameof(argumentName));
             ArgumentType = argumentType ?? throw new ArgumentNullException(nameof(argumentType));
             VariableName = variableName ?? throw new ArgumentNullException(nameof(variableName));
             IsRequired = isRequired;
             InlineArgument = inlineArgument;
+            DefaultValue = defaultValue;
         }
 
         /// <summary>
@@ -82,11 +100,16 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// Should the argument be inlined
         /// </summary>
         public bool? InlineArgument { get; set; }
+        
+        /// <summary>
+        /// Default value for the argument
+        /// </summary>
+        public object DefaultValue { get; }
 
         /// <inheritdoc />
         public override string ToString()
         {
-            return "Name: " + ArgumentName + " Type: " + ArgumentType + " IsRequired: " + IsRequired + " VariableName: " + (VariableName ?? "null");
+            return "Name: " + ArgumentName + " Type: " + ArgumentType + " IsRequired: " + IsRequired + " VariableName: " + (VariableName ?? "null") + " DefaultValue: " + (DefaultValue ?? "null");
         }
     }
 }
