@@ -14,7 +14,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// </summary>
         /// <param name="argument">The argument to initilize from</param>
         internal GraphQLFieldArguments(GraphQLArgumentsAttribute argument) 
-            : this(argument.ArgumentName, argument.ArgumentType, argument.VariableName, argument.IsRequired)
+            : this(argument.ArgumentName, argument.ArgumentType, argument.VariableName, argument.IsRequired, argument.InlineArgument)
         {
         }
 
