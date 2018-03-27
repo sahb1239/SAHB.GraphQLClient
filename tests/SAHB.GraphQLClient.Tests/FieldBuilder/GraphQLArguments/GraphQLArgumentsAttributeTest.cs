@@ -87,5 +87,81 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         {
             
         }
+
+        [Fact]
+        public void Test_Inline_Argument_True()
+        {
+            // Get all fields for the type QueryToTest
+            var fields = _fieldBuilder.GetFields(typeof(QueryToTest4)).ToList<GraphQLField>();
+
+            // Check if single field is found
+            Assert.Contains(fields,
+                field => field.Alias == nameof(QueryToTest4.Field1) && field.Arguments.Any(argument =>
+                             argument.ArgumentName == "argument1" && argument.VariableName == "variable1" &&
+                             argument.InlineArgument == true));
+        }
+
+        public class QueryToTest4
+        {
+            [GraphQLArguments("argument1", "String", "variable1", false, true)]
+            public string Field1 { get; set; }
+        }
+
+        [Fact]
+        public void Test_Inline_Argument_Required_True()
+        {
+            // Get all fields for the type QueryToTest
+            var fields = _fieldBuilder.GetFields(typeof(QueryToTest5)).ToList<GraphQLField>();
+
+            // Check if single field is found
+            Assert.Contains(fields,
+                field => field.Alias == nameof(QueryToTest5.Field1) && field.Arguments.Any(argument =>
+                             argument.ArgumentName == "argument1" && argument.VariableName == "variable1" &&
+                             argument.IsRequired == true));
+        }
+
+        public class QueryToTest5
+        {
+            [GraphQLArguments("argument1", "String", "variable1", true)]
+            public string Field1 { get; set; }
+        }
+
+        [Fact]
+        public void Test_Inline_Argument_Required_False()
+        {
+            // Get all fields for the type QueryToTest
+            var fields = _fieldBuilder.GetFields(typeof(QueryToTest6)).ToList<GraphQLField>();
+
+            // Check if single field is found
+            Assert.Contains(fields,
+                field => field.Alias == nameof(QueryToTest6.Field1) && field.Arguments.Any(argument =>
+                             argument.ArgumentName == "argument1" && argument.VariableName == "variable1" &&
+                             argument.IsRequired == false));
+        }
+
+        public class QueryToTest6
+        {
+            [GraphQLArguments("argument1", "String", "variable1", false)]
+            public string Field1 { get; set; }
+        }
+
+        [Fact]
+        public void Test_Inline_Argument_Required_Default_False()
+        {
+            // Get all fields for the type QueryToTest
+            var fields = _fieldBuilder.GetFields(typeof(QueryToTest7)).ToList<GraphQLField>();
+
+            // Check if single field is found
+            Assert.Contains(fields,
+                field => field.Alias == nameof(QueryToTest7.Field1) && field.Arguments.Any(argument =>
+                             argument.ArgumentName == "argument1" && argument.VariableName == "variable1" &&
+                             argument.IsRequired == false));
+        }
+
+        public class QueryToTest7
+        {
+            [GraphQLArguments("argument1", "String", "variable1")]
+            public string Field1 { get; set; }
+        }
     }
 }
