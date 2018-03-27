@@ -44,6 +44,13 @@ namespace SAHB.GraphQLClient.QueryGenerator
                 switch (queryArgument.Count)
                 {
                     case 0:
+                        // Set default value
+                        if (fieldArgument.DefaultValue != null)
+                        {
+                            arguments.Add(fieldArgument, new GraphQLQueryArgument(fieldArgument.VariableName, fieldArgument.DefaultValue));
+                            break;
+                        }
+                        // If no default was set we need to check if it was required
                         if (fieldArgument.IsRequired)
                         {
                             argumentsNotSet.Add(fieldArgument);
