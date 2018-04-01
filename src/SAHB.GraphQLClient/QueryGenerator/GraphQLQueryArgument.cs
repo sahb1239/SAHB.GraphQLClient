@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
+using SAHB.GraphQLClient.Internal.Filtering;
 
 namespace SAHB.GraphQLClient.QueryGenerator
 {
@@ -34,12 +35,8 @@ namespace SAHB.GraphQLClient.QueryGenerator
 
         public static GraphQLQueryArgument CreateFromFilter<T>(string variableName, Expression<Func<T, bool>> filter)
         {
-            return new GraphQLQueryArgument(variableName, GetFilter(filter));
-        }
-
-        private static IDictionary<string, string> GetFilter<T>(Expression<Func<T, bool>> filter)
-        {
-            
+            var filtering = new GraphQLFiltering();
+            return new GraphQLQueryArgument(variableName, filtering.GetFilterArgument(filter));
         }
     }
 }

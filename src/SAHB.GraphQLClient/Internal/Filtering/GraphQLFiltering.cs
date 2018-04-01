@@ -7,9 +7,9 @@ namespace SAHB.GraphQLClient.Internal.Filtering
 {
     internal class GraphQLFiltering : IGraphQLFiltering
     {
-        public string GetFilterArgument(Expression expression)
+        public object GetFilterArgument(Expression expression)
         {
-            return JsonConvert.SerializeObject(GetFilterExpressionObj(expression));
+            return GetFilterExpressionObj(expression);
         }
 
         object GetFilterExpressionObj(Expression expression)
