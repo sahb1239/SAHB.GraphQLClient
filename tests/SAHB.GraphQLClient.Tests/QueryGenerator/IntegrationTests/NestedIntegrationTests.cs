@@ -27,7 +27,12 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator.IntegrationTests
         {
             public string Name { get; set; }
             public uint Age { get; set; }
+
+            // The naming is intentional lowercase
+#pragma warning disable IDE1006 // Naming Styles
+            // ReSharper disable once InconsistentNaming
             public string lastname { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
         }
 
         public class Query2

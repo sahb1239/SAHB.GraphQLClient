@@ -163,5 +163,24 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
             [GraphQLArguments("argument1", "String", "variable1")]
             public string Field1 { get; set; }
         }
+
+        [Fact]
+        public void Test_Default_Value()
+        {
+            // Get all fields for the type QueryToTest
+            var fields = _fieldBuilder.GetFields(typeof(DefaultValueQuery)).ToList<GraphQLField>();
+
+            // Check if single field is found
+            Assert.Contains(fields,
+                field => field.Alias == nameof(DefaultValueQuery.Field1) && field.Arguments.Any(argument =>
+                             argument.ArgumentName == "argument1" && argument.VariableName == "variable1" &&
+                             (string) argument.DefaultValue == "SomeDefaultValue"));
+        }
+
+        public class DefaultValueQuery
+        {
+            [GraphQLArguments("argument1", "String", "variable1", isRequired: false, inlineArgument: true, defaultValue: "SomeDefaultValue")]
+            public string Field1 { get; set; }
+        }
     }
 }

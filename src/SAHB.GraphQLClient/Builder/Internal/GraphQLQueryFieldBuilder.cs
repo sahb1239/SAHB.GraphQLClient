@@ -44,6 +44,14 @@ namespace SAHB.GraphQLClient.Builder.Internal
             return this;
         }
 
+        /// <inheritdoc />
+        public IGraphQLQueryFieldBuilder Argument(string argumentName, string argumentType, string variableName, bool isRequired,
+            bool? inlineArgument, object defaultValue)
+        {
+            _arguments.Add(new GraphQLFieldArguments(argumentName, argumentType, variableName, isRequired, inlineArgument, defaultValue));
+            return this;
+        }
+
         internal GraphQLField GetField()
         {
             return new GraphQLField(alias: _alias, field: _field, fields: GetFields(), arguments: _arguments);
