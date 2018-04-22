@@ -3,18 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAHB.GraphQLClient", "src\SAHB.GraphQLClient\SAHB.GraphQLClient.csproj", "{A257A3C8-E33D-4B7D-BE9A-013EB71BFDFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAHB.GraphQL.Client", "src\SAHB.GraphQLClient\SAHB.GraphQL.Client.csproj", "{A257A3C8-E33D-4B7D-BE9A-013EB71BFDFA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAHB.GraphQLClient.Tests", "tests\SAHB.GraphQLClient.Tests\SAHB.GraphQLClient.Tests.csproj", "{34800ABC-031C-4EF5-A864-FFB71FE02CF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAHB.GraphQL.Client.Tests", "tests\SAHB.GraphQLClient.Tests\SAHB.GraphQL.Client.Tests.csproj", "{34800ABC-031C-4EF5-A864-FFB71FE02CF7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{557C65CE-E3C0-43D6-8A39-FCB9D146AE2B}"
 	ProjectSection(SolutionItems) = preProject
 		src\Common.props = src\Common.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAHB.GraphQLClient.Benchmarks", "benchmarks\SAHB.GraphQLClient.Benchmarks\SAHB.GraphQLClient.Benchmarks.csproj", "{0D1513DA-7802-47C3-A919-17603F8AD570}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAHB.GraphQL.Client.Benchmarks", "benchmarks\SAHB.GraphQLClient.Benchmarks\SAHB.GraphQL.Client.Benchmarks.csproj", "{0D1513DA-7802-47C3-A919-17603F8AD570}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAHB.GraphQLClient.Examples", "examples\SAHB.GraphQLClient.Examples\SAHB.GraphQLClient.Examples.csproj", "{08166E2A-B42A-4B7E-BD7B-D86933D30EDE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAHB.GraphQL.Client.Examples", "examples\SAHB.GraphQLClient.Examples\SAHB.GraphQL.Client.Examples.csproj", "{08166E2A-B42A-4B7E-BD7B-D86933D30EDE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
