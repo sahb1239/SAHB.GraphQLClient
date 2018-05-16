@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\tests\SAHB.GraphQLClient.Tests\SAHB.GraphQLClient.Tests.csproj" />
+    <Folder Include="BenchmarkDotNet.Artifacts\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="BenchmarkDotNet.Artifacts\" />
+    <ProjectReference Include="..\..\tests\SAHB.GraphQLClient.Tests\SAHB.GraphQL.Client.Tests.csproj" />
   </ItemGroup>
 
 </Project>
