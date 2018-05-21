@@ -44,6 +44,13 @@ namespace SAHB.GraphQLClient.QueryGenerator
                 switch (queryArgument.Count)
                 {
                     case 0:
+                        // Set default value
+                        if (fieldArgument.DefaultValue != null)
+                        {
+                            arguments.Add(fieldArgument, new GraphQLQueryArgument(fieldArgument.VariableName, fieldArgument.DefaultValue));
+                            break;
+                        }
+                        // If no default was set we need to check if it was required
                         if (fieldArgument.IsRequired)
                         {
                             argumentsNotSet.Add(fieldArgument);
@@ -185,10 +192,10 @@ namespace SAHB.GraphQLClient.QueryGenerator
             var variables = arguments.Where(e => !ShouldInlineArgument(e)).ToArray();
             if (variables.Any())
             {
-                return JsonConvert.SerializeObject(new { query = query, variables = (variables.ToDictionary(e => e.Value.VariableName, e => e.Value.ArgumentValue)) });
+                return JsonConvert.SerializeObject(new { query, variables = variables.ToDictionary(e => e.Value.VariableName, e => e.Value.ArgumentValue) });
             }
 
-            return JsonConvert.SerializeObject(new { query = query });
+            return JsonConvert.SerializeObject(new { query });
         }
 
         #region Logging

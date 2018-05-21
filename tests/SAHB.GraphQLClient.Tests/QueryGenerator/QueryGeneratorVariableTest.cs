@@ -392,6 +392,48 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                 new GraphQLQueryArgument("variableName", "test"), new GraphQLQueryArgument("variableName", "test")));
         }
 
+        [Fact]
+        public void Test_Should_Throw_When_Multiple_Same_Variables_Has_Been_Defined_Only_One_Variable_In_Exception()
+        {
+            // Arrange
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false)
+                    })
+            };
+
+            // Act / Assert
+            var exception = Assert.Throws<GraphQLDuplicateVariablesException>(() => _queryGenerator.GetQuery(fields,
+                new GraphQLQueryArgument("variableName", "test"), new GraphQLQueryArgument("variableName", "test")));
+
+            // Should only contain one duplicate variable name
+            Assert.Equal(1, exception.DuplicateVariableNames.Count);
+        }
+
+        [Fact]
+        public void Test_Should_Throw_When_Multiple_Same_Variables_Correct_Duplicate_Variable_Name_In_Exception()
+        {
+            // Arrange
+            var fields = new[]
+            {
+                new GraphQLField(alias: "alias", field: "field", fields: null,
+                    arguments: new List<GraphQLFieldArguments>
+                    {
+                        new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false)
+                    })
+            };
+
+            // Act / Assert
+            var exception = Assert.Throws<GraphQLDuplicateVariablesException>(() => _queryGenerator.GetQuery(fields,
+                new GraphQLQueryArgument("variableName", "test"), new GraphQLQueryArgument("variableName", "test")));
+
+            // Should only contain one duplicate variable name
+            Assert.Contains("variableName", exception.DuplicateVariableNames);
+        }
+
         public class StaticArgument
         {
             public string Field1 { get; set; }

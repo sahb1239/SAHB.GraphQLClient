@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SAHB.GraphQLClient\SAHB.GraphQLClient.csproj" />
+    <ProjectReference Include="..\..\src\SAHB.GraphQLClient\SAHB.GraphQL.Client.csproj" />
   </ItemGroup>
 
 </Project>

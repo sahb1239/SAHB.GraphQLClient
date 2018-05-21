@@ -42,5 +42,17 @@
         /// <param name="inlineArgument">Should the GraphQL argument be inlined</param>
         /// <returns>Returns the same instance</returns>
         IGraphQLQueryFieldBuilder Argument(string argumentName, string argumentType, string variableName, bool isRequired, bool? inlineArgument);
+
+        /// <summary>
+        /// Adds a argument to the field
+        /// </summary>
+        /// <param name="argumentName">The argument name used on the GraphQL server</param>
+        /// <param name="argumentType">The argument type used on the GraphQL server, for example Int or String</param>
+        /// <param name="variableName">The variable used to execute the query</param>
+        /// <param name="isRequired">Is the GraphQL argument required to execute the query</param>
+        /// <param name="inlineArgument">Should the GraphQL argument be inlined</param>
+        /// <param name="defaultValue">The default value for the GraphQL argument</param>
+        /// <returns>Returns the same instance</returns>
+        IGraphQLQueryFieldBuilder Argument(string argumentName, string argumentType, string variableName, bool isRequired, bool? inlineArgument, object defaultValue);
     }
 }
