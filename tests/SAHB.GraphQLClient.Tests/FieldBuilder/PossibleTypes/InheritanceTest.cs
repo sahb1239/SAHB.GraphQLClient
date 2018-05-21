@@ -186,7 +186,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.PossibleTypes
         [GraphQLPossibleTypes(typeof(PossibleOtherQuery5))]
         public class QueryToTest5
         {
-            public PossibleOtherQuery5 Field1 { get; set; }
+            public string Field1 { get; set; }
         }
 
         public class PossibleOtherQuery5 : QueryToTest5
