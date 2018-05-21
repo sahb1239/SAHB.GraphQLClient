@@ -49,7 +49,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                     if (TypeIgnored(GetIEnumerableType(propertyType)))
                         continue;
 
-                    fields.Add(GetGraphQLIEnumerableType(property));
+                    fields.Add(GetGraphQLIEnumerableType(property, type));
                 }
                 // Check if System type
                 else if (propertyType.GetTypeInfo().Namespace.StartsWith(nameof(System), StringComparison.Ordinal))
@@ -67,7 +67,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                     if (TypeIgnored(propertyType))
                         continue;
 
-                    fields.Add(GetGraphQLFieldWithSubfields(property));
+                    fields.Add(GetGraphQLFieldWithSubfields(property, type));
                 }
             }
 
@@ -96,34 +96,33 @@ namespace SAHB.GraphQLClient.FieldBuilder
         }
 
         // ReSharper disable once InconsistentNaming
-        private GraphQLField GetGraphQLFieldWithSubfields(PropertyInfo property)
+        private GraphQLField GetGraphQLFieldWithSubfields(PropertyInfo property, Type currentType)
         {
+            var subFields = GetFields(property.PropertyType).ToList();
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),
-                GetFields(property.PropertyType), GetPropertyArguments(property),
-                GetPossibleTypesFromType(property, property.PropertyType));
+                subFields, GetPropertyArguments(property),
+                GetPossibleTypesFromType(property, property.PropertyType, currentType, subFields));
         }
 
         // ReSharper disable once InconsistentNaming
-        private GraphQLField GetGraphQLIEnumerableType(PropertyInfo property)
+        private GraphQLField GetGraphQLIEnumerableType(PropertyInfo property, Type currentType)
         {
+            var subFields = GetFields(GetIEnumerableType(property.PropertyType)).ToList();
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),
-                GetFields(GetIEnumerableType(property.PropertyType)), GetPropertyArguments(property),
-                GetPossibleTypesFromType(property, GetIEnumerableType(property.PropertyType)));
+                subFields, GetPropertyArguments(property),
+                GetPossibleTypesFromType(property, GetIEnumerableType(property.PropertyType), currentType, subFields));
         }
 
-        private IEnumerable<GraphQLPossibleType> GetPossibleTypesFromType(PropertyInfo property, Type type)
+        private IEnumerable<GraphQLPossibleType> GetPossibleTypesFromType(PropertyInfo property, Type type, Type currentWorkingType, ICollection<GraphQLField> currentFields)
         {
             // Get from the property
             var possibleTypePropertyAttribute = property.GetCustomAttribute<GraphQLPossibleTypesAttribute>();
             if (possibleTypePropertyAttribute != null)
             {
-                foreach (var possibleType in possibleTypePropertyAttribute.PossibleTypes)
+                foreach (var possibleType in GetPossibleTypesFromPossibleTypesAttribute(possibleTypePropertyAttribute,
+                    currentWorkingType, currentFields))
                 {
-                    // Get name
-                    var nameAttribute = possibleType.GetTypeInfo().GetCustomAttribute<GraphQLTypeNameAttribute>();
-                    var name = nameAttribute?.Name ?? possibleType.Name;
-                    
-                    yield return new GraphQLPossibleType(GetFields(possibleType), name);
+                    yield return possibleType;
                 }
             }
 
@@ -131,12 +130,30 @@ namespace SAHB.GraphQLClient.FieldBuilder
             var possibleTypesAttribute = type.GetTypeInfo().GetCustomAttribute<GraphQLPossibleTypesAttribute>();
             if (possibleTypesAttribute != null)
             {
-                foreach (var possibleType in possibleTypesAttribute.PossibleTypes)
+                foreach (var possibleType in GetPossibleTypesFromPossibleTypesAttribute(possibleTypesAttribute,
+                    currentWorkingType, currentFields))
                 {
-                    // Get name
-                    var nameAttribute = possibleType.GetTypeInfo().GetCustomAttribute<GraphQLTypeNameAttribute>();
-                    var name = nameAttribute?.Name ?? possibleType.Name;
+                    yield return possibleType;
+                }
+            }
+        }
 
+        private IEnumerable<GraphQLPossibleType> GetPossibleTypesFromPossibleTypesAttribute(
+            GraphQLPossibleTypesAttribute attribute, Type currentWorkingType, ICollection<GraphQLField> currentFields)
+        {
+            foreach (var possibleType in attribute.PossibleTypes)
+            {
+                // Get name
+                var nameAttribute = possibleType.GetTypeInfo().GetCustomAttribute<GraphQLTypeNameAttribute>();
+                var name = nameAttribute?.Name ?? possibleType.Name;
+
+                // Handle current type or else we would get a StackOverflow
+                if (possibleType == currentWorkingType)
+                {
+                    yield return new GraphQLPossibleType(currentFields, name);
+                }
+                else
+                {
                     yield return new GraphQLPossibleType(GetFields(possibleType), name);
                 }
             }
