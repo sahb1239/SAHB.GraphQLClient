@@ -193,5 +193,44 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.PossibleTypes
         {
             public string Field2 { get; set; }
         }
+
+        [Fact]
+        public void Correct_Possible_Types_Property_Multiple()
+        {
+            // Get all fields for the type QueryToTest
+            var fields = _fieldBuilder.GetFields(typeof(QueryToTest6)).ToList<GraphQLField>();
+
+            // Expect 
+            Assert.Equal(1, fields.Count());
+
+            // Get first field
+            var firstField = fields.First();
+            Assert.Equal(2, firstField.PossibleTypes.Count);
+
+            // Check both types are contained
+            Assert.True(firstField.PossibleTypes.Any(possibleType => possibleType.TypeName == typeof(PossibleOtherQuery6_1).Name));
+            Assert.True(firstField.PossibleTypes.Any(possibleType => possibleType.TypeName == typeof(PossibleOtherQuery6_2).Name));
+        }
+
+        public class QueryToTest6
+        {
+            [GraphQLPossibleTypes(typeof(PossibleOtherQuery6_1), typeof(PossibleOtherQuery6_2))]
+            public NestedField6 Field1 { get; set; }
+        }
+
+        public class NestedField6
+        {
+            public string Field2 { get; set; }
+        }
+
+        public class PossibleOtherQuery6_1 : NestedField6
+        {
+            public string Field3 { get; set; }
+        }
+
+        public class PossibleOtherQuery6_2 : NestedField6
+        {
+            public string Field4 { get; set; }
+        }
     }
 }
