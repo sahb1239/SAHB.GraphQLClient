@@ -20,13 +20,8 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <param name="arguments">Arguments for the current field</param>
         [Obsolete]
         public GraphQLField(string alias, string field, IEnumerable<GraphQLField> fields,
-            IEnumerable<GraphQLFieldArguments> arguments)
+            IEnumerable<GraphQLFieldArguments> arguments) : this(alias, field, fields, arguments, null)
         {
-            Field = field ?? throw new ArgumentNullException(nameof(field));
-
-            Alias = alias;
-            Fields = (fields ?? Enumerable.Empty<GraphQLField>()).ToList();
-            Arguments = (arguments ?? Enumerable.Empty<GraphQLFieldArguments>()).ToList();
         }
 
         /// <summary>
