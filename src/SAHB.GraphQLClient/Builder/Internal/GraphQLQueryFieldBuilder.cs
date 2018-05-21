@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SAHB.GraphQLClient.FieldBuilder;
 
 namespace SAHB.GraphQLClient.Builder.Internal
@@ -9,6 +10,7 @@ namespace SAHB.GraphQLClient.Builder.Internal
         private readonly string _field;
         private string _alias;
         private readonly List<GraphQLFieldArguments> _arguments = new List<GraphQLFieldArguments>();
+        private readonly List<GraphQLPossibleType> _possibleTypes = new List<GraphQLPossibleType>();
 
         internal GraphQLQueryFieldBuilder(string field)
         {
@@ -52,9 +54,23 @@ namespace SAHB.GraphQLClient.Builder.Internal
             return this;
         }
 
+        public IGraphQLQueryFieldBuilder PossibleType(string typeName, Action<IGraphQLBuilder> typeGenerator)
+        {
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
+            if (typeGenerator == null) throw new ArgumentNullException(nameof(typeGenerator));
+
+            // Build the possible type
+            var typeBuilder = new GraphQLBuilder();
+            typeGenerator(typeBuilder);
+
+            // Add the possible types
+            _possibleTypes.Add(new GraphQLPossibleType(typeBuilder.GetFields(), typeName));
+            return this;
+        }
+
         internal GraphQLField GetField()
         {
-            return new GraphQLField(alias: _alias, field: _field, fields: GetFields(), arguments: _arguments, possibleTypes: null);
+            return new GraphQLField(alias: _alias, field: _field, fields: GetFields(), arguments: _arguments, possibleTypes: _possibleTypes);
         }
     }
 }

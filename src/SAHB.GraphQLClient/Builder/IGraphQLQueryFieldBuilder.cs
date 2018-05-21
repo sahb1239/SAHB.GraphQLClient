@@ -1,4 +1,6 @@
-﻿namespace SAHB.GraphQLClient.Builder
+﻿using System;
+
+namespace SAHB.GraphQLClient.Builder
 {
     // ReSharper disable once InconsistentNaming
     /// <summary>
@@ -54,5 +56,13 @@
         /// <param name="defaultValue">The default value for the GraphQL argument</param>
         /// <returns>Returns the same instance</returns>
         IGraphQLQueryFieldBuilder Argument(string argumentName, string argumentType, string variableName, bool isRequired, bool? inlineArgument, object defaultValue);
+
+        /// <summary>
+        /// Adds a possible type to the field used for supporting union and interface types
+        /// </summary>
+        /// <param name="typeName">The type name to use</param>
+        /// <param name="typeGenerator">The generator of the new type</param>
+        /// <returns></returns>
+        IGraphQLQueryFieldBuilder PossibleType(string typeName, Action<IGraphQLBuilder> typeGenerator);
     }
 }
