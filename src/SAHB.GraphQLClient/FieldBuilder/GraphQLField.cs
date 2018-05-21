@@ -18,6 +18,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <param name="field">GraphQL field</param>
         /// <param name="fields">Subfields</param>
         /// <param name="arguments">Arguments for the current field</param>
+        [Obsolete]
         public GraphQLField(string alias, string field, IEnumerable<GraphQLField> fields,
             IEnumerable<GraphQLFieldArguments> arguments)
         {
@@ -26,6 +27,25 @@ namespace SAHB.GraphQLClient.FieldBuilder
             Alias = alias;
             Fields = (fields ?? Enumerable.Empty<GraphQLField>()).ToList();
             Arguments = (arguments ?? Enumerable.Empty<GraphQLFieldArguments>()).ToList();
+        }
+
+        /// <summary>
+        /// Initilizes a GraphQL field used to contain metadata which can be used for generating a GraphQL query
+        /// </summary>
+        /// <param name="alias">GraphQL alias</param>
+        /// <param name="field">GraphQL field</param>
+        /// <param name="fields">Subfields</param>
+        /// <param name="arguments">Arguments for the current field</param>
+        /// <param name="possibleTypes">The possible types used for union and interfaces</param>
+        public GraphQLField(string alias, string field, IEnumerable<GraphQLField> fields,
+            IEnumerable<GraphQLFieldArguments> arguments, IEnumerable<GraphQLPossibleType> possibleTypes)
+        {
+            Field = field ?? throw new ArgumentNullException(nameof(field));
+
+            Alias = alias;
+            Fields = (fields ?? Enumerable.Empty<GraphQLField>()).ToList();
+            Arguments = (arguments ?? Enumerable.Empty<GraphQLFieldArguments>()).ToList();
+            PossibleTypes = (possibleTypes ?? Enumerable.Empty<GraphQLPossibleType>()).ToList();
         }
 
         /// <summary>
@@ -48,6 +68,11 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// </summary>
         public ICollection<GraphQLFieldArguments> Arguments { get; }
 
+        /// <summary>
+        /// Get the possible types used for unions and interfaces
+        /// </summary>
+        public ICollection<GraphQLPossibleType> PossibleTypes { get; }
+
         /// <inheritdoc />
         public override string ToString()
         {
@@ -61,6 +86,11 @@ namespace SAHB.GraphQLClient.FieldBuilder
             if (Fields.Any())
             {
                 builder.AppendLine($"Fields: {IndentAndAddStart(String.Join(Environment.NewLine, Fields))}");
+            }
+            if (PossibleTypes.Any())
+            {
+                builder.AppendLine(
+                    $"Possible types: {IndentAndAddStart(String.Join(Environment.NewLine, PossibleTypes))}");
             }
             return builder.ToString();
         }
