@@ -86,5 +86,41 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.PossibleTypes
         {
             public string Field3 { get; set; }
         }
+
+        [Fact]
+        public void Correct_Possible_Types_Class_CustomName()
+        {
+            // Get all fields for the type QueryToTest
+            var fields = _fieldBuilder.GetFields(typeof(QueryToTest3)).ToList<GraphQLField>();
+
+            // Expect 
+            Assert.Equal(1, fields.Count());
+
+            // Get first field
+            var firstField = fields.First();
+            Assert.Equal(1, firstField.PossibleTypes.Count);
+
+            // Get first possible type
+            var firstPossibleType = firstField.PossibleTypes.First();
+            Assert.Equal(typeof(PossibleOtherQuery3), firstPossibleType.Type);
+            Assert.Equal("CustomTypeName", firstPossibleType.TypeName);
+        }
+
+        public class QueryToTest3
+        {
+            public NestedField3 Field1 { get; set; }
+        }
+
+        [GraphQLPossibleTypes(typeof(PossibleOtherQuery3))]
+        public class NestedField3
+        {
+            public string Field2 { get; set; }
+        }
+
+        [GraphQLTypeName("CustomTypeName")]
+        public class PossibleOtherQuery3 : NestedField3
+        {
+            public string Field3 { get; set; }
+        }
     }
 }
