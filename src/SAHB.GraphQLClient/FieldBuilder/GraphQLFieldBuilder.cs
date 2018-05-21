@@ -87,26 +87,59 @@ namespace SAHB.GraphQLClient.FieldBuilder
         {
             return memberInfo.GetCustomAttribute<GraphQLFieldIgnoreAttribute>() != null;
         }
-        
+
         // ReSharper disable once InconsistentNaming
         private GraphQLField GetGraphQLField(PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property), null,
-                GetPropertyArguments(property));
+                GetPropertyArguments(property), null);
         }
 
         // ReSharper disable once InconsistentNaming
         private GraphQLField GetGraphQLFieldWithSubfields(PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),
-                GetFields(property.PropertyType), GetPropertyArguments(property));
+                GetFields(property.PropertyType), GetPropertyArguments(property),
+                GetPossibleTypesFromType(property, property.PropertyType));
         }
 
         // ReSharper disable once InconsistentNaming
         private GraphQLField GetGraphQLIEnumerableType(PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),
-                GetFields(GetIEnumerableType(property.PropertyType)), GetPropertyArguments(property));
+                GetFields(GetIEnumerableType(property.PropertyType)), GetPropertyArguments(property),
+                GetPossibleTypesFromType(property, GetIEnumerableType(property.PropertyType)));
+        }
+
+        private IEnumerable<GraphQLPossibleType> GetPossibleTypesFromType(PropertyInfo property, Type type)
+        {
+            // Get from the property
+            var possibleTypePropertyAttribute = property.GetCustomAttribute<GraphQLPossibleTypesAttribute>();
+            if (possibleTypePropertyAttribute != null)
+            {
+                foreach (var possibleType in possibleTypePropertyAttribute.PossibleTypes)
+                {
+                    // Get name
+                    var nameAttribute = possibleType.GetTypeInfo().GetCustomAttribute<GraphQLTypeNameAttribute>();
+                    var name = nameAttribute?.Name ?? possibleType.Name;
+
+                    yield return new GraphQLPossibleType(possibleType, name);
+                }
+            }
+
+            // Get from the property type
+            var possibleTypesAttribute = type.GetTypeInfo().GetCustomAttribute<GraphQLPossibleTypesAttribute>();
+            if (possibleTypesAttribute != null)
+            {
+                foreach (var possibleType in possibleTypesAttribute.PossibleTypes)
+                {
+                    // Get name
+                    var nameAttribute = possibleType.GetTypeInfo().GetCustomAttribute<GraphQLTypeNameAttribute>();
+                    var name = nameAttribute?.Name ?? possibleType.Name;
+
+                    yield return new GraphQLPossibleType(possibleType, name);
+                }
+            }
         }
 
         protected virtual string GetPropertyAlias(PropertyInfo property)
