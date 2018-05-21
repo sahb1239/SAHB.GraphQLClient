@@ -20,7 +20,7 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator
             };
             var fieldBuilder = new FieldBuilderMock(fields);
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
-            var expected = "{\"query\":\"query{alias:field ... on interfaceConcreteType{alias:field}}\"}";
+            var expected = "{\"query\":\"query{alias:field ... on interfaceConcreteType{alias:field} __typename}\"}";
 
             var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
 
@@ -45,7 +45,7 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator
             };
             var fieldBuilder = new FieldBuilderMock(fields);
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
-            var expected = "{\"query\":\"query{alias:field ... on interfaceConcreteType{alias:field alias2:field2}}\"}";
+            var expected = "{\"query\":\"query{alias:field ... on interfaceConcreteType{alias:field alias2:field2} __typename}\"}";
 
             var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
 
@@ -74,7 +74,7 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator
             };
             var fieldBuilder = new FieldBuilderMock(fields);
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
-            var expected = "{\"query\":\"query{alias:field ... on interfaceConcreteType1{alias:field} ... on interfaceConcreteType2{alias:field}}\"}";
+            var expected = "{\"query\":\"query{alias:field ... on interfaceConcreteType1{alias:field} ... on interfaceConcreteType2{alias:field} __typename}\"}";
 
             var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
 
@@ -105,7 +105,7 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator
             };
             var fieldBuilder = new FieldBuilderMock(fields);
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
-            var expected = "{\"query\":\"query{alias:field ... on interfaceConcreteType1{alias:field alias2:field2} ... on interfaceConcreteType2{alias:field alias2:field2}}\"}";
+            var expected = "{\"query\":\"query{alias:field ... on interfaceConcreteType1{alias:field alias2:field2} ... on interfaceConcreteType2{alias:field alias2:field2} __typename}\"}";
 
             var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
 

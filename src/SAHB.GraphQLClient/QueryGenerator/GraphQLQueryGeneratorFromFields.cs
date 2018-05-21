@@ -177,6 +177,9 @@ namespace SAHB.GraphQLClient.QueryGenerator
                         fieldBuilder.Append(
                             $" ... on {possibleType.TypeName}{GetFields(possibleType.Fields, arguments)}");
                     }
+
+                    // Add the __typename to the query to determine the type. __typename is defined in draft GraphQL draft Oct 2016 4.1.4
+                    fieldBuilder.Append(" __typename");
                 }
 
                 return fieldBuilder.ToString();
