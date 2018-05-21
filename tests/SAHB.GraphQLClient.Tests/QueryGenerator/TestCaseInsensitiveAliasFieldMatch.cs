@@ -22,7 +22,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         {
             var fields = new[]
             {
-                new GraphQLField("Field", "field", null, null),
+                new GraphQLField("Field", "field", null, null, null),
             };
             var fieldBuilder = new FieldBuilderMock(fields);
             var queryGenerator = new GraphQLQueryGeneratorFromFields();

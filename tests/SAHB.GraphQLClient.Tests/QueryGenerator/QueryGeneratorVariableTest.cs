@@ -26,7 +26,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName")
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -49,7 +49,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     {
                         new GraphQLFieldArguments("argumentName1", "argumentType1", "variableName1"),
                         new GraphQLFieldArguments("argumentName2", "argumentType2", "variableName2")
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -71,7 +71,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName")
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -92,7 +92,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName")
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -114,7 +114,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName")
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -135,7 +135,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", true)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act / assert
@@ -155,7 +155,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", true)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act / Assert
@@ -173,7 +173,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", true)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -194,7 +194,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", false)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -215,7 +215,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:true)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -236,7 +236,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:true)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -257,7 +257,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:null)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -278,7 +278,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:null)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -299,7 +299,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:null)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -320,7 +320,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:false)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -342,7 +342,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:false),
                         new GraphQLFieldArguments("argumentName1", "argumentType1", "variableName1", isRequired:false)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -364,7 +364,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false, inlineArgument:false),
                         new GraphQLFieldArguments("argumentName1", "argumentType1", "variableName", isRequired:false)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act
@@ -384,7 +384,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act / Assert
@@ -402,7 +402,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act / Assert
@@ -423,7 +423,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     arguments: new List<GraphQLFieldArguments>
                     {
                         new GraphQLFieldArguments("argumentName", "argumentType", "variableName", isRequired:false)
-                    })
+                    }, possibleTypes: null)
             };
 
             // Act / Assert

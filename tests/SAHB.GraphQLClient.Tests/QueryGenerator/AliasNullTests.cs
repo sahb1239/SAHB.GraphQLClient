@@ -15,7 +15,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         [Fact]
         public void Test_QueryGenerator_Alias_Null()
         {
-            var field = new GraphQLField(alias: null, field: "Field1", fields: null, arguments: null);
+            var field = new GraphQLField(alias: null, field: "Field1", fields: null, arguments: null, possibleTypes: null);
 
             var expected = "{\"query\":\"query{Field1}\"}";
 

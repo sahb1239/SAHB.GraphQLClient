@@ -54,7 +54,7 @@ namespace SAHB.GraphQLClient.Builder.Internal
 
         internal GraphQLField GetField()
         {
-            return new GraphQLField(alias: _alias, field: _field, fields: GetFields(), arguments: _arguments);
+            return new GraphQLField(alias: _alias, field: _field, fields: GetFields(), arguments: _arguments, possibleTypes: null);
         }
     }
 }

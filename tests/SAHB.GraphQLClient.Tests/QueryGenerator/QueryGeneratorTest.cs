@@ -13,7 +13,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         {
             var fields = new[]
             {
-                new GraphQLField("alias", "field", null, null),
+                new GraphQLField("alias", "field", null, null, null),
             };
             var fieldBuilder = new FieldBuilderMock(fields);
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
@@ -29,7 +29,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         {
             var fields = new[]
             {
-                new GraphQLField("alias", "field", null, null),
+                new GraphQLField("alias", "field", null, null, null),
             };
             var fieldBuilder = new FieldBuilderMock(fields);
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
@@ -45,8 +45,8 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         {
             var fields = new[]
             {
-                new GraphQLField("alias", "field", null, null),
-                new GraphQLField("alias2", "field2", null, null),
+                new GraphQLField("alias", "field", null, null, null),
+                new GraphQLField("alias2", "field2", null, null, null),
             };
             var fieldBuilder = new FieldBuilderMock(fields);
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
@@ -62,8 +62,8 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         {
             var fields = new[]
             {
-                new GraphQLField("alias", "field", null, null),
-                new GraphQLField("alias2", "field2", null, null),
+                new GraphQLField("alias", "field", null, null, null),
+                new GraphQLField("alias2", "field2", null, null, null),
             };
             var fieldBuilder = new FieldBuilderMock(fields);
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
@@ -88,10 +88,12 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                             alias: "alias2", 
                             field: "field2", 
                             fields: null, 
-                            arguments: null
+                            arguments: null, 
+                            possibleTypes: null
                         ), 
                     }, 
-                    arguments: null),
+                    arguments: null, 
+                    possibleTypes: null),
             };
             var fieldBuilder = new FieldBuilderMock(fields);
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
@@ -116,21 +118,25 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                             alias: "alias2",
                             field: "field2",
                             fields: null,
-                            arguments: null
+                            arguments: null, 
+                            possibleTypes: null
                         ),
                         new GraphQLField(
                             alias: "alias3",
                             field: "field3",
                             fields: null,
-                            arguments: null
+                            arguments: null, 
+                            possibleTypes: null
                         ),
                     },
-                    arguments: null),
+                    arguments: null, 
+                    possibleTypes: null),
                 new GraphQLField(
                     alias: "alias4",
                     field: "field4",
                     fields: null,
-                    arguments: null
+                    arguments: null, 
+                    possibleTypes: null
                 )
             };
             var fieldBuilder = new FieldBuilderMock(fields);
