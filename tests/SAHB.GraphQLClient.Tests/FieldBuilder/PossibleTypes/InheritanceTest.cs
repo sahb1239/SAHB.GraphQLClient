@@ -140,5 +140,58 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.PossibleTypes
         {
             public string Field3 { get; set; }
         }
+
+        [Fact]
+        public void Possible_Types_Including_Own_Type()
+        {
+            // Get all fields for the type QueryToTest
+            var fields = _fieldBuilder.GetFields(typeof(QueryToTest4)).ToList<GraphQLField>();
+
+            // Expect 
+            Assert.Equal(1, fields.Count());
+
+            // Get first field
+            var firstField = fields.First();
+            Assert.Equal(2, firstField.PossibleTypes.Count);
+        }
+
+        public class QueryToTest4
+        {
+            public NestedField4 Field1 { get; set; }
+        }
+
+        [GraphQLPossibleTypes(typeof(NestedField4), typeof(PossibleOtherQuery4))]
+        public class NestedField4
+        {
+            public string Field2 { get; set; }
+        }
+        
+        public class PossibleOtherQuery4 : NestedField4
+        {
+            public string Field3 { get; set; }
+        }
+
+        [Fact]
+        public void Possible_Types_Should_Not_Work_For_Base_Type()
+        {
+            // Get all fields for the type QueryToTest
+            var fields = _fieldBuilder.GetFields(typeof(QueryToTest5)).ToList<GraphQLField>();
+
+            // Expect 
+            Assert.Equal(1, fields.Count());
+
+            // We have no way of seeing the GraphQLPossibleTypes which is intentional
+        }
+
+        [GraphQLPossibleTypes(typeof(PossibleOtherQuery5))]
+        public class QueryToTest5
+        {
+            public PossibleOtherQuery5 Field1 { get; set; }
+        }
+
+        public class PossibleOtherQuery5 : QueryToTest5
+        {
+            public string Field2 { get; set; }
+        }
     }
 }
