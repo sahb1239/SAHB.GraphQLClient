@@ -122,8 +122,8 @@ namespace SAHB.GraphQLClient.FieldBuilder
                     // Get name
                     var nameAttribute = possibleType.GetTypeInfo().GetCustomAttribute<GraphQLTypeNameAttribute>();
                     var name = nameAttribute?.Name ?? possibleType.Name;
-
-                    yield return new GraphQLPossibleType(possibleType, name);
+                    
+                    yield return new GraphQLPossibleType(GetFields(possibleType), name);
                 }
             }
 
@@ -137,7 +137,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                     var nameAttribute = possibleType.GetTypeInfo().GetCustomAttribute<GraphQLTypeNameAttribute>();
                     var name = nameAttribute?.Name ?? possibleType.Name;
 
-                    yield return new GraphQLPossibleType(possibleType, name);
+                    yield return new GraphQLPossibleType(GetFields(possibleType), name);
                 }
             }
         }

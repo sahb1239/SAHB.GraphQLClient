@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SAHB.GraphQLClient.FieldBuilder
 {
@@ -11,18 +13,18 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <summary>
         /// Initilizes a GraphQL possible type used for unions and interfaces
         /// </summary>
-        /// <param name="type">The type of the possible type</param>
+        /// <param name="fields">The fields for the possible type</param>
         /// <param name="typeName">The name which should be returned from the __typename field defined in the GraphQL draft from Oct 2016</param>
-        public GraphQLPossibleType(Type type, string typeName)
+        public GraphQLPossibleType(IEnumerable<GraphQLField> fields, string typeName)
         {
-            Type = type;
-            TypeName = typeName;
+            Fields = (fields ?? Enumerable.Empty<GraphQLField>()).ToList();
+            TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
         }
 
         /// <summary>
-        /// The possible return type, this should inherit from the field
+        /// The fields for the GraphQL possible types
         /// </summary>
-        public Type Type { get; }
+        public ICollection<GraphQLField> Fields { get; }
 
         /// <summary>
         /// The typename which is returned from the __typename defined in the GraphQL draft from Oct 2016
@@ -32,7 +34,8 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <inheritdoc />
         public override string ToString()
         {
-            return TypeName + ": " + Type.FullName;
+            return TypeName + ": " +
+                   Environment.NewLine + "   " + string.Join(Environment.NewLine + "   ", Fields);
         }
     }
 }

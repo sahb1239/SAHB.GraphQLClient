@@ -32,8 +32,13 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.PossibleTypes
 
             // Get first possible type
             var firstPossibleType = firstField.PossibleTypes.First();
-            Assert.Equal(typeof(PossibleOtherQuery1), firstPossibleType.Type);
-            Assert.Equal(typeof(PossibleOtherQuery1).Name, firstPossibleType.TypeName);
+            
+            // Assert the number of fields (should be 2 since we inherit)
+            Assert.Equal(2, firstPossibleType.Fields.Count);
+
+            // Check if Field2 and Field3 is in the possibleType
+            Assert.True(firstPossibleType.Fields.Any(field => field.Alias == nameof(PossibleOtherQuery1.Field2)));
+            Assert.True(firstPossibleType.Fields.Any(field => field.Alias == nameof(PossibleOtherQuery1.Field3)));
         }
 
         public class QueryToTest1
@@ -67,8 +72,13 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.PossibleTypes
 
             // Get first possible type
             var firstPossibleType = firstField.PossibleTypes.First();
-            Assert.Equal(typeof(PossibleOtherQuery2), firstPossibleType.Type);
-            Assert.Equal(typeof(PossibleOtherQuery2).Name, firstPossibleType.TypeName);
+
+            // Assert the number of fields (should be 2 since we inherit)
+            Assert.Equal(2, firstPossibleType.Fields.Count);
+
+            // Check if Field2 and Field3 is in the possibleType
+            Assert.True(firstPossibleType.Fields.Any(field => field.Alias == nameof(PossibleOtherQuery2.Field2)));
+            Assert.True(firstPossibleType.Fields.Any(field => field.Alias == nameof(PossibleOtherQuery2.Field3)));
         }
 
         public class QueryToTest2
@@ -102,7 +112,15 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.PossibleTypes
 
             // Get first possible type
             var firstPossibleType = firstField.PossibleTypes.First();
-            Assert.Equal(typeof(PossibleOtherQuery3), firstPossibleType.Type);
+
+            // Assert the number of fields (should be 2 since we inherit)
+            Assert.Equal(2, firstPossibleType.Fields.Count);
+
+            // Check if Field2 and Field3 is in the possibleType
+            Assert.True(firstPossibleType.Fields.Any(field => field.Alias == nameof(PossibleOtherQuery3.Field2)));
+            Assert.True(firstPossibleType.Fields.Any(field => field.Alias == nameof(PossibleOtherQuery3.Field3)));
+
+            // Assert the name was overrided
             Assert.Equal("CustomTypeName", firstPossibleType.TypeName);
         }
 
