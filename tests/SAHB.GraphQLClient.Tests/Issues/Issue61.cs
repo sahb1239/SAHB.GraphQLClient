@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using SAHB.GraphQLClient;
+using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
 using Xunit;
@@ -19,7 +20,7 @@ namespace SAHB.GraphQL.Client.Tests.Issues
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
             
             // Act / Assert
-            Assert.Throws<Exception>(() =>
+            Assert.Throws<GraphQLArgumentVariableNotFoundException>(() =>
             {
                 // Get the query
                 var query = queryGenerator.GetQuery(fieldGenerator.GetFields(typeof(SampleQuery)),
@@ -34,7 +35,7 @@ namespace SAHB.GraphQL.Client.Tests.Issues
             var client = GraphQLHttpClient.Default();
 
             // Act / Assert
-            Assert.Throws<Exception>(() =>
+            Assert.Throws<GraphQLArgumentVariableNotFoundException>(() =>
             {
                 // Get the query
                 var query = client.CreateQuery< SampleQuery>("url", arguments:
