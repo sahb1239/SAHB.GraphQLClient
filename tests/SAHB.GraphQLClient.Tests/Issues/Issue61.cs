@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using SAHB.GraphQLClient;
@@ -20,12 +21,20 @@ namespace SAHB.GraphQL.Client.Tests.Issues
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
             
             // Act / Assert
-            Assert.Throws<GraphQLArgumentVariableNotFoundException>(() =>
+            var exception = Assert.Throws<GraphQLArgumentVariableNotFoundException>(() =>
             {
                 // Get the query
                 var query = queryGenerator.GetQuery(fieldGenerator.GetFields(typeof(SampleQuery)),
                     new GraphQLQueryArgument("helloArgument", "Value"));
             });
+
+            // Assert
+            // Should contain one element
+            Assert.Equal(1, exception.Arguments.Count());
+
+            // Argument should contain helloArgument and value
+            Assert.Equal("helloArgument", exception.Arguments.First().VariableName);
+            Assert.Equal("Value", exception.Arguments.First().ArgumentValue);
         }
 
         [Fact]
@@ -35,12 +44,20 @@ namespace SAHB.GraphQL.Client.Tests.Issues
             var client = GraphQLHttpClient.Default();
 
             // Act / Assert
-            Assert.Throws<GraphQLArgumentVariableNotFoundException>(() =>
+            var exception = Assert.Throws<GraphQLArgumentVariableNotFoundException>(() =>
             {
                 // Get the query
                 var query = client.CreateQuery< SampleQuery>("url", arguments:
                     new GraphQLQueryArgument("helloVariableName", "helloVariableValue"));
             });
+
+            // Assert
+            // Should contain one element
+            Assert.Equal(1, exception.Arguments.Count());
+
+            // Argument should contain helloArgument and value
+            Assert.Equal("helloVariableName", exception.Arguments.First().VariableName);
+            Assert.Equal("helloVariableValue", exception.Arguments.First().ArgumentValue);
         }
 
 
