@@ -31,16 +31,23 @@ namespace SAHB.GraphQLClient.QueryGenerator
         {
             // Get all the arguments from the fields
             var fieldArguments = Helper.GetAllArgumentsFromFields(fields).ToList();
-            
+
+            // Create list of argument variables which was not found
+            var variablesNotFoundInFields = queryArguments.ToList();
+
             // Create mapping for each argument field
             IDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments = new Dictionary<GraphQLFieldArguments, GraphQLQueryArgument>();
             ICollection<GraphQLFieldArguments> argumentsNotSet = new Collection<GraphQLFieldArguments>();
             List<string> duplicateVariableNames = new List<string>();
             foreach (var fieldArgument in fieldArguments)
             {
+                // Remove from variablesNotFoundInFields
+                variablesNotFoundInFields.RemoveAll(argument => argument.VariableName == fieldArgument.VariableName);
+
                 // Find matching query arguments
                 var queryArgument = queryArguments.Where(e => e.VariableName == fieldArgument.VariableName).Take(2).ToList();
 
+                // Find match for argument
                 switch (queryArgument.Count)
                 {
                     case 0:
@@ -75,6 +82,12 @@ namespace SAHB.GraphQLClient.QueryGenerator
             if (duplicateVariableNames.Any())
             {
                 throw new GraphQLDuplicateVariablesException(duplicateVariableNames);
+            }
+
+            // Check if any supplied arguments was not found in fields
+            if (variablesNotFoundInFields.Any())
+            {
+                throw new GraphQLArgumentVariableNotFoundException(variablesNotFoundInFields);
             }
 
             // Get readonly arguments
