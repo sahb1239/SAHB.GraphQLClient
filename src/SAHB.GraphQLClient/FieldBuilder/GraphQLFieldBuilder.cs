@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using SAHB.GraphQL.Client.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 
 namespace SAHB.GraphQLClient.FieldBuilder
@@ -92,26 +93,39 @@ namespace SAHB.GraphQLClient.FieldBuilder
         private GraphQLField GetGraphQLField(PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property), null,
-                GetPropertyArguments(property));
+                GetPropertyArguments(property), property.PropertyType, GetTypes(property));
         }
 
         // ReSharper disable once InconsistentNaming
         private GraphQLField GetGraphQLFieldWithSubfields(PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),
-                GetFields(property.PropertyType), GetPropertyArguments(property));
+                GetFields(property.PropertyType), GetPropertyArguments(property), property.PropertyType,
+                GetTypes(property));
         }
 
         // ReSharper disable once InconsistentNaming
         private GraphQLField GetGraphQLIEnumerableType(PropertyInfo property)
         {
             return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),
-                GetFields(GetIEnumerableType(property.PropertyType)), GetPropertyArguments(property));
+                GetFields(GetIEnumerableType(property.PropertyType)), GetPropertyArguments(property),
+                property.PropertyType, GetTypes(property));
         }
 
         protected virtual string GetPropertyAlias(PropertyInfo property)
         {
             return property.Name;
+        }
+
+        protected virtual IDictionary<string, Type> GetTypes(PropertyInfo property)
+        {
+            // Get GraphQLUnionOrInterfaceAttribute on field and class
+            var attributes = property
+                .GetCustomAttributes<GraphQLUnionOrInterfaceAttribute>()
+                .Union(
+                    property.PropertyType.GetTypeInfo().GetCustomAttributes<GraphQLUnionOrInterfaceAttribute>());
+
+            return attributes.ToDictionary(attribute => attribute.TypeName, attribute => attribute.Type);
         }
 
         protected virtual string GetPropertyField(PropertyInfo property)
