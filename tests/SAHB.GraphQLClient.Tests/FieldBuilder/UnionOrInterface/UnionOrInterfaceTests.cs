@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SAHB.GraphQL.Client.Exceptions;
 using SAHB.GraphQL.Client.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.FieldBuilder;
 using Xunit;
@@ -104,6 +105,26 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
 
             // Test default type
             Assert.Equal(typeof(SubQuery3_1), fields.First().DefaultType);
+        }
+
+        public class Query4
+        {
+            [GraphQLUnionOrInterface("Obj1", typeof(string))]
+            [GraphQLUnionOrInterface("Obj1", typeof(IEnumerable<string>))]
+            public string Hello { get; set; }
+        }
+
+        [Fact]
+        public void Should_Throw_When_Duplicate_GraphQLUnionOrInterfaceAttributes_Defined()
+        {
+            // Arrange
+            var fieldBuilder = new GraphQLFieldBuilder();
+
+            // Act / Assert
+            Assert.Throws<GraphQLDuplicateTypeNameException>(() =>
+            {
+                var fields = fieldBuilder.GetFields(typeof(Query4));
+            });
         }
     }
 }

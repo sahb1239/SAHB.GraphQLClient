@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using SAHB.GraphQL.Client.Exceptions;
 using SAHB.GraphQL.Client.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 
@@ -125,6 +126,15 @@ namespace SAHB.GraphQLClient.FieldBuilder
                 .Union(
                     property.PropertyType.GetTypeInfo().GetCustomAttributes<GraphQLUnionOrInterfaceAttribute>());
 
+            // Check if dictionary contains duplicates
+            var duplicates = attributes.Select(e => e.TypeName).GroupBy(e => e, e => e).Where(e => e.Count() > 1)
+                .Select(e => e.Key).ToArray();
+            if (duplicates.Any())
+            {
+                throw new GraphQLDuplicateTypeNameException(duplicates);
+            }
+
+            // Return dictionary
             return attributes.ToDictionary(attribute => attribute.TypeName, attribute => attribute.Type);
         }
 
