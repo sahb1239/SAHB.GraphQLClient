@@ -31,7 +31,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.IEnumerable
             var fields = _fieldBuilder.GetFields(typeof(QueryToTest)).ToList<GraphQLField>();
 
             // Expect 
-            Assert.Equal(1, fields.First().Fields.Count());
+            Assert.Equal(1, fields.First().SelectionSet.Count());
         }
 
         public class QueryToTest

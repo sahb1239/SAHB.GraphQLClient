@@ -52,7 +52,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
             var fields = _fieldBuilder.GetFields(typeof(GraphQLIntQuery)).ToList<GraphQLField>();
 
             // Check if fields is empty on both fields since it's strings (which internally is IEnumerable)
-            Assert.Empty(fields.SelectMany(e => e.Fields));
+            Assert.Empty(fields.SelectMany(e => e.SelectionSet));
         }
 
         [Fact]

@@ -176,9 +176,9 @@ namespace SAHB.GraphQLClient.QueryGenerator
                 }
 
                 // Append subquery
-                if (field.Fields?.Any() ?? false)
+                if (field.SelectionSet?.Any() ?? false)
                 {
-                    fieldBuilder.Append(GetFields(field.Fields, arguments));
+                    fieldBuilder.Append(GetFields(field.SelectionSet, arguments));
                 }
 
                 return fieldBuilder.ToString();

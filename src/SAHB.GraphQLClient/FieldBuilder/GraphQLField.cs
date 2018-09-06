@@ -24,7 +24,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
             Field = field ?? throw new ArgumentNullException(nameof(field));
 
             Alias = alias;
-            Fields = (fields ?? Enumerable.Empty<GraphQLField>()).ToList();
+            SelectionSet = (fields ?? Enumerable.Empty<GraphQLField>()).ToList();
             Arguments = (arguments ?? Enumerable.Empty<GraphQLFieldArguments>()).ToList();
         }
 
@@ -39,9 +39,15 @@ namespace SAHB.GraphQLClient.FieldBuilder
         public string Field { get; }
 
         /// <summary>
-        /// Subfields
+        /// The selection set for the field
         /// </summary>
-        public ICollection<GraphQLField> Fields { get; }
+        public ICollection<GraphQLField> SelectionSet { get; }
+
+        /// <summary>
+        /// The selection set for the field
+        /// </summary>
+        [Obsolete("Please use the SelectionSet property instead")]
+        public ICollection<GraphQLField> Fields => SelectionSet;
 
         /// <summary>
         /// Arguments for the current field
@@ -58,9 +64,9 @@ namespace SAHB.GraphQLClient.FieldBuilder
             {
                 builder.AppendLine($"Arguments: {IndentAndAddStart(String.Join(Environment.NewLine, Arguments))}");
             }
-            if (Fields.Any())
+            if (SelectionSet.Any())
             {
-                builder.AppendLine($"Fields: {IndentAndAddStart(String.Join(Environment.NewLine, Fields))}");
+                builder.AppendLine($"Fields: {IndentAndAddStart(String.Join(Environment.NewLine, SelectionSet))}");
             }
             return builder.ToString();
         }
