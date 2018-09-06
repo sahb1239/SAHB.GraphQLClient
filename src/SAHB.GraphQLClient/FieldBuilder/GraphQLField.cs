@@ -30,10 +30,10 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <param name="field">GraphQL field</param>
         /// <param name="fields">Subfields</param>
         /// <param name="arguments">Arguments for the current field</param>
-        /// <param name="defaultType">Default deserilzation type which should be deserilized to if no match is found in <paramref name="targetTypes"/></param>
+        /// <param name="defaultTargetType">Default deserilzation type which should be deserilized to if no match is found in <paramref name="targetTypes"/></param>
         /// <param name="targetTypes">The types which should be deserilized to based on the __typename GraphQL field</param>
         public GraphQLField(string alias, string field, IEnumerable<GraphQLField> fields,
-            IEnumerable<GraphQLFieldArguments> arguments, Type defaultType, IDictionary<string, Type> targetTypes)
+            IEnumerable<GraphQLFieldArguments> arguments, Type defaultTargetType, IDictionary<string, Type> targetTypes)
         {
             Field = field ?? throw new ArgumentNullException(nameof(field));
 
@@ -41,7 +41,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
             SelectionSet = (fields ?? Enumerable.Empty<GraphQLField>()).ToList();
             Arguments = (arguments ?? Enumerable.Empty<GraphQLFieldArguments>()).ToList();
 
-            DefaultType = defaultType;
+            DefaultTargetType = defaultTargetType;
             TargetTypes = (targetTypes ?? new Dictionary<string, Type>());
         }
 
@@ -79,7 +79,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <summary>
         /// Returns the default deserilzation type which should be deserilized to if no match is found in <see cref="TargetTypes"/>
         /// </summary>
-        public Type DefaultType { get; set; }
+        public Type DefaultTargetType { get; set; }
 
         /// <inheritdoc />
         public override string ToString()
@@ -87,9 +87,9 @@ namespace SAHB.GraphQLClient.FieldBuilder
             StringBuilder builder = new StringBuilder();
             builder.AppendLine($"Field: {Field}");
             builder.AppendLine($"Alias: {(Alias ?? "null")}");
-            if (DefaultType != null)
+            if (DefaultTargetType != null)
             {
-                builder.AppendLine($"Default type: {DefaultType.FullName}");
+                builder.AppendLine($"Default type: {DefaultTargetType.FullName}");
             }
             if (Arguments.Any())
             {

@@ -35,7 +35,7 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
             Assert.Equal(typeof(Object), fields.First().TargetTypes.First().Value);
 
             // Test default type
-            Assert.Equal(typeof(String), fields.First().DefaultType);
+            Assert.Equal(typeof(String), fields.First().DefaultTargetType);
         }
 
         public class Query2
@@ -67,7 +67,7 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
             Assert.Equal(typeof(IEnumerable<string>), fields.First().TargetTypes.First(e => e.Key == "Obj2").Value);
 
             // Test default type
-            Assert.Equal(typeof(String), fields.First().DefaultType);
+            Assert.Equal(typeof(String), fields.First().DefaultTargetType);
         }
 
         public class Query3
@@ -104,7 +104,7 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
             Assert.Equal(typeof(IEnumerable<string>), fields.First().TargetTypes.First(e => e.Key == "Obj4").Value);
 
             // Test default type
-            Assert.Equal(typeof(SubQuery3_1), fields.First().DefaultType);
+            Assert.Equal(typeof(SubQuery3_1), fields.First().DefaultTargetType);
         }
 
         public class Query4
