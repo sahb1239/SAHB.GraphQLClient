@@ -95,6 +95,22 @@ namespace SAHB.GraphQLClient.FieldBuilder
                 }
             }
 
+            // Add __typename if multiple types
+            if (types.Any())
+            {
+                // Check if selectionSet has been set
+                if (selectionSet == null)
+                {
+                    throw new NotSupportedException("Cannot add __typename to a type which does not have a selectionSet");
+                }
+
+                // Check if __typename is not already in the selected fields
+                if (!selectionSet.Any(field => field.Field == "__typename"))
+                {
+                    selectionSet = selectionSet.Union(new List<GraphQLField>() { new GraphQLField(null, "__typename", null, null) });
+                }
+            }
+
             // Return GraphQLField
             return new GraphQLField(alias, fieldName, selectionSet, arguments, property.PropertyType, types);
         }
