@@ -30,10 +30,10 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <param name="field">GraphQL field</param>
         /// <param name="fields">Subfields</param>
         /// <param name="arguments">Arguments for the current field</param>
-        /// <param name="defaultTargetType">Default deserilzation type which should be deserilized to if no match is found in <paramref name="targetTypes"/></param>
+        /// <param name="type">Default deserilzation type which should be deserilized to if no match is found in <paramref name="targetTypes"/></param>
         /// <param name="targetTypes">The types which should be deserilized to based on the __typename GraphQL field</param>
         public GraphQLField(string alias, string field, IEnumerable<GraphQLField> fields,
-            IEnumerable<GraphQLFieldArguments> arguments, Type defaultTargetType, IDictionary<string, GraphQLField> targetTypes)
+            IEnumerable<GraphQLFieldArguments> arguments, Type type, IDictionary<string, GraphQLField> targetTypes)
         {
             Field = field ?? throw new ArgumentNullException(nameof(field));
 
@@ -41,7 +41,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
             SelectionSet = (fields ?? Enumerable.Empty<GraphQLField>()).ToList();
             Arguments = (arguments ?? Enumerable.Empty<GraphQLFieldArguments>()).ToList();
 
-            Type = defaultTargetType;
+            Type = type;
             TargetTypes = (targetTypes ?? new Dictionary<string, GraphQLField>());
         }
 
