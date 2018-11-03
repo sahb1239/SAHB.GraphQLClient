@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SAHB.GraphQL.Client.Deserialization;
 using SAHB.GraphQLClient.Exceptions;
@@ -86,8 +87,8 @@ namespace SAHB.GraphQLClient.Batching.Internal
                 deserilizeFrom.Add(field.Inner.Alias, _result.Data[field.Alias]);
             }
 
-            // Deserilize from
-            return deserilizeFrom.ToObject<T>();
+            // Deserilize
+            return _graphQLDeserialization.DeserializeResult<T>(deserilizeFrom, _fields[identitifer]);
         }
 
         public async Task Execute()

@@ -74,6 +74,15 @@ namespace SAHB.GraphQLClient.Examples
             Console.WriteLine(queryId1000Result.Character.Name);
             Console.WriteLine(queryId1001Result.Character.Name);
 
+            if (queryId1000Result.Character is Human human2)
+            {
+                Console.WriteLine("Human!: " + human2.Height);
+            }
+            else if (queryId1000Result.Character is Droid droid2)
+            {
+                Console.WriteLine("Droid!: " + droid2.PrimaryFunction);
+            }
+
             // Create executor
             IGraphQLHttpExecutor executor = new GraphQLHttpExecutor();
             var result = await executor.ExecuteQuery(@"{""query"":""query{Hero:hero{Name:name Friends:friends{Name:name}}}""}",

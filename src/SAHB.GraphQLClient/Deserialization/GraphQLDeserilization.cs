@@ -29,6 +29,21 @@ namespace SAHB.GraphQL.Client.Deserialization
             return JsonConvert.DeserializeObject<GraphQLDataResult<T>>(graphQLResult, settings);
         }
 
+        public T DeserializeResult<T>(JObject jsonObject, IEnumerable<GraphQLField> fields) where T : class
+        {
+            // Get all fieldConverters
+            var converters = GetFieldConverters(fields);
+
+            // Get JsonSerilizerSettings
+            var settings = new JsonSerializer();
+            foreach (var converter in converters)
+            {
+                settings.Converters.Add(converter);
+            }
+
+            return jsonObject.ToObject<T>(settings);
+        }
+
         private IEnumerable<GraphQLFieldConverter> GetFieldConverters(IEnumerable<GraphQLField> fields)
         {
             if (fields == null)

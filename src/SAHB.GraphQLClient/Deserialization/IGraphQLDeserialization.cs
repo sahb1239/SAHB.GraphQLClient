@@ -1,4 +1,5 @@
-﻿using SAHB.GraphQLClient.FieldBuilder;
+﻿using Newtonsoft.Json.Linq;
+using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Result;
 using System;
 using System.Collections.Generic;
@@ -19,5 +20,14 @@ namespace SAHB.GraphQL.Client.Deserialization
         /// <param name="fields">The GraphQL fields</param>
         /// <returns>The GraphQL Result</returns>
         GraphQLDataResult<T> DeserializeResult<T>(string graphQLResult, IEnumerable<GraphQLField> fields) where T : class;
+
+        /// <summary>
+        /// Desilize a GraphQL result into a <see cref="GraphQLDataResult{T}"/>
+        /// </summary>
+        /// <typeparam name="T">The type to deserilize into</typeparam>
+        /// <param name="jsonObject">The GraphQL result from the server represented as a JObject</param>
+        /// <param name="fields">The GraphQL fields</param>
+        /// <returns>The GraphQL Result</returns>
+        T DeserializeResult<T>(JObject jsonObject, IEnumerable<GraphQLField> fields) where T : class;
     }
 }
