@@ -96,7 +96,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
             var readonlyArguments = new ReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument>(arguments);
 
             // Get query
-            var query = GetGraphQLQuery(queryType, GetArguments(readonlyArguments), GetFields(fields, readonlyArguments));
+            var query = GetGraphQLQuery(queryType, GetArguments(readonlyArguments), GenerateQueryForFields(fields, readonlyArguments));
             var request = GetQueryRequest(query, readonlyArguments);
 
             // Logging
@@ -140,47 +140,51 @@ namespace SAHB.GraphQLClient.QueryGenerator
             return string.Join(" ", arguments.Where(argument => !ShouldInlineArgument(argument)).Select(e => $"${e.Key.VariableName}:{e.Key.ArgumentType}"));
         }
 
-        private string GetFields(IEnumerable<GraphQLField> fields, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        private string GenerateQueryForFields(IEnumerable<GraphQLField> fields, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        {
+            return "{" + string.Join(" ", fields.Select(field => GenerateQueryForField(field, arguments))) + "}";
+        }
+
+        private string GenerateQueryForField(GraphQLField field, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append("{");
 
-            builder.Append(string.Join(" ", fields.Select(field =>
+            // Append alias and field
+            if (field.Alias == null || field.Alias.Equals(field.Field, StringComparison.OrdinalIgnoreCase))
             {
-                var fieldBuilder = new StringBuilder();
+                builder.Append(field.Field);
+            }
+            else
+            {
+                builder.Append(field.Alias + ":" + field.Field);
+            }
 
-                // Append alias and field
-                if (field.Alias == null || field.Alias.Equals(field.Field, StringComparison.OrdinalIgnoreCase))
-                {
-                    fieldBuilder.Append(field.Field);
-                }
-                else
-                {
-                    fieldBuilder.Append(field.Alias + ":" + field.Field);
-                }
+            // Append arguments
+            // Format: (argumentName:$VariableName argumentName:$VariableName)
+            var fieldArguments = field.Arguments?.ToDictionary(argument => argument,
+                argument => arguments.FirstOrDefault(e => e.Key == argument).Value).Where(e => e.Value != null);
+            if (fieldArguments?.Any() ?? false)
+            {
+                builder.Append("(");
 
-                // Append arguments
-                // Format: (argumentName:$VariableName argumentName:$VariableName)
-                var fieldArguments = field.Arguments?.ToDictionary(argument => argument,
-                    argument => arguments.FirstOrDefault(e => e.Key == argument).Value).Where(e => e.Value != null);
-                if (fieldArguments?.Any() ?? false)
-                {
-                    fieldBuilder.Append("(");
+                builder.Append(string.Join(" ",
+                    fieldArguments.Select(
+                        argument => argument.Key.ArgumentName + ":" +
+                                    (ShouldInlineArgument(argument)
+                                        ? JsonConvert.SerializeObject(argument.Value.ArgumentValue)
+                                        : "$" + argument.Key.VariableName))));
 
-                    fieldBuilder.Append(string.Join(" ",
-                        fieldArguments.Select(
-                            argument => argument.Key.ArgumentName + ":" +
-                                        (ShouldInlineArgument(argument)
-                                            ? JsonConvert.SerializeObject(argument.Value.ArgumentValue)
-                                            : "$" + argument.Key.VariableName))));
+                builder.Append(")");
+            }
 
-                    fieldBuilder.Append(")");
-                }
-
-                // Append subquery
+            // Append subquery
+            if ((field.SelectionSet?.Any() ?? false) || (field.TargetTypes?.Any() ?? false))
+            {
                 if (field.SelectionSet?.Any() ?? false)
                 {
-                    fieldBuilder.Append(GetFields(field.SelectionSet, arguments));
+                    builder.Append("{");
+                    // SelectionSet
+                    builder.Append(string.Join(" ", field.SelectionSet.Select(e => GenerateQueryForField(e, arguments))));
                 }
 
                 // Get other possible subTypes
@@ -188,16 +192,23 @@ namespace SAHB.GraphQLClient.QueryGenerator
                 {
                     foreach (var possibleType in field.TargetTypes)
                     {
+                        builder.Append($" ... on {possibleType.Key}");
+                        builder.Append("{");
+                        builder.Append(string.Join(" ", possibleType.Value.SelectionSet.Select(e => GenerateQueryForField(e, arguments))));
+                        builder.Append("}");
+
                         // Append subquery
-                        fieldBuilder.Append(
-                            $" ... on {possibleType.Key}{GetFields(possibleType.Value.SelectionSet, arguments)}");
+                        //builder.Append(
+                        //    $" ... on {possibleType.Key}{GenerateQueryForFields(possibleType.Value.SelectionSet, arguments)}");
                     }
                 }
 
-                return fieldBuilder.ToString();
-            })));
+                if (field.SelectionSet?.Any() ?? false)
+                {
+                    builder.Append("}");
+                }
+            }
 
-            builder.Append("}");
             return builder.ToString();
         }
 
