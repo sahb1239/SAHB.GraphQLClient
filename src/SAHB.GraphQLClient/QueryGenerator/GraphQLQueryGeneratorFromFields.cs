@@ -21,15 +21,15 @@ namespace SAHB.GraphQLClient.QueryGenerator
             switch (operation.OperationType)
             {
                 case GraphQLOperationType.Query:
-                    return GetQuery("query", operation.SelectionSet.ToList(), arguments);
                 case GraphQLOperationType.Mutation:
-                    return GetQuery("mutation", operation.SelectionSet.ToList(), arguments);
+                case GraphQLOperationType.Subscription:
+                    return GetQuery(operation.OperationType, operation.SelectionSet.ToList(), arguments);
             }
 
             throw new NotImplementedException($"Operation {operation.OperationType} not implemented");
         }
 
-        private string GetQuery(string queryType, ICollection<GraphQLField> fields, params GraphQLQueryArgument[] queryArguments)
+        private string GetQuery(GraphQLOperationType operationType, ICollection<GraphQLField> fields, params GraphQLQueryArgument[] queryArguments)
         {
             // Get all the arguments from the fields
             var fieldArguments = Helper.GetAllArgumentsFromFields(fields).ToList();
@@ -96,6 +96,32 @@ namespace SAHB.GraphQLClient.QueryGenerator
             var readonlyArguments = new ReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument>(arguments);
 
             // Get query
+            if (operationType == GraphQLOperationType.Subscription)
+            {
+                // Only support for one field
+                if (fields.Count > 1)
+                {
+                    throw new NotSupportedException("Subscriptions does not support more than one selection");
+                }
+            }
+
+            // Get queryType
+            string queryType;
+            switch (operationType)
+            {
+                case GraphQLOperationType.Query:
+                    queryType = "query";
+                    break;
+                case GraphQLOperationType.Mutation:
+                    queryType = "mutation";
+                    break;
+                case GraphQLOperationType.Subscription:
+                    queryType = "subscription " + (string.IsNullOrWhiteSpace(fields.First().Alias) ? fields.First().Field : fields.First().Alias);
+                    break;
+                default:
+                    throw new NotImplementedException($"Querytype {operationType} not implemented");
+            }
+
             var query = GetGraphQLQuery(queryType, GetArguments(readonlyArguments), GenerateQueryForFields(fields, readonlyArguments));
             var request = GetQueryRequest(query, readonlyArguments);
 
