@@ -183,6 +183,17 @@ namespace SAHB.GraphQLClient.QueryGenerator
                     fieldBuilder.Append(GetFields(field.SelectionSet, arguments));
                 }
 
+                // Get other possible subTypes
+                if (field.TargetTypes?.Any() ?? false)
+                {
+                    foreach (var possibleType in field.TargetTypes)
+                    {
+                        // Append subquery
+                        fieldBuilder.Append(
+                            $" ... on {possibleType.Key}{GetFields(possibleType.Value.SelectionSet, arguments)}");
+                    }
+                }
+
                 return fieldBuilder.ToString();
             })));
 
