@@ -26,51 +26,12 @@ namespace SAHB.GraphQLClient.FieldBuilder
 
             foreach (var property in properties)
             {
-                // Check if property is ignored
+                // Check if property or property class is ignored
                 if (TypeIgnoredMemberInfo(property))
                     continue;
 
-                // Get the type of the property
-                var propertyType = property.PropertyType;
-
-                // Check if primitive type or ValueType
-                if (propertyType.GetTypeInfo().IsPrimitive || propertyType.GetTypeInfo().IsValueType)
-                {
-                    // Check if class is ignored
-                    if (TypeIgnored(propertyType))
-                        continue;
-
-                    fields.Add(GetGraphQLField(property));
-                }
-                // Check if IEnumerable type and the enumerable type is not a System type (String is a IEnumerable type and therefore would otherwise go into this case)
-                else if (IsIEnumerableType(propertyType) &&
-                         !GetIEnumerableType(propertyType).GetTypeInfo().IsValueType &&
-                         !GetIEnumerableType(propertyType).GetTypeInfo().Name.StartsWith(nameof(System), StringComparison.Ordinal))
-                {
-                    // Check if class is ignored
-                    if (TypeIgnored(GetIEnumerableType(propertyType)))
-                        continue;
-
-                    fields.Add(GetGraphQLIEnumerableType(property));
-                }
-                // Check if System type
-                else if (propertyType.GetTypeInfo().Namespace.StartsWith(nameof(System), StringComparison.Ordinal))
-                {
-                    // Check if class is ignored
-                    if (TypeIgnored(propertyType))
-                        continue;
-
-                    fields.Add(GetGraphQLField(property));
-                }
-                // Else return subtypes
-                else
-                {
-                    // Check if class is ignored
-                    if (TypeIgnored(propertyType))
-                        continue;
-
-                    fields.Add(GetGraphQLFieldWithSubfields(property));
-                }
+                // Add field
+                fields.Add(GetGraphQLField(property));
             }
 
             // Logging
@@ -83,34 +44,115 @@ namespace SAHB.GraphQLClient.FieldBuilder
             return fields;
         }
 
-        private bool TypeIgnored(Type type) => TypeIgnoredMemberInfo(type.GetTypeInfo());
+        #region TypeIgnored
+        private bool TypeIgnored(PropertyInfo propertyInfo)
+        {
+            // Check if property is ignored
+            if (TypeIgnoredMemberInfo(propertyInfo))
+                return true;
+
+            // Check if the GraphQLClass is ignored
+            if (IsSelectionSetIEnumerable(propertyInfo))
+            {
+                return TypeIgnoredMemberInfo(GetIEnumerableType(propertyInfo.PropertyType).GetTypeInfo());
+            }
+            else
+            {
+                return TypeIgnoredMemberInfo(propertyInfo);
+            }
+        }
 
         private bool TypeIgnoredMemberInfo(MemberInfo memberInfo)
         {
             return memberInfo.GetCustomAttribute<GraphQLFieldIgnoreAttribute>() != null;
         }
-        
-        // ReSharper disable once InconsistentNaming
+        #endregion
+
         private GraphQLField GetGraphQLField(PropertyInfo property)
         {
-            return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property), null,
-                GetPropertyArguments(property), property.PropertyType, GetTypes(property));
+            // Get alias and fieldName
+            var alias = GetPropertyAlias(property);
+            var fieldName = GetPropertyField(property);
+
+            // Get arguments
+            var arguments = GetPropertyArguments(property);
+
+            // Get types
+            // TODO: Problems if types is IEnumerable types
+            var types = GetTypes(property);
+
+            // Get selectionSet
+            IEnumerable<GraphQLField> selectionSet = null;
+            if (ShouldIncludeSelectionSet(property))
+            {
+                if (IsSelectionSetIEnumerable(property))
+                {
+                    selectionSet = GetFields(GetIEnumerableType(property.PropertyType));
+                }
+                else
+                {
+                    selectionSet = GetFields(property.PropertyType);
+                }
+            }
+
+            // Return GraphQLField
+            return new GraphQLField(alias, fieldName, selectionSet, arguments, property.PropertyType, types);
         }
 
-        // ReSharper disable once InconsistentNaming
-        private GraphQLField GetGraphQLFieldWithSubfields(PropertyInfo property)
+        private bool ShouldIncludeSelectionSet(PropertyInfo property)
         {
-            return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),
-                GetFields(property.PropertyType), GetPropertyArguments(property), property.PropertyType,
-                GetTypes(property));
+            // Get the type of the property
+            var propertyType = property.PropertyType;
+
+            // Check if primitive or value type
+            if (propertyType.GetTypeInfo().IsPrimitive || propertyType.GetTypeInfo().IsValueType)
+                return false;
+
+            // Check if the type is a IEnumerable type
+            if (IsIEnumerableType(propertyType))
+            {
+                // Detect if the enumerable type is a System type (String is a IEnumerable type and should not include SelectionSet)
+                if (GetIEnumerableType(propertyType).GetTypeInfo().Name.StartsWith(nameof(System), StringComparison.Ordinal))
+                {
+                    return false;
+                }
+
+                // Detect if the type of the IEnumerable is not a value type
+                if (!GetIEnumerableType(propertyType).GetTypeInfo().IsValueType)
+                {
+                    return true;
+                }
+            }
+
+            return true;
         }
 
-        // ReSharper disable once InconsistentNaming
-        private GraphQLField GetGraphQLIEnumerableType(PropertyInfo property)
+        private bool IsSelectionSetIEnumerable(PropertyInfo property)
         {
-            return new GraphQLField(GetPropertyAlias(property), GetPropertyField(property),
-                GetFields(GetIEnumerableType(property.PropertyType)), GetPropertyArguments(property),
-                property.PropertyType, GetTypes(property));
+            // Get the type of the property
+            var propertyType = property.PropertyType;
+
+            // Check if primitive or value type
+            if (propertyType.GetTypeInfo().IsPrimitive || propertyType.GetTypeInfo().IsValueType)
+                return false;
+
+            // Check if the type is a IEnumerable type
+            if (IsIEnumerableType(propertyType))
+            {
+                // Detect if the enumerable type is a System type (String is a IEnumerable type and should not include SelectionSet)
+                if (GetIEnumerableType(propertyType).GetTypeInfo().Name.StartsWith(nameof(System), StringComparison.Ordinal))
+                {
+                    return false;
+                }
+
+                // Detect if the type of the IEnumerable is not a value type
+                if (!GetIEnumerableType(propertyType).GetTypeInfo().IsValueType)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         protected virtual string GetPropertyAlias(PropertyInfo property)
@@ -125,7 +167,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                 .GetCustomAttributes<GraphQLUnionOrInterfaceAttribute>()
                 .Union(
                     property.PropertyType.GetTypeInfo().GetCustomAttributes<GraphQLUnionOrInterfaceAttribute>());
-
+            
             // Check if dictionary contains duplicates
             var duplicates = attributes.Select(e => e.TypeName).GroupBy(e => e, e => e).Where(e => e.Count() > 1)
                 .Select(e => e.Key).ToArray();
