@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SAHB.GraphQL.Client.Deserialization;
+using SAHB.GraphQL.Client.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.Extentions;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
@@ -52,20 +53,26 @@ namespace SAHB.GraphQLClient.Examples
             builderResponse = await query.Execute();
             Console.WriteLine(builderResponse["hero"]["name"].Value);
 
+            var character = await client.Query<CharacterQuery>("https://mpjk0plp9.lp.gql.zone/graphql", arguments: new GraphQLQueryArgument("characterID", "1000"));
+            if (character.Character is Human human)
+            {
+                Console.WriteLine("Human!: " + human.Height);
+            }
+
             // Create batch
             var batch = client.CreateBatch("https://mpjk0plp9.lp.gql.zone/graphql");
 
             // Create two requests in the batch
-            var queryId1000 = batch.Query<HumanQuery>(new GraphQLQueryArgument("humanID", "1000"));
-            var queryId1001 = batch.Query<HumanQuery>(new GraphQLQueryArgument("humanID", "1001"));
+            var queryId1000 = batch.Query<CharacterQuery>(new GraphQLQueryArgument("characterID", "1000"));
+            var queryId1001 = batch.Query<CharacterQuery>(new GraphQLQueryArgument("characterID", "1001"));
 
             // Execute the batch
             var queryId1000Result = await queryId1000.Execute();
             var queryId1001Result = await queryId1001.Execute();
 
             // Get result
-            Console.WriteLine(queryId1000Result.Human.Name);
-            Console.WriteLine(queryId1001Result.Human.Name);
+            Console.WriteLine(queryId1000Result.Character.Name);
+            Console.WriteLine(queryId1001Result.Character.Name);
 
             // Create executor
             IGraphQLHttpExecutor executor = new GraphQLHttpExecutor();
@@ -142,16 +149,28 @@ namespace SAHB.GraphQLClient.Examples
             public CharacterOrPerson Hero { get; set; }
         }
 
-        public class HumanQuery
+        public class CharacterQuery
         {
-            [GraphQLArguments("id", "ID!", "humanID")]
-            public CharacterOrPerson Human { get; set; }
+            [GraphQLArguments("id", "ID!", "characterID")]
+            public CharacterOrPerson Character { get; set; }
         }
 
+        [GraphQLUnionOrInterface("Human", typeof(Human))]
+        [GraphQLUnionOrInterface("Droid", typeof(Droid))]
         public class CharacterOrPerson
         {
             public string Name { get; set; }
             public IEnumerable<Friend> Friends { get; set; }
+        }
+
+        public class Human : CharacterOrPerson
+        {
+            public decimal Height { get; set; }
+        }
+
+        public class Droid : CharacterOrPerson
+        {
+            public string PrimaryFunction { get; set; }
         }
 
         public class Friend
