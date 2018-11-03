@@ -34,7 +34,7 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
             var fieldBuilder = new GraphQLFieldBuilder();
 
             // Act
-            var fields = fieldBuilder.GetFields(typeof(Query1));
+            var fields = fieldBuilder.GenerateOperation(typeof(Query1), GraphQLOperationType.Query).SelectionSet;
 
             // Assert
             Assert.Equal(1, fields.Count());
@@ -48,7 +48,7 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
             Assert.Equal("subclass2", fields.First().TargetTypes.Last().Key);
 
             // Test default type
-            Assert.Equal(typeof(SubClass), fields.First().DefaultTargetType);
+            Assert.Equal(typeof(SubClass), fields.First().Type);
         }
     }
 }

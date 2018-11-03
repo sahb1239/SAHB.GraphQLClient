@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SAHB.GraphQL.Client.Deserialization;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
@@ -27,10 +28,12 @@ namespace SAHB.GraphQLClient
                 new GraphQLQueryGeneratorFromFields() { LoggerFactory = provider.GetService<ILoggerFactory>() });
             services.AddSingleton<IGraphQLHttpExecutor>(provider =>
                 new GraphQLHttpExecutor() { LoggerFactory = provider.GetService<ILoggerFactory>() });
+            services.AddSingleton<IGraphQLDeserialization, GraphQLDeserilization>();
             services.AddSingleton<IGraphQLHttpClient>(provider =>
                 new GraphQLHttpClient(provider.GetRequiredService<IGraphQLHttpExecutor>(),
                     provider.GetRequiredService<IGraphQLFieldBuilder>(),
-                    provider.GetRequiredService<IGraphQLQueryGeneratorFromFields>())
+                    provider.GetRequiredService<IGraphQLQueryGeneratorFromFields>(),
+                    provider.GetRequiredService<IGraphQLDeserialization>())
                 {
                     LoggerFactory = provider.GetService<ILoggerFactory>()
                 });

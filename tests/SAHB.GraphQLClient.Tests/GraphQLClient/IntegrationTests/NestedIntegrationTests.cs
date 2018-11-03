@@ -4,6 +4,7 @@ using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Extentions;
 using Xunit;
+using SAHB.GraphQL.Client.Deserialization;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
 {
@@ -11,11 +12,13 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
     {
         private readonly IGraphQLQueryGeneratorFromFields _queryGenerator;
         private readonly IGraphQLFieldBuilder _fieldBuilder;
+        private readonly IGraphQLDeserialization _deserilization;
 
         public NestedIntegrationTests()
         {
             _queryGenerator = new GraphQLQueryGeneratorFromFields();
             _fieldBuilder = new GraphQLFieldBuilder();
+            _deserilization = new GraphQLDeserilization();
         }
 
         [Fact]
@@ -23,7 +26,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
         {
             var responseContent = "{\"data\":{\"Me\":{\"Firstname\":\"Søren\", Age:\"24\", \"lastname\": \"Bjergmark\"}}}";
             var httpClient = new HttpClientMock.GraphQLHttpExecutorMock(responseContent, "{\"query\":\"query{me{firstname age lastname}}\"}");
-            var client = new GraphQLHttpClient(httpClient, _fieldBuilder, _queryGenerator);
+            var client = new GraphQLHttpClient(httpClient, _fieldBuilder, _queryGenerator, _deserilization);
 
             // Act
             var response = await client.Query<QueryToTest>("");

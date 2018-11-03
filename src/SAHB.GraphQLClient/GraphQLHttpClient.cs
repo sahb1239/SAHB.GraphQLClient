@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
+using SAHB.GraphQL.Client.Deserialization;
+using SAHB.GraphQL.Client.FieldBuilder;
 using SAHB.GraphQLClient.Batching;
 using SAHB.GraphQLClient.Batching.Internal;
 using SAHB.GraphQLClient.Builder;
@@ -19,6 +21,7 @@ namespace SAHB.GraphQLClient
         private readonly IGraphQLHttpExecutor _executor;
         private readonly IGraphQLFieldBuilder _fieldBuilder;
         private readonly IGraphQLQueryGeneratorFromFields _queryGenerator;
+        private readonly IGraphQLDeserialization _deserilization;
         private ILoggerFactory _loggerFactory;
 
         /// <summary>
@@ -48,11 +51,12 @@ namespace SAHB.GraphQLClient
         /// <param name="executor">The <see cref="IGraphQLHttpExecutor"/> to use for the GraphQL client</param>
         /// <param name="fieldBuilder">The <see cref="IGraphQLFieldBuilder"/> used for generating the fields used for generating the query</param>
         /// <param name="queryGenerator">The <see cref="IGraphQLQueryGeneratorFromFields"/> used for the GraphQL client</param>
-        public GraphQLHttpClient(IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator)
+        public GraphQLHttpClient(IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserilization)
         {
             _executor = executor ?? throw new ArgumentNullException(nameof(executor));
             _fieldBuilder = fieldBuilder ?? throw new ArgumentNullException(nameof(fieldBuilder));
             _queryGenerator = queryGenerator ?? throw new ArgumentNullException(nameof(queryGenerator));
+            _deserilization = deserilization ?? throw new ArgumentNullException(nameof(deserilization));
         }
 
         /// <summary>
@@ -61,10 +65,10 @@ namespace SAHB.GraphQLClient
         /// <returns>A new instance of the GraphQL client</returns>
         public static IGraphQLHttpClient Default()
         {
-            return new GraphQLHttpClient(new GraphQLHttpExecutor(), new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields());
+            return new GraphQLHttpClient(new GraphQLHttpExecutor(), new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
         }
 
-        public IGraphQLQuery CreateQuery(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null,
+        public IGraphQLQuery<dynamic> CreateQuery(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {
             return CreateQuery(builder, url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
@@ -77,7 +81,7 @@ namespace SAHB.GraphQLClient
             return CreateQuery<T>(url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
         }
 
-        public IGraphQLQuery CreateMutation(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null,
+        public IGraphQLQuery<dynamic> CreateMutation(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {
             return CreateMutation(builder, url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
@@ -90,7 +94,7 @@ namespace SAHB.GraphQLClient
             return CreateMutation<T>(url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
         }
 
-        public IGraphQLQuery CreateMutation(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null,
+        public IGraphQLQuery<dynamic> CreateMutation(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {
             var build = new GraphQLBuilder();
@@ -98,21 +102,21 @@ namespace SAHB.GraphQLClient
 
             // Get the fields and query
             var fields = build.GetFields();
-            var query = _queryGenerator.GetMutation(fields, arguments);
+            var operation = new GraphQLOperation(GraphQLOperationType.Mutation, fields);
 
             // Get query
-            return GetGraphQLQuery(query, url, httpMethod, authorizationToken, authorizationMethod);
+            return GetGraphQLQuery(operation, arguments, url, httpMethod, authorizationToken, authorizationMethod);
         }
 
         /// <inheritdoc />
         public IGraphQLQuery<T> CreateMutation<T>(string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
-            var query = _queryGenerator.GetMutation(_fieldBuilder.GetFields(typeof(T)), arguments);
-            return GetGraphQLQuery<T>(query, url, httpMethod, authorizationToken, authorizationMethod);
+            var operation = _fieldBuilder.GenerateOperation(typeof(T), GraphQLOperationType.Mutation);
+            return GetGraphQLQuery<T>(operation, arguments, url, httpMethod, authorizationToken, authorizationMethod);
         }
 
-        public IGraphQLQuery CreateQuery(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null,
+        public IGraphQLQuery<dynamic> CreateQuery(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {
             var build = new GraphQLBuilder();
@@ -120,18 +124,18 @@ namespace SAHB.GraphQLClient
 
             // Get the fields and query
             var fields = build.GetFields();
-            var query = _queryGenerator.GetQuery(fields, arguments);
+            var operation = new GraphQLOperation(GraphQLOperationType.Query, fields);
 
             // Get query
-            return GetGraphQLQuery(query, url, httpMethod, authorizationToken, authorizationMethod);
+            return GetGraphQLQuery(operation, arguments, url, httpMethod, authorizationToken, authorizationMethod);
         }
 
         /// <inheritdoc />
         public IGraphQLQuery<T> CreateQuery<T>(string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
-            var query = _queryGenerator.GetQuery(_fieldBuilder.GetFields(typeof(T)), arguments);
-            return GetGraphQLQuery<T>(query, url, httpMethod, authorizationToken, authorizationMethod);
+            var operation = _fieldBuilder.GenerateOperation(typeof(T), GraphQLOperationType.Query);
+            return GetGraphQLQuery<T>(operation, arguments, url, httpMethod, authorizationToken, authorizationMethod);
         }
 
         /// <inheritdoc />
@@ -144,23 +148,23 @@ namespace SAHB.GraphQLClient
         public IGraphQLBatch CreateBatch(string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer")
         {
-            return new GraphQLBatch(url, httpMethod, authorizationToken, authorizationMethod, _executor, _fieldBuilder, _queryGenerator);
+            return new GraphQLBatch(url, httpMethod, authorizationToken, authorizationMethod, _executor, _fieldBuilder, _queryGenerator, _deserilization);
         }
 
         // ReSharper disable once InconsistentNaming
-        private IGraphQLQuery GetGraphQLQuery(string query, string url, HttpMethod httpMethod,
+        private IGraphQLQuery<dynamic> GetGraphQLQuery(IGraphQLOperation operation, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod,
             string authorizationToken = null,
             string authorizationMethod = "Bearer")
         {
-            return new GraphQLQuery(query, url, httpMethod, authorizationToken, authorizationMethod, _executor);
+            return new GraphQLQuery<dynamic>(operation, arguments, url, httpMethod, authorizationToken, authorizationMethod, _queryGenerator, _executor, _deserilization);
         }
 
         // ReSharper disable once InconsistentNaming
-        private IGraphQLQuery<T> GetGraphQLQuery<T>(string query, string url, HttpMethod httpMethod,
+        private IGraphQLQuery<T> GetGraphQLQuery<T>(IGraphQLOperation operation, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod,
             string authorizationToken = null,
             string authorizationMethod = "Bearer") where T : class
         {
-            return new GraphQLQuery<T>(query, url, httpMethod, authorizationToken, authorizationMethod, _executor);
+            return new GraphQLQuery<T>(operation, arguments, url, httpMethod, authorizationToken, authorizationMethod, _queryGenerator, _executor, _deserilization);
         }
     }
 }

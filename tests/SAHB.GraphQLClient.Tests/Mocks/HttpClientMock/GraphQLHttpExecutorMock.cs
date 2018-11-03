@@ -24,13 +24,13 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock
 
         public HttpRequestMessage LastRequest { get; private set; }
 
-        public Task<GraphQLDataResult<T>> ExecuteQuery<T>(string query, string url, HttpMethod method, string authorizationToken = null,
-            string authorizationMethod = "Bearer") where T : class
+        public Task<string> ExecuteQuery(string query, string url, HttpMethod method, string authorizationToken = null,
+            string authorizationMethod = "Bearer")
         {
             // Check if query is correct
             Assert.Equal(_requiredQuery, query);
 
-            return Task.FromResult(JsonConvert.DeserializeObject<GraphQLDataResult<T>>(_response));
+            return Task.FromResult(_response);
         }
     }
 }

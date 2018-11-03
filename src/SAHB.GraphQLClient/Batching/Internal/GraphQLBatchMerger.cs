@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using SAHB.GraphQL.Client.Deserialization;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
@@ -22,6 +23,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
         private readonly IGraphQLHttpExecutor _executor;
         private readonly IGraphQLFieldBuilder _fieldBuilder;
         private readonly IGraphQLQueryGeneratorFromFields _queryGenerator;
+        private readonly IGraphQLDeserialization _graphQLDeserialization;
         private readonly IDictionary<string, IEnumerable<GraphQLFieldWithOverridedAlias>> _fields;
         private readonly IDictionary<string, GraphQLQueryArgument[]> _arguments;
         private int _identifierCount = 0;
@@ -29,7 +31,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
         private GraphQLDataResult<JObject> _result;
         private string _executedQuery;
 
-        public GraphQLBatchMerger(string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator)
+        public GraphQLBatchMerger(string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization graphQLDeserialization)
         {
             _url = url;
             _httpMethod = httpMethod;
@@ -38,6 +40,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             _executor = executor;
             _fieldBuilder = fieldBuilder;
             _queryGenerator = queryGenerator;
+            _graphQLDeserialization = graphQLDeserialization;
             _fields = new Dictionary<string, IEnumerable<GraphQLFieldWithOverridedAlias>>();
             _arguments = new Dictionary<string, GraphQLQueryArgument[]>();
         }
@@ -51,7 +54,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             var identifier = $"batch{_identifierCount++}";
 
             // Get fields
-            var fields = _fieldBuilder.GetFields(typeof(T)).Select(field =>
+            var fields = _fieldBuilder.GenerateOperation(typeof(T), GraphQLOperationType.Query).SelectionSet.Select(field =>
                 new GraphQLFieldWithOverridedAlias(string.IsNullOrWhiteSpace(field.Alias) ? field.Field : field.Alias,
                     field)).ToList();
 
@@ -100,13 +103,18 @@ namespace SAHB.GraphQLClient.Batching.Internal
             // Update arguments so they don't conflict
             UpdateArguments();
 
+            // Get all fields
+            var fields = _fields.SelectMany(e => e.Value).ToList();
+
             // Generate query
-            _executedQuery = _queryGenerator.GetQuery(_fields.SelectMany(e => e.Value),
+            _executedQuery = _queryGenerator.GenerateQuery(new GraphQLOperation(GraphQLOperationType.Query, fields),
                 _arguments.SelectMany(e => e.Value).ToArray());
 
             // Execute query
-            _result =
-                await _executor.ExecuteQuery<JObject>(_executedQuery, _url, _httpMethod, _authorizationToken, _authorizationMethod).ConfigureAwait(false);
+            var serverResult = await _executor.ExecuteQuery(_executedQuery, _url, _httpMethod, _authorizationToken, _authorizationMethod).ConfigureAwait(false);
+
+            // Deserilize result
+            _result = _graphQLDeserialization.DeserializeResult<JObject>(serverResult, fields);
         }
 
         private void UpdateAlias()

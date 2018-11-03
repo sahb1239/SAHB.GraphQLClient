@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using SAHB.GraphQLClient.QueryGenerator;
+using System.Threading.Tasks;
 
 namespace SAHB.GraphQLClient.Batching.Internal
 {

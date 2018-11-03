@@ -24,8 +24,8 @@ namespace SAHB.GraphQLClient.Extentions
         {
             if (queryGenerator == null) throw new ArgumentNullException(nameof(queryGenerator));
             if (fieldBuilder == null) throw new ArgumentNullException(nameof(fieldBuilder));
-            var fields = fieldBuilder.GetFields(typeof(T));
-            return queryGenerator.GetQuery(fields, arguments);
+            var operation = fieldBuilder.GenerateOperation(typeof(T), GraphQLOperationType.Query);
+            return queryGenerator.GenerateQuery(operation, arguments);
         }
 
         /// <summary>
@@ -41,8 +41,8 @@ namespace SAHB.GraphQLClient.Extentions
         {
             if (queryGenerator == null) throw new ArgumentNullException(nameof(queryGenerator));
             if (fieldBuilder == null) throw new ArgumentNullException(nameof(fieldBuilder));
-            var fields = fieldBuilder.GetFields(typeof(T));
-            return queryGenerator.GetMutation(fields, arguments);
+            var operation = fieldBuilder.GenerateOperation(typeof(T), GraphQLOperationType.Mutation);
+            return queryGenerator.GenerateQuery(operation, arguments);
         }
     }
 }

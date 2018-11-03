@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SAHB.GraphQL.Client.Deserialization;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
@@ -26,7 +27,7 @@ namespace SAHB.GraphQLClient.Tests.Builder
                         alias2 = "Value2"
                     }
                 }), expected);
-            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields());
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var query = client.CreateQuery(builder =>
@@ -48,7 +49,7 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 {
                     Data = (string)null
                 }), expected);
-            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields());
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var query = client.CreateQuery(builder =>
@@ -68,7 +69,7 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 {
                     Data = (string)null
                 }), expected);
-            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields());
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var query = client.CreateQuery(builder =>
@@ -91,7 +92,7 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 {
                     Data = (string)null
                 }), expected);
-            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields());
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var query = client.CreateQuery(builder =>
@@ -114,7 +115,7 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 {
                     Data = (string)null
                 }), expected);
-            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields());
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var query = client.CreateQuery(builder =>
@@ -129,7 +130,7 @@ namespace SAHB.GraphQLClient.Tests.Builder
         }
 
         [Fact]
-        public void Test_GraphQL_Builder_Argument_Required_Throws()
+        public async Task Test_GraphQL_Builder_Argument_Required_Throws()
         {
             var expected = "{\"query\":\"query{doSomeAction}\"}";
             var httpClientMock = new GraphQLHttpExecutorMock(
@@ -137,13 +138,13 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 {
                     Data = (string)null
                 }), expected);
-            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields());
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act / Assert
-            Assert.Throws<GraphQLArgumentsRequiredException>(() => client.CreateQuery(builder =>
+            await Assert.ThrowsAsync<GraphQLArgumentsRequiredException>(() => client.CreateQuery(builder =>
                     builder.Field("doSomeAction",
                         field => { field.Argument("argumentName", "argumentType", "variableName", isRequired: true); }),
-                "randomurl"));
+                "randomurl").Execute());
         }
 
         [Fact]
@@ -155,7 +156,7 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 {
                     Data = (string)null
                 }), expected);
-            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields());
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var query = client.CreateQuery(builder =>
@@ -178,7 +179,7 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 {
                     Data = (string)null
                 }), expected);
-            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields());
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var query = client.CreateQuery(builder =>
@@ -227,7 +228,7 @@ namespace SAHB.GraphQLClient.Tests.Builder
                     }
                 }), expected);
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var query = client.CreateQuery(builder =>

@@ -33,7 +33,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <param name="defaultTargetType">Default deserilzation type which should be deserilized to if no match is found in <paramref name="targetTypes"/></param>
         /// <param name="targetTypes">The types which should be deserilized to based on the __typename GraphQL field</param>
         public GraphQLField(string alias, string field, IEnumerable<GraphQLField> fields,
-            IEnumerable<GraphQLFieldArguments> arguments, Type defaultTargetType, IDictionary<string, Type> targetTypes)
+            IEnumerable<GraphQLFieldArguments> arguments, Type defaultTargetType, IDictionary<string, GraphQLField> targetTypes)
         {
             Field = field ?? throw new ArgumentNullException(nameof(field));
 
@@ -41,8 +41,8 @@ namespace SAHB.GraphQLClient.FieldBuilder
             SelectionSet = (fields ?? Enumerable.Empty<GraphQLField>()).ToList();
             Arguments = (arguments ?? Enumerable.Empty<GraphQLFieldArguments>()).ToList();
 
-            DefaultTargetType = defaultTargetType;
-            TargetTypes = (targetTypes ?? new Dictionary<string, Type>());
+            Type = defaultTargetType;
+            TargetTypes = (targetTypes ?? new Dictionary<string, GraphQLField>());
         }
 
         /// <summary>
@@ -61,12 +61,6 @@ namespace SAHB.GraphQLClient.FieldBuilder
         public ICollection<GraphQLField> SelectionSet { get; }
 
         /// <summary>
-        /// The selection set for the field
-        /// </summary>
-        [Obsolete("Please use the SelectionSet property instead")]
-        public ICollection<GraphQLField> Fields => SelectionSet;
-
-        /// <summary>
         /// Arguments for the current field
         /// </summary>
         public ICollection<GraphQLFieldArguments> Arguments { get; }
@@ -74,12 +68,12 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <summary>
         /// Returns the type which should be deserilized to based on the __typename field
         /// </summary>
-        public IDictionary<string, Type> TargetTypes { get; }
+        public IDictionary<string, GraphQLField> TargetTypes { get; }
 
         /// <summary>
-        /// Returns the default deserilzation type which should be deserilized to if no match is found in <see cref="TargetTypes"/>
+        /// Returns the deserilzation type which should be deserilized to if no match is found in <see cref="TargetTypes"/>
         /// </summary>
-        public Type DefaultTargetType { get; }
+        public Type Type { get; }
 
         /// <inheritdoc />
         public override string ToString()
@@ -87,9 +81,9 @@ namespace SAHB.GraphQLClient.FieldBuilder
             StringBuilder builder = new StringBuilder();
             builder.AppendLine($"Field: {Field}");
             builder.AppendLine($"Alias: {(Alias ?? "null")}");
-            if (DefaultTargetType != null)
+            if (Type != null)
             {
-                builder.AppendLine($"Default type: {DefaultTargetType.FullName}");
+                builder.AppendLine($"Default type: {Type.FullName}");
             }
             if (Arguments.Any())
             {

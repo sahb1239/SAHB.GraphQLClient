@@ -19,7 +19,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         public void Test_GraphQLSkipArgument_In_Fieds()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GetFields(typeof(SkipQueryToTest1)).ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateOperation(typeof(SkipQueryToTest1), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
 
             // Check if any argument is found
             Assert.Contains(fields,
@@ -30,7 +30,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         public void Test_GraphQLSkipArgument_Correct_ArgumentName_And_Type()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GetFields(typeof(SkipQueryToTest1)).ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateOperation(typeof(SkipQueryToTest1), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
 
             // Check if the argument is found
             Assert.Contains(fields,
@@ -49,7 +49,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         public void Test_GraphQLTakeArgument_In_Fieds()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GetFields(typeof(TakeQueryToTest1)).ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateOperation(typeof(TakeQueryToTest1), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
 
             // Check if any argument is found
             Assert.Contains(fields,
@@ -60,7 +60,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         public void Test_GraphQLTakeArgument_Correct_ArgumentName_And_Type()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GetFields(typeof(TakeQueryToTest1)).ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateOperation(typeof(TakeQueryToTest1), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
 
             // Check if the argument is found
             Assert.Contains(fields,
@@ -79,7 +79,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         public void Test_GraphQLSkipTakeArgument_Correct_ArgumentName_And_Type()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GetFields(typeof(SkipTakeQueryToTest1)).ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateOperation(typeof(SkipTakeQueryToTest1), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
 
             // Check if the argument is found
             Assert.Contains(fields,

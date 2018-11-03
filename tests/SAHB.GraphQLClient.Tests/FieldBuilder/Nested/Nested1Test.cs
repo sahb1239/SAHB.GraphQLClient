@@ -17,7 +17,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.Nested
         public void Correct_Count_With_Nested_Field()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GetFields(typeof(QueryToTest)).ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
 
             // Expect one element in root
             Assert.Equal(1, fields.Count);
@@ -27,7 +27,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.Nested
         public void Correct_Count_Fields()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GetFields(typeof(QueryToTest)).ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
 
             // Expect 
             Assert.Equal(1, fields.First().SelectionSet.Count());

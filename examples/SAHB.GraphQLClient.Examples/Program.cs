@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SAHB.GraphQL.Client.Deserialization;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.Extentions;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
@@ -68,9 +69,13 @@ namespace SAHB.GraphQLClient.Examples
 
             // Create executor
             IGraphQLHttpExecutor executor = new GraphQLHttpExecutor();
-            var result = await executor.ExecuteQuery<HeroQuery>(@"{""query"":""query{Hero:hero{Name:name Friends:friends{Name:name}}}""}",
+            var result = await executor.ExecuteQuery(@"{""query"":""query{Hero:hero{Name:name Friends:friends{Name:name}}}""}",
                 "https://mpjk0plp9.lp.gql.zone/graphql", HttpMethod.Post);
-            Console.WriteLine(result.Data.Hero.Name);
+            IGraphQLDeserialization graphQLDeserialization = new GraphQLDeserilization();
+
+            var deserilizedResult = graphQLDeserialization.DeserializeResult<HeroQuery>(result, null);
+
+            Console.WriteLine(deserilizedResult.Data.Hero.Name);
 
             // Using dependency injection and concole logging
             var serviceCollection = new ServiceCollection();

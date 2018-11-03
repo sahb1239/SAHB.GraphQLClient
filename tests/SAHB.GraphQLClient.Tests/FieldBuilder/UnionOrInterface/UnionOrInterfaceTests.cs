@@ -24,7 +24,7 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
             var fieldBuilder = new GraphQLFieldBuilder();
 
             // Act
-            var fields = fieldBuilder.GetFields(typeof(Query1));
+            var fields = fieldBuilder.GenerateOperation(typeof(Query1), GraphQLOperationType.Query).SelectionSet;
 
             // Assert
             Assert.Equal(1, fields.Count());
@@ -32,10 +32,10 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
             // Test target types
             Assert.Equal(1, fields.First().TargetTypes.Count);
             Assert.Equal("Obj", fields.First().TargetTypes.First().Key);
-            Assert.Equal(typeof(Object), fields.First().TargetTypes.First().Value);
+            Assert.Equal(typeof(Object), fields.First().TargetTypes.First().Value.Type);
 
             // Test default type
-            Assert.Equal(typeof(String), fields.First().DefaultTargetType);
+            Assert.Equal(typeof(String), fields.First().Type);
         }
 
         public class Query2
@@ -52,7 +52,7 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
             var fieldBuilder = new GraphQLFieldBuilder();
 
             // Act
-            var fields = fieldBuilder.GetFields(typeof(Query2));
+            var fields = fieldBuilder.GenerateOperation(typeof(Query2), GraphQLOperationType.Query).SelectionSet;
 
             // Assert
             Assert.Equal(1, fields.Count());
@@ -61,13 +61,13 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
             Assert.Equal(2, fields.First().TargetTypes.Count);
 
             Assert.Equal("Obj1", fields.First().TargetTypes.First(e => e.Key == "Obj1").Key);
-            Assert.Equal(typeof(Object), fields.First().TargetTypes.First(e => e.Key == "Obj1").Value);
+            Assert.Equal(typeof(Object), fields.First().TargetTypes.First(e => e.Key == "Obj1").Value.Type);
 
             Assert.Equal("Obj2", fields.First().TargetTypes.First(e => e.Key == "Obj2").Key);
-            Assert.Equal(typeof(IEnumerable<string>), fields.First().TargetTypes.First(e => e.Key == "Obj2").Value);
+            Assert.Equal(typeof(IEnumerable<string>), fields.First().TargetTypes.First(e => e.Key == "Obj2").Value.Type);
 
             // Test default type
-            Assert.Equal(typeof(String), fields.First().DefaultTargetType);
+            Assert.Equal(typeof(String), fields.First().Type);
         }
 
         public class Query3
@@ -89,7 +89,7 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
             var fieldBuilder = new GraphQLFieldBuilder();
 
             // Act
-            var fields = fieldBuilder.GetFields(typeof(Query3));
+            var fields = fieldBuilder.GenerateOperation(typeof(Query3), GraphQLOperationType.Query).SelectionSet;
 
             // Assert
             Assert.Equal(1, fields.Count());
@@ -98,13 +98,13 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
             Assert.Equal(2, fields.First().TargetTypes.Count);
 
             Assert.Equal("Obj3", fields.First().TargetTypes.First(e => e.Key == "Obj3").Key);
-            Assert.Equal(typeof(Object), fields.First().TargetTypes.First(e => e.Key == "Obj3").Value);
+            Assert.Equal(typeof(Object), fields.First().TargetTypes.First(e => e.Key == "Obj3").Value.Type);
 
             Assert.Equal("Obj4", fields.First().TargetTypes.First(e => e.Key == "Obj4").Key);
-            Assert.Equal(typeof(IEnumerable<string>), fields.First().TargetTypes.First(e => e.Key == "Obj4").Value);
+            Assert.Equal(typeof(IEnumerable<string>), fields.First().TargetTypes.First(e => e.Key == "Obj4").Value.Type);
 
             // Test default type
-            Assert.Equal(typeof(SubQuery3_1), fields.First().DefaultTargetType);
+            Assert.Equal(typeof(SubQuery3_1), fields.First().Type);
         }
 
         public class Query4
@@ -123,7 +123,7 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
             // Act / Assert
             Assert.Throws<GraphQLDuplicateTypeNameException>(() =>
             {
-                var fields = fieldBuilder.GetFields(typeof(Query4));
+                var fields = fieldBuilder.GenerateOperation(typeof(Query4), GraphQLOperationType.Query).SelectionSet;
             });
         }
     }

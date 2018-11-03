@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using SAHB.GraphQL.Client.FieldBuilder;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Internal;
@@ -15,16 +16,17 @@ namespace SAHB.GraphQLClient.QueryGenerator
     /// <inheritdoc />
     public class GraphQLQueryGeneratorFromFields : IGraphQLQueryGeneratorFromFields
     {
-        /// <inheritdoc />
-        public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
+        public string GenerateQuery(IGraphQLOperation operation, params GraphQLQueryArgument[] arguments)
         {
-            return GetQuery("query", fields.ToList(), arguments);
-        }
+            switch (operation.OperationType)
+            {
+                case GraphQLOperationType.Query:
+                    return GetQuery("query", operation.SelectionSet.ToList(), arguments);
+                case GraphQLOperationType.Mutation:
+                    return GetQuery("mutation", operation.SelectionSet.ToList(), arguments);
+            }
 
-        /// <inheritdoc />
-        public string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
-        {
-            return GetQuery("mutation", fields.ToList(), arguments);
+            throw new NotImplementedException($"Operation {operation.OperationType} not implemented");
         }
 
         private string GetQuery(string queryType, ICollection<GraphQLField> fields, params GraphQLQueryArgument[] queryArguments)

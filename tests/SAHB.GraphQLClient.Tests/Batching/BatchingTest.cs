@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SAHB.GraphQL.Client.Deserialization;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
@@ -32,7 +33,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
                     }
                 }), expected);
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var batch = client.CreateBatch("");
@@ -84,7 +85,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
                     }
                 }), expected);
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var batch = client.CreateBatch("");
@@ -138,7 +139,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
                     }
                 }), expected);
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var batch = client.CreateBatch("");
@@ -190,7 +191,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
                     }
                 }), expected);
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var batch = client.CreateBatch("");
@@ -218,7 +219,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
                     }
                 }), expected);
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var batch = client.CreateBatch("");
@@ -251,7 +252,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
                     }
                 }), expected);
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var batch = client.CreateBatch("");

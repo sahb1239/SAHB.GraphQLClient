@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SAHB.GraphQL.Client.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder;
 
 namespace SAHB.GraphQLClient.Tests.Mocks
@@ -13,9 +14,9 @@ namespace SAHB.GraphQLClient.Tests.Mocks
             _fields = fields;
         }
 
-        public IEnumerable<GraphQLField> GetFields(Type type)
+        public IGraphQLOperation GenerateOperation(Type type, GraphQLOperationType operationType)
         {
-            return _fields;
+            return new GraphQLOperation(operationType, _fields);
         }
     }
 }

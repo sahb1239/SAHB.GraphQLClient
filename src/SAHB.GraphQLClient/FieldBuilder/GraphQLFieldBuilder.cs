@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using SAHB.GraphQL.Client;
 using SAHB.GraphQL.Client.Exceptions;
+using SAHB.GraphQL.Client.FieldBuilder;
 using SAHB.GraphQL.Client.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 
@@ -14,8 +16,17 @@ namespace SAHB.GraphQLClient.FieldBuilder
     /// <inheritdoc />
     public class GraphQLFieldBuilder : IGraphQLFieldBuilder
     {
+        public IGraphQLOperation GenerateOperation(Type type, GraphQLOperationType operationType)
+        {
+            // Get selectionSet
+            var selectionSet = GetSelectionSet(type);
+
+            // Return operation
+            return new GraphQLOperation(operationType, selectionSet);
+        }
+
         /// <inheritdoc />
-        public IEnumerable<GraphQLField> GetFields(Type type)
+        private IEnumerable<GraphQLField> GetSelectionSet(Type type)
         {
             // Initilize list with fields and arguments
             var fields = new List<GraphQLField>();
@@ -40,7 +51,6 @@ namespace SAHB.GraphQLClient.FieldBuilder
                 Logger.LogDebug($"Generated the following fields from the type {type.FullName}{Environment.NewLine}{String.Join(Environment.NewLine, fields)}");
             }
 
-            // Return fields
             return fields;
         }
 
@@ -78,8 +88,10 @@ namespace SAHB.GraphQLClient.FieldBuilder
             var arguments = GetPropertyArguments(property);
 
             // Get types
-            // TODO: Problems if types is IEnumerable types
-            var types = GetTypes(property);
+            // TODO: Possible problems if types is IEnumerable types
+            var types = GetTypes(property)
+                .Select(e => new { typeName = e.Key, field = new GraphQLField(null, fieldName, GetSelectionSet(e.Value), null, e.Value, null) })
+                .ToDictionary(e => e.typeName, e => e.field);
 
             // Get selectionSet
             IEnumerable<GraphQLField> selectionSet = null;
@@ -87,11 +99,11 @@ namespace SAHB.GraphQLClient.FieldBuilder
             {
                 if (IsSelectionSetIEnumerable(property))
                 {
-                    selectionSet = GetFields(GetIEnumerableType(property.PropertyType));
+                    selectionSet = GetSelectionSet(GetIEnumerableType(property.PropertyType));
                 }
                 else
                 {
-                    selectionSet = GetFields(property.PropertyType);
+                    selectionSet = GetSelectionSet(property.PropertyType);
                 }
             }
 
@@ -101,13 +113,13 @@ namespace SAHB.GraphQLClient.FieldBuilder
                 // Check if selectionSet has been set
                 if (selectionSet == null)
                 {
-                    throw new NotSupportedException("Cannot add __typename to a type which does not have a selectionSet");
+                    throw new NotSupportedException($"Cannot add {Constants.TYPENAME_GRAPHQL_CONSTANT} to a type which does not have a selectionSet");
                 }
 
                 // Check if __typename is not already in the selected fields
-                if (!selectionSet.Any(field => field.Field == "__typename"))
+                if (!selectionSet.Any(field => field.Field == Constants.TYPENAME_GRAPHQL_CONSTANT))
                 {
-                    selectionSet = selectionSet.Union(new List<GraphQLField>() { new GraphQLField(null, "__typename", null, null) });
+                    selectionSet = selectionSet.Union(new List<GraphQLField>() { new GraphQLField(null, Constants.TYPENAME_GRAPHQL_CONSTANT, null, null) });
                 }
             }
 

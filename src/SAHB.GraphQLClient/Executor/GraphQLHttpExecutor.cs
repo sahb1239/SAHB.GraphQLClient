@@ -27,7 +27,7 @@ namespace SAHB.GraphQLClient.Executor
         }
 
         /// <inheritdoc />
-        public async Task<GraphQLDataResult<T>> ExecuteQuery<T>(string query, string url, HttpMethod method, string authorizationToken = null, string authorizationMethod = "Bearer") where T : class
+        public async Task<string> ExecuteQuery(string query, string url, HttpMethod method, string authorizationToken = null, string authorizationMethod = "Bearer")
         {
             // Check parameters for null
             if (query == null) throw new ArgumentNullException(nameof(query));
@@ -82,16 +82,7 @@ namespace SAHB.GraphQLClient.Executor
                 Logger.LogInformation($"Response: {stringResponse}");
             }
 
-            // Deserilize response
-            var result = JsonConvert.DeserializeObject<GraphQLDataResult<T>>(stringResponse);
-
-            // Logging errors
-            if (result.ContainsErrors && Logger != null && Logger.IsEnabled(LogLevel.Error))
-            {
-                Logger.LogError($"GraphQL error from query {query} and url {url}", result.Errors);
-            }
-
-            return result;
+            return stringResponse;
         }
         
         #region Logging
