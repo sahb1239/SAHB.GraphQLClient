@@ -74,12 +74,12 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <summary>
         /// Returns the type which should be deserilized to based on the __typename field
         /// </summary>
-        public IDictionary<string, Type> TargetTypes { get; set; }
+        public IDictionary<string, Type> TargetTypes { get; }
 
         /// <summary>
         /// Returns the default deserilzation type which should be deserilized to if no match is found in <see cref="TargetTypes"/>
         /// </summary>
-        public Type DefaultTargetType { get; set; }
+        public Type DefaultTargetType { get; }
 
         /// <inheritdoc />
         public override string ToString()
