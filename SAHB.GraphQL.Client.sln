@@ -16,6 +16,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAHB.GraphQL.Client.Benchma
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAHB.GraphQL.Client.Examples", "examples\SAHB.GraphQLClient.Examples\SAHB.GraphQL.Client.Examples.csproj", "{08166E2A-B42A-4B7E-BD7B-D86933D30EDE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAHB.GraphQL.Client.Subscription", "src\SAHB.GraphQL.Client.Subscription\SAHB.GraphQL.Client.Subscription.csproj", "{D3622E59-39EE-4C63-9372-C89B78F0282E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAHB.GraphQL.Client.Subscription.Examples", "examples\SAHB.GraphQL.Client.Subscription.Examples\SAHB.GraphQL.Client.Subscription.Examples.csproj", "{08D480C7-E9DE-4E68-B785-41063D854F51}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +42,14 @@ Global
 		{08166E2A-B42A-4B7E-BD7B-D86933D30EDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08166E2A-B42A-4B7E-BD7B-D86933D30EDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08166E2A-B42A-4B7E-BD7B-D86933D30EDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3622E59-39EE-4C63-9372-C89B78F0282E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3622E59-39EE-4C63-9372-C89B78F0282E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3622E59-39EE-4C63-9372-C89B78F0282E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3622E59-39EE-4C63-9372-C89B78F0282E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08D480C7-E9DE-4E68-B785-41063D854F51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08D480C7-E9DE-4E68-B785-41063D854F51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08D480C7-E9DE-4E68-B785-41063D854F51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08D480C7-E9DE-4E68-B785-41063D854F51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

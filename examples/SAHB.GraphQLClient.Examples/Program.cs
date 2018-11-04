@@ -8,6 +8,7 @@ using SAHB.GraphQL.Client.Deserialization;
 using SAHB.GraphQL.Client.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.Extentions;
+using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.QueryGenerator;
 
