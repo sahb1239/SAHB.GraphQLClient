@@ -28,7 +28,17 @@ namespace SAHB.GraphQLClient.Exceptions
 
             return string.Join(Environment.NewLine,
                 errors.Select(error =>
-                    $"{error.Message ?? "Error"} at {Environment.NewLine}{string.Join(Environment.NewLine, error.Locations?.Select(location => "   line: " + location.Line + " column: " + location.Column))}"));
+                    $"{error.Message ?? "Error"} at {Environment.NewLine}{GetErrorLocation(error)}"));
+        }
+
+        private static string GetErrorLocation(GraphQLDataError error)
+        {
+            var errors = (error.Locations?.Select(location => "   line: " + location?.Line + " column: " + location?.Column));
+            if (errors != null && errors.Any())
+            {
+                return string.Join(Environment.NewLine, errors);
+            }
+            return "Unknown location";
         }
 
         public IEnumerable<GraphQLDataError> Errors { get; }
