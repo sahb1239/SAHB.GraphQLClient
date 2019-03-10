@@ -13,7 +13,7 @@ namespace SAHB.GraphQLClient.FieldBuilder.Attributes
     public class GraphQLTakeArgumentsAttribute : GraphQLArgumentsAttribute
     {
         /// <summary>
-        /// Initilizes the take argument attribute using the argumentName "take" and the argumentType "Int"
+        /// Initializes the take argument attribute using the argumentName "take" and the argumentType "Int"
         /// </summary>
         /// <param name="variableName">The variable name to use in the query</param>
         public GraphQLTakeArgumentsAttribute(string variableName) : base("take", "Int", variableName)
@@ -21,7 +21,7 @@ namespace SAHB.GraphQLClient.FieldBuilder.Attributes
         }
 
         /// <summary>
-        /// Initilizes a take argument attribute which defines a argument which is used for a GraphQL field
+        /// Initializes a take argument attribute which defines a argument which is used for a GraphQL field
         /// </summary>
         /// <param name="argumentName">The argument name used in the GraphQL query</param>
         /// <param name="argumentType">The argument type of the argument in the GraphQL query</param>

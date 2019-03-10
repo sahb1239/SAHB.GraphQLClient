@@ -2,7 +2,7 @@ namespace SAHB.GraphQLClient.Result
 {
     // ReSharper disable once InconsistentNaming
     /// <summary>
-    /// The location which a GraphQL error occureed
+    /// The location which a GraphQL error occured
     /// </summary>
     public class GraphQLDataErrorLocation
     {

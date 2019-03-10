@@ -10,7 +10,7 @@ namespace SAHB.GraphQLClient.FieldBuilder.Attributes
     public class GraphQLArgumentsAttribute : Attribute
     {
         /// <summary>
-        /// Initilizes a attribute which defines a argument which is used for a GraphQL field
+        /// Initializes a attribute which defines a argument which is used for a GraphQL field
         /// </summary>
         /// <param name="argumentName">The argument name used in the GraphQL query</param>
         /// <param name="argumentType">The argument type of the argument in the GraphQL query</param>
@@ -21,7 +21,7 @@ namespace SAHB.GraphQLClient.FieldBuilder.Attributes
         }
 
         /// <summary>
-        /// Initilizes a attribute which defines a argument which is used for a GraphQL field
+        /// Initializes a attribute which defines a argument which is used for a GraphQL field
         /// </summary>
         /// <param name="argumentName">The argument name used in the GraphQL query</param>
         /// <param name="argumentType">The argument type of the argument in the GraphQL query</param>
@@ -36,7 +36,7 @@ namespace SAHB.GraphQLClient.FieldBuilder.Attributes
         }
 
         /// <summary>
-        /// Initilizes a attribute which defines a argument which is used for a GraphQL field
+        /// Initializes a attribute which defines a argument which is used for a GraphQL field
         /// </summary>
         /// <param name="argumentName">The argument name used in the GraphQL query</param>
         /// <param name="argumentType">The argument type of the argument in the GraphQL query</param>
@@ -53,7 +53,7 @@ namespace SAHB.GraphQLClient.FieldBuilder.Attributes
         }
 
         /// <summary>
-        /// Initilizes a attribute which defines a argument which is used for a GraphQL field
+        /// Initializes a attribute which defines a argument which is used for a GraphQL field
         /// </summary>
         /// <param name="argumentName">The argument name used in the GraphQL query</param>
         /// <param name="argumentType">The argument type of the argument in the GraphQL query</param>

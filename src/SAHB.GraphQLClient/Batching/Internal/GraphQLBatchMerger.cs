@@ -83,7 +83,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
                 deserilizeFrom.Add(field.Inner.Alias, _result.Data[field.Alias]);
             }
 
-            // Deserilize from
+            // Deserialize from
             return deserilizeFrom.ToObject<T>();
         }
 
@@ -132,7 +132,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
                 }
             }
 
-            // Update recieved arguments
+            // Update received arguments
             foreach (var argumentsWithIdentitfier in _arguments)
             {
                 foreach (var argument in argumentsWithIdentitfier.Value)

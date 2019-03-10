@@ -10,7 +10,7 @@ namespace SAHB.GraphQLClient.FieldBuilder.Attributes
     public class GraphQLFieldNameAttribute : Attribute
     {
         /// <summary>
-        /// Initilizes a attribute which defines the current property or class should map to a specific GraphQL field name
+        /// Initializes a attribute which defines the current property or class should map to a specific GraphQL field name
         /// </summary>
         /// <param name="fieldName">The GraphQL field</param>
         public GraphQLFieldNameAttribute(string fieldName)

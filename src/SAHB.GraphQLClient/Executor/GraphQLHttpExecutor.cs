@@ -17,7 +17,7 @@ namespace SAHB.GraphQLClient.Executor
         private readonly HttpClient _client;
 
         /// <summary>
-        /// Initilizes a new instance of a GraphQL executor which executes a query against a http GraphQL server
+        /// Initializes a new instance of a GraphQL executor which executes a query against a http GraphQL server
         /// </summary>
         public GraphQLHttpExecutor()
         {
@@ -40,7 +40,7 @@ namespace SAHB.GraphQLClient.Executor
                 Logger.LogInformation($"Sending query {query} to GraphQL server on {url} with method {method}");
             }
 
-            // Initilizes request message
+            // Initializes request message
             var requestMessage = new HttpRequestMessage(method, url)
             {
                 Content = new StringContent(query, Encoding.UTF8, "application/json")
@@ -82,7 +82,7 @@ namespace SAHB.GraphQLClient.Executor
                 Logger.LogInformation($"Response: {stringResponse}");
             }
 
-            // Deserilize response
+            // Deserialize response
             var result = JsonConvert.DeserializeObject<GraphQLDataResult<T>>(stringResponse);
 
             // Logging errors

@@ -10,16 +10,16 @@ namespace SAHB.GraphQLClient.FieldBuilder
     public class GraphQLFieldArguments
     {
         /// <summary>
-        /// Initilizes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
+        /// Initializes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
         /// </summary>
-        /// <param name="argument">The argument to initilize from</param>
+        /// <param name="argument">The argument to initialize from</param>
         internal GraphQLFieldArguments(GraphQLArgumentsAttribute argument) 
             : this(argument.ArgumentName, argument.ArgumentType, argument.VariableName, argument.IsRequired, argument.InlineArgument, argument.DefaultValue)
         {
         }
 
         /// <summary>
-        /// Initilizes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
+        /// Initializes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
         /// </summary>
         /// <param name="argumentName">GraphQL argument name</param>
         /// <param name="argumentType">GraphQL argument type of the variable</param>
@@ -30,7 +30,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         }
 
         /// <summary>
-        /// Initilizes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
+        /// Initializes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
         /// </summary>
         /// <param name="argumentName">GraphQL argument name</param>
         /// <param name="argumentType">GraphQL argument type of the variable</param>
@@ -42,7 +42,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         }
 
         /// <summary>
-        /// Initilizes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
+        /// Initializes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
         /// </summary>
         /// <param name="argumentName">GraphQL argument name</param>
         /// <param name="argumentType">GraphQL argument type of the variable</param>
@@ -58,7 +58,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         }
 
         /// <summary>
-        /// Initilizes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
+        /// Initializes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
         /// </summary>
         /// <param name="argumentName">GraphQL argument name</param>
         /// <param name="argumentType">GraphQL argument type of the variable</param>
