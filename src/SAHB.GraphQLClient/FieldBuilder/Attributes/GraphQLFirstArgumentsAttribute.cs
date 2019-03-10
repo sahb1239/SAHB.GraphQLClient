@@ -10,7 +10,7 @@ namespace SAHB.GraphQLClient.FieldBuilder.Attributes
     public class GraphQLFirstArgumentsAttribute : GraphQLArgumentsAttribute
     {
         /// <summary>
-        /// Initilizes the first argument attribute using the argumentName "first" and the argumentType "Int"
+        /// Initializes the first argument attribute using the argumentName "first" and the argumentType "Int"
         /// </summary>
         /// <param name="variableName">The variable name to use in the query</param>
         public GraphQLFirstArgumentsAttribute(string variableName) : base("first", "Int", variableName)

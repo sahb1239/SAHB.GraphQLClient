@@ -10,7 +10,7 @@ namespace SAHB.GraphQLClient.FieldBuilder.Attributes
     public class GraphQLLastArgumentsAttribute : GraphQLArgumentsAttribute
     {
         /// <summary>
-        /// Initilizes the last argument attribute using the argumentName "last" and the argumentType "Int"
+        /// Initializes the last argument attribute using the argumentName "last" and the argumentType "Int"
         /// </summary>
         /// <param name="variableName">The variable name to use in the query</param>
         public GraphQLLastArgumentsAttribute(string variableName) : base("last", "Int", variableName)

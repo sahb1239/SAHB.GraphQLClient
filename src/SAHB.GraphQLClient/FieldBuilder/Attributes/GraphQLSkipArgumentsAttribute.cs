@@ -13,7 +13,7 @@ namespace SAHB.GraphQLClient.FieldBuilder.Attributes
     public class GraphQLSkipArgumentsAttribute : GraphQLArgumentsAttribute
     {
         /// <summary>
-        /// Initilizes the skip argument attribute using the argumentName "skip" and the argumentType "Int"
+        /// Initializes the skip argument attribute using the argumentName "skip" and the argumentType "Int"
         /// </summary>
         /// <param name="variableName">The variable name to use in the query</param>
         public GraphQLSkipArgumentsAttribute(string variableName) : base("skip", "Int", variableName)
@@ -21,7 +21,7 @@ namespace SAHB.GraphQLClient.FieldBuilder.Attributes
         }
 
         /// <summary>
-        /// Initilizes a skip argument attribute which defines a argument which is used for a GraphQL field
+        /// Initializes a skip argument attribute which defines a argument which is used for a GraphQL field
         /// </summary>
         /// <param name="argumentName">The argument name used in the GraphQL query</param>
         /// <param name="argumentType">The argument type of the argument in the GraphQL query</param>
