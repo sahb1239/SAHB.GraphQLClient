@@ -260,7 +260,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
                 batch.Query<QueryBatchWithConflictingArgumentsPart1>(new GraphQLQueryArgument("argumentVariable", 1.ToString()));
             var result1 = await query1.Execute();
 
-            //  Query should not throw but insted just return same output
+            //  Query should not throw but instead just return same output
             var result2 = await query1.Execute();
 
             // Assert

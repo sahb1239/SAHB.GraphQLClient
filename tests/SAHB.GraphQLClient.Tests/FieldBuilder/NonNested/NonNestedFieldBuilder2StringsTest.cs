@@ -19,7 +19,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
             // Get all fields for the type GraphQLStringQuery
             var fields = _fieldBuilder.GenerateOperation(typeof(GraphQLStringQuery), GraphQLOperationType.Query).SelectionSet.ToList();
 
-            // Check if contains excactly 2 fields
+            // Check if contains exactly 2 fields
             Assert.Equal(2, fields.Count);
         }
 

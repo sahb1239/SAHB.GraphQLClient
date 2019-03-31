@@ -141,7 +141,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
                 }
             }
 
-            // Update recieved arguments
+            // Update received arguments
             foreach (var argumentsWithIdentitfier in _arguments)
             {
                 foreach (var argument in argumentsWithIdentitfier.Value)

@@ -28,7 +28,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
             var expected = "{\"query\":\"query{field}\"}";
 
-            var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
+            var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Type parameter is ignored since it just returns the fields
 
             Assert.Equal(expected, actual);
         }

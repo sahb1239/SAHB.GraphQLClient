@@ -94,7 +94,7 @@ namespace SAHB.GraphQLClient.Examples
 
             Console.WriteLine(deserilizedResult.Data.Hero.Name);
 
-            // Using dependency injection and concole logging
+            // Using dependency injection and console logging
             var serviceCollection = new ServiceCollection();
             serviceCollection
                 .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Information))

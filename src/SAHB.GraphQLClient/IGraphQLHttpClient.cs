@@ -70,7 +70,7 @@ namespace SAHB.GraphQLClient
         /// <param name="authorizationToken">Authorization token inserted in the Authorization header</param>
         /// <param name="authorizationMethod">The authorization method inserted in the Authorization header. This is only used when authorizationToken is not null</param>
         /// <param name="arguments">The arguments used in the query which is inserted in the variables</param>
-        /// <returns>The query generated ready to be executed</returns>ss
+        /// <returns>The query generated ready to be executed</returns>
         /// <exception cref="GraphQLErrorException">Thrown when validation or GraphQL endpoint returns an error</exception>
         IGraphQLQuery<dynamic> CreateMutation(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments);
 
@@ -83,7 +83,7 @@ namespace SAHB.GraphQLClient
         /// <param name="authorizationToken">Authorization token inserted in the Authorization header</param>
         /// <param name="authorizationMethod">The authorization method inserted in the Authorization header. This is only used when authorizationToken is not null</param>
         /// <param name="arguments">The arguments used in the query which is inserted in the variables</param>
-        /// <returns>The query generated ready to be executed</returns>ss
+        /// <returns>The query generated ready to be executed</returns>
         /// <exception cref="GraphQLErrorException">Thrown when validation or GraphQL endpoint returns an error</exception>
         IGraphQLQuery<T> CreateMutation<T>(string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class;
 
@@ -118,8 +118,8 @@ namespace SAHB.GraphQLClient
         /// Default HttpMethod is POST
         /// </summary>
         /// <param name="url">The endpoint to request the GraphQL server from</param>
-        /// <param name="authorizationToken">The token used to authentificate with the GraphQL server</param>
-        /// <param name="authorizationMethod">The method used for authentification</param>
+        /// <param name="authorizationToken">The token used to authenticate with the GraphQL server</param>
+        /// <param name="authorizationMethod">The method used for authentication</param>
         /// <returns></returns>
         IGraphQLBatch CreateBatch(string url, string authorizationToken = null, string authorizationMethod = "Bearer");
 
@@ -128,8 +128,8 @@ namespace SAHB.GraphQLClient
         /// </summary>
         /// <param name="url">The endpoint to request the GraphQL server from</param>
         /// <param name="httpMethod">The HttpMethod to use to communicate with the server, for example POST</param>
-        /// <param name="authorizationToken">The token used to authentificate with the GraphQL server</param>
-        /// <param name="authorizationMethod">The method used for authentification</param>
+        /// <param name="authorizationToken">The token used to authenticate with the GraphQL server</param>
+        /// <param name="authorizationMethod">The method used for authentication</param>
         /// <returns></returns>
         IGraphQLBatch CreateBatch(string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer");
     }

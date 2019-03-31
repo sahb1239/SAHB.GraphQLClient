@@ -46,7 +46,7 @@ namespace SAHB.GraphQLClient
         private ILogger<GraphQLHttpClient> Logger { get; set; }
 
         /// <summary>
-        /// Initilizes a new instance of GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/>
+        /// Initializes a new instance of GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/>
         /// </summary>
         /// <param name="executor">The <see cref="IGraphQLHttpExecutor"/> to use for the GraphQL client</param>
         /// <param name="fieldBuilder">The <see cref="IGraphQLFieldBuilder"/> used for generating the fields used for generating the query</param>
@@ -60,7 +60,7 @@ namespace SAHB.GraphQLClient
         }
 
         /// <summary>
-        /// Initilizes a new instance of GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/> using the default <see cref="IGraphQLHttpExecutor"/> and the default <see cref="IGraphQLQueryGeneratorFromFields"/>
+        /// Initializes a new instance of GraphQL client which supports generating GraphQL queries and mutations from a <see cref="Type"/> using the default <see cref="IGraphQLHttpExecutor"/> and the default <see cref="IGraphQLQueryGeneratorFromFields"/>
         /// </summary>
         /// <returns>A new instance of the GraphQL client</returns>
         public static IGraphQLHttpClient Default()

@@ -10,7 +10,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
     public class GraphQLQueryArgument
     {
         /// <summary>
-        /// Initilizes a GraphQL argument used to contain variable value and type of a argument which is added to a query
+        /// Initializes a GraphQL argument used to contain variable value and type of a argument which is added to a query
         /// </summary>
         /// <param name="variableName">The variable name which should be set used in the <see cref="GraphQLArgumentsAttribute"/></param>
         /// <param name="argumentValue">The value which is inserted in the variables part of the GraphQL query</param>
