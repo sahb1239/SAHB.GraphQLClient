@@ -8,6 +8,7 @@ using SAHB.GraphQL.Client;
 using SAHB.GraphQL.Client.Exceptions;
 using SAHB.GraphQL.Client.FieldBuilder;
 using SAHB.GraphQL.Client.FieldBuilder.Attributes;
+using SAHB.GraphQL.Client.Internal;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 
 namespace SAHB.GraphQLClient.FieldBuilder
