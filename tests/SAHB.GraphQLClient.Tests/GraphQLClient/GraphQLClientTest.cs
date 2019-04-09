@@ -8,7 +8,6 @@ using SAHB.GraphQL.Client.Deserialization;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
-using SAHB.GraphQLClient.Tests.Batching;
 using SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock;
 using Xunit;
 

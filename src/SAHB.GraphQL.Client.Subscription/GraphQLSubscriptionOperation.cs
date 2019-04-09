@@ -2,8 +2,11 @@
 using Newtonsoft.Json.Linq;
 using SAHB.GraphQL.Client.Deserialization;
 using SAHB.GraphQL.Client.FieldBuilder;
+using SAHB.GraphQLClient;
+using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Result;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SAHB.GraphQL.Client.Subscription
@@ -12,17 +15,17 @@ namespace SAHB.GraphQL.Client.Subscription
         where T : class
     {
         private readonly GraphQLOperationSource operationSource;
-        private readonly IGraphQLOperation operation;
+        private readonly IEnumerable<IGraphQLField> selectionSet;
         private readonly IGraphQLDeserialization deserialization;
 
         public event EventHandler<GraphQLDataReceivedEventArg<T>> DataRecieved;
         public event EventHandler<GraphQLDataReceivedEventArg<T>> ErrorRecieved;
         public event EventHandler Completed;
 
-        public GraphQLSubscriptionOperation(GraphQLOperationSource operationSource, IGraphQLOperation operation, IGraphQLDeserialization deserialization)
+        public GraphQLSubscriptionOperation(GraphQLOperationSource operationSource, IEnumerable<IGraphQLField> selectionSet, IGraphQLDeserialization deserialization)
         {
             this.operationSource = operationSource;
-            this.operation = operation;
+            this.selectionSet = selectionSet;
             this.deserialization = deserialization;
             this.operationSource.RecievePayload += OperationSource_RecievePayload;
             this.operationSource.Completed += OperationSource_Completed;
@@ -50,7 +53,7 @@ namespace SAHB.GraphQL.Client.Subscription
             // Deserilize data
             if (result.Data != null)
             {
-                var data = deserialization.DeserializeResult<T>(result.Data, operation.SelectionSet);
+                var data = deserialization.DeserializeResult<T>(result.Data, selectionSet);
                 finalResult.Data = data;
             }
 

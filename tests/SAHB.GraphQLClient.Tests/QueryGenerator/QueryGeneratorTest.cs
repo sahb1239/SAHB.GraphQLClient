@@ -11,7 +11,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         [Fact]
         public void Check_Simple_Query_Single_Field()
         {
-            var fields = new[]
+            var fields = new IGraphQLField[]
             {
                 new GraphQLField("alias", "field", null, null),
             };
@@ -27,7 +27,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         [Fact]
         public void Check_Simple_Mutation_Single_Field()
         {
-            var fields = new[]
+            var fields = new IGraphQLField[]
             {
                 new GraphQLField("alias", "field", null, null),
             };
@@ -105,7 +105,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         [Fact]
         public void Check_Simple_Query_Multiple_Nested_Field()
         {
-            var fields = new[]
+            var fields = new IGraphQLField[]
             {
                 new GraphQLField(
                     alias: "alias",

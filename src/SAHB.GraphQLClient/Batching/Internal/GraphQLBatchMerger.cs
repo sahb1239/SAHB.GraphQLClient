@@ -55,7 +55,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             var identifier = $"batch{_identifierCount++}";
 
             // Get fields
-            var fields = _fieldBuilder.GenerateOperation(typeof(T), GraphQLOperationType.Query).SelectionSet.Select(field =>
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(T)).Select(field =>
                 new GraphQLFieldWithOverridedAlias(string.IsNullOrWhiteSpace(field.Alias) ? field.Field : field.Alias,
                     field)).ToList();
 
@@ -108,7 +108,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             var fields = _fields.SelectMany(e => e.Value).ToList();
 
             // Generate query
-            _executedQuery = _queryGenerator.GenerateQuery(new GraphQLOperation(GraphQLOperationType.Query, fields),
+            _executedQuery = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields,
                 _arguments.SelectMany(e => e.Value).ToArray());
 
             // Execute query
@@ -157,14 +157,14 @@ namespace SAHB.GraphQLClient.Batching.Internal
         /// <inheritdoc />
         private class GraphQLFieldWithOverridedAlias : GraphQLField
         {
-            public GraphQLFieldWithOverridedAlias(string alias, GraphQLField field)
+            public GraphQLFieldWithOverridedAlias(string alias, IGraphQLField field)
                 : base(alias, field: field.Field, fields: field.SelectionSet,
-                    arguments: field.Arguments, type: field.Type, targetTypes: field.TargetTypes)
+                    arguments: field.Arguments, type: field.BaseType, targetTypes: field.TargetTypes)
             {
                 Inner = field;
             }
 
-            public GraphQLField Inner { get; }
+            public IGraphQLField Inner { get; }
         }
     }
 }

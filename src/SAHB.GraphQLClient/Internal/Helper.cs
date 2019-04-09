@@ -6,9 +6,9 @@ namespace SAHB.GraphQLClient.Internal
 {
     internal class Helper
     {
-        internal static IEnumerable<GraphQLFieldArguments> GetAllArgumentsFromFields(IEnumerable<GraphQLField> fields)
+        internal static IEnumerable<IGraphQLArguments> GetAllArgumentsFromFields(IEnumerable<IGraphQLField> fields)
         {
-            return fields?.SelectMany(field => field.Arguments.Concat(GetAllArgumentsFromFields(field.SelectionSet))) ?? Enumerable.Empty<GraphQLFieldArguments>();
+            return fields?.SelectMany(field => field.Arguments.Concat(GetAllArgumentsFromFields(field.SelectionSet))) ?? Enumerable.Empty<IGraphQLArguments>();
         }
     }
 }

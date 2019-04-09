@@ -33,12 +33,12 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator.IntegrationTests
         public void TestSubscriptionQueryGeneration()
         {
             // Arrange
-            var operation = _fieldBuilder.GenerateOperation(typeof(MessageSubscription), GraphQLOperationType.Subscription);
+            var selectionSet = _fieldBuilder.GenerateSelectionSet(typeof(MessageSubscription));
 
             string expected = "{\"query\":\"subscription newMessage{newMessage{body sender}}\"}";
 
             // Act
-            var actual = _queryGenerator.GenerateQuery(operation);
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Subscription, selectionSet);
 
             // Assert
             Assert.Equal(expected, actual);

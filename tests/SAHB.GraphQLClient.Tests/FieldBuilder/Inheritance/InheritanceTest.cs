@@ -20,7 +20,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.Inheritance
         public void Correct_Count_Fields()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest)).ToList<IGraphQLField>();
 
             // Expect 
             Assert.Equal(2, fields.Count());

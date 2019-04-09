@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using SAHB.GraphQLClient.Result;
 
@@ -10,6 +12,9 @@ namespace SAHB.GraphQLClient.Executor
     /// </summary>
     public interface IGraphQLHttpExecutor
     {
+        HttpClient Client { get; }
+        HttpMethod DefaultMethod { get; set; }
+
         /// <summary>
         /// Execute the specified GraphQL query
         /// </summary>
@@ -19,6 +24,6 @@ namespace SAHB.GraphQLClient.Executor
         /// <param name="authorizationToken">The authorization token which should be used</param>
         /// <param name="authorizationMethod">Authorization method used for the authorization token</param>
         /// <returns></returns>
-        Task<string> ExecuteQuery(string query, string url, HttpMethod method, string authorizationToken = null, string authorizationMethod = "Bearer");
+        Task<string> ExecuteQuery(string query, string url = null, HttpMethod method = null, string authorizationToken = null, string authorizationMethod = "Bearer", IDictionary<string, string> headers = null);
     }
 }

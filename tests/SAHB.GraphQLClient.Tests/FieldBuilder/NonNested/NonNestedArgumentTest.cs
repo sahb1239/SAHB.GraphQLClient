@@ -18,7 +18,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
         public void Test_Single_Usage_Argument()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest)).ToList<IGraphQLField>();
 
             // Check if single field is found
             Assert.Contains(fields,
@@ -30,7 +30,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
         public void Test_Multiple_Usage_Argument()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest)).ToList<IGraphQLField>();
 
             // Check if fields is found
             Assert.Contains(fields,
@@ -44,7 +44,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
         public void Test_Multiple_Same_Name_Usage()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest)).ToList<IGraphQLField>();
 
             // Check if fields is found
             Assert.Contains(fields,
@@ -59,7 +59,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
         public void Test_Correct_Number_Of_Arguments()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest)).ToList<IGraphQLField>();
 
             // Check if correct number of arguments
             Assert.Equal(1, fields.Where(e => e.Alias == nameof(QueryToTest.Field1)).SelectMany(e => e.Arguments).Count());

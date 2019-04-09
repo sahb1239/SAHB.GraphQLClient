@@ -1,4 +1,6 @@
-﻿using SAHB.GraphQLClient.FieldBuilder;
+﻿using SAHB.GraphQL.Client.FieldBuilder;
+using SAHB.GraphQLClient;
+using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
 using System;
 using System.Collections.Generic;
@@ -20,15 +22,12 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator
                     null,
                     null,
                     null,
-                    new Dictionary<string, GraphQLField> {
+                    new Dictionary<string, IGraphQLTargetType> {
                         {
                             "interfaceConcreteType",
-                            new GraphQLField(null, "field", new List<GraphQLField>() {
+                            new GraphQLTargetType(typeof(string), new List<GraphQLField>() {
                                 new GraphQLField("alias", "field", null, null, null, null)
-                                },
-                            null,
-                            null,
-                            null)
+                                })
                         }
                     }
                 )
@@ -36,7 +35,7 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
             var expected = "{\"query\":\"query{alias:field ... on interfaceConcreteType{alias:field}}\"}";
 
-            var actual = queryGenerator.GenerateQuery(new GraphQLOperation(GraphQLOperationType.Query, fields));
+            var actual = queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields);
 
             Assert.Equal(expected, actual);
         }
@@ -44,23 +43,21 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator
         [Fact]
         public void Test_Single_Other_Possible_Type_With_Extra_Field()
         {
-            var fields = new[]
+            var fields = new IGraphQLField[]
             {
                 new GraphQLField("alias", "field",  null, null, null,
-                    new Dictionary<string, GraphQLField>
+                    new Dictionary<string, IGraphQLTargetType>
                     {
                         {
                             "interfaceConcreteType",
-                            new GraphQLField
+                            new GraphQLTargetType
                             (
-                                null,
-                                "field",
+                                typeof(string),
                                 new List<GraphQLField>
                                 {
                                     new GraphQLField("alias", "field", null, null),
                                     new GraphQLField("alias2", "field2", null, null)
-                                },
-                                null
+                                }
                             )
                         }
                     }),
@@ -68,7 +65,7 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
             var expected = "{\"query\":\"query{alias:field ... on interfaceConcreteType{alias:field alias2:field2}}\"}";
 
-            var actual = queryGenerator.GenerateQuery(new GraphQLOperation(GraphQLOperationType.Query, fields));
+            var actual = queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields);
 
             Assert.Equal(expected, actual);
         }
@@ -79,33 +76,29 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator
             var fields = new[]
             {
                 new GraphQLField("alias", "field", null, null, null,
-                     new Dictionary<string, GraphQLField>
+                     new Dictionary<string, IGraphQLTargetType>
                     {
                         {
                             "interfaceConcreteType1",
-                            new GraphQLField
+                            new GraphQLTargetType
                             (
-                                null,
-                                "field",
+                                typeof(string),
                                 new List<GraphQLField>
                                 {
                                     new GraphQLField("alias", "field", null, null, null, null)
-                                },
-                                null
+                                }
                             )
                         },
                         {
 
                              "interfaceConcreteType2",
-                             new GraphQLField
+                             new GraphQLTargetType
                             (
-                                null,
-                                "field",
+                                typeof(int),
                                 new List<GraphQLField>
                                 {
                                     new GraphQLField("alias", "field", null, null, null, null)
-                                },
-                                null
+                                }
                             )
 
                         }
@@ -115,7 +108,7 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
             var expected = "{\"query\":\"query{alias:field ... on interfaceConcreteType1{alias:field} ... on interfaceConcreteType2{alias:field}}\"}";
 
-            var actual = queryGenerator.GenerateQuery(new GraphQLOperation(GraphQLOperationType.Query, fields));
+            var actual = queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields);
 
             Assert.Equal(expected, actual);
         }
@@ -126,35 +119,31 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator
             var fields = new[]
            {
                 new GraphQLField("alias", "field", null, null, null,
-                     new Dictionary<string, GraphQLField>
+                     new Dictionary<string, IGraphQLTargetType>
                     {
                         {
                             "interfaceConcreteType1",
-                            new GraphQLField
+                            new GraphQLTargetType
                             (
-                                null,
-                                "field",
+                                typeof(string),
                                 new List<GraphQLField>
                                 {
                                     new GraphQLField("alias", "field", null, null, null, null),
                                     new GraphQLField("alias2", "field2", null, null, null, null)
-                                },
-                                null
+                                }
                             )
                         },
                         {
 
                              "interfaceConcreteType2",
-                             new GraphQLField
+                             new GraphQLTargetType
                             (
-                                null,
-                                "field",
+                                typeof(int),
                                 new List<GraphQLField>
                                 {
                                     new GraphQLField("alias", "field", null, null, null, null),
                                     new GraphQLField("alias2", "field2", null, null, null, null)
-                                },
-                                null
+                                }
                             )
 
                         }
@@ -164,7 +153,7 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
             var expected = "{\"query\":\"query{alias:field ... on interfaceConcreteType1{alias:field alias2:field2} ... on interfaceConcreteType2{alias:field alias2:field2}}\"}";
 
-            var actual = queryGenerator.GenerateQuery(new GraphQLOperation(GraphQLOperationType.Query, fields));
+            var actual = queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields);
 
             Assert.Equal(expected, actual);
         }

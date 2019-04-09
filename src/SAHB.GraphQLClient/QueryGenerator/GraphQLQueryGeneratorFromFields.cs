@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using SAHB.GraphQL.Client;
 using SAHB.GraphQL.Client.FieldBuilder;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
@@ -16,20 +17,26 @@ namespace SAHB.GraphQLClient.QueryGenerator
     /// <inheritdoc />
     public class GraphQLQueryGeneratorFromFields : IGraphQLQueryGeneratorFromFields
     {
-        public string GenerateQuery(IGraphQLOperation operation, params GraphQLQueryArgument[] arguments)
+        public string GenerateQuery(GraphQLOperationType operationType, IEnumerable<IGraphQLField> selectionSet, params GraphQLQueryArgument[] arguments)
         {
-            switch (operation.OperationType)
+            switch (operationType)
             {
                 case GraphQLOperationType.Query:
                 case GraphQLOperationType.Mutation:
                 case GraphQLOperationType.Subscription:
-                    return GetQuery(operation.OperationType, operation.SelectionSet.ToList(), arguments);
+                    return GetQuery(operationType, selectionSet.ToList(), arguments);
             }
 
-            throw new NotImplementedException($"Operation {operation.OperationType} not implemented");
+            throw new NotImplementedException($"Operation {operationType} not implemented");
         }
 
-        private string GetQuery(GraphQLOperationType operationType, ICollection<GraphQLField> fields, params GraphQLQueryArgument[] queryArguments)
+        [Obsolete]
+        public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments) => GenerateQuery(GraphQLOperationType.Query, fields, arguments);
+
+        [Obsolete]
+        public string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments) => GenerateQuery(GraphQLOperationType.Mutation, fields, arguments);
+
+        private string GetQuery(GraphQLOperationType operationType, ICollection<IGraphQLField> fields, params GraphQLQueryArgument[] queryArguments)
         {
             // Get all the arguments from the fields
             var fieldArguments = Helper.GetAllArgumentsFromFields(fields).ToList();
@@ -38,8 +45,8 @@ namespace SAHB.GraphQLClient.QueryGenerator
             var variablesNotFoundInFields = queryArguments.ToList();
 
             // Create mapping for each argument field
-            IDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments = new Dictionary<GraphQLFieldArguments, GraphQLQueryArgument>();
-            ICollection<GraphQLFieldArguments> argumentsNotSet = new Collection<GraphQLFieldArguments>();
+            IDictionary<IGraphQLArguments, GraphQLQueryArgument> arguments = new Dictionary<IGraphQLArguments, GraphQLQueryArgument>();
+            ICollection<IGraphQLArguments> argumentsNotSet = new Collection<IGraphQLArguments>();
             List<string> duplicateVariableNames = new List<string>();
             foreach (var fieldArgument in fieldArguments)
             {
@@ -93,7 +100,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
             }
 
             // Get readonly arguments
-            var readonlyArguments = new ReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument>(arguments);
+            var readonlyArguments = new ReadOnlyDictionary<IGraphQLArguments, GraphQLQueryArgument>(arguments);
 
             // Get query
             if (operationType == GraphQLOperationType.Subscription)
@@ -134,10 +141,10 @@ namespace SAHB.GraphQLClient.QueryGenerator
             return request;
         }
 
-        private bool ShouldInlineArgument(KeyValuePair<GraphQLFieldArguments, GraphQLQueryArgument> keyValuePair) =>
+        private bool ShouldInlineArgument(KeyValuePair<IGraphQLArguments, GraphQLQueryArgument> keyValuePair) =>
             ShouldInlineArgument(keyValuePair.Key, keyValuePair.Value);
 
-        private bool ShouldInlineArgument(GraphQLFieldArguments fieldArgument, GraphQLQueryArgument queryArgument)
+        private bool ShouldInlineArgument(IGraphQLArguments fieldArgument, GraphQLQueryArgument queryArgument)
         {
             // If inline is forced we should just inline
             if (fieldArgument.InlineArgument.HasValue)
@@ -161,17 +168,17 @@ namespace SAHB.GraphQLClient.QueryGenerator
             return false;
         }
 
-        private string GetArguments(IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        private string GetArguments(IReadOnlyDictionary<IGraphQLArguments, GraphQLQueryArgument> arguments)
         {
             return string.Join(" ", arguments.Where(argument => !ShouldInlineArgument(argument)).Select(e => $"${e.Key.VariableName}:{e.Key.ArgumentType}"));
         }
 
-        private string GenerateQueryForFields(IEnumerable<GraphQLField> fields, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        private string GenerateQueryForFields(IEnumerable<IGraphQLField> fields, IReadOnlyDictionary<IGraphQLArguments, GraphQLQueryArgument> arguments)
         {
             return "{" + string.Join(" ", fields.Select(field => GenerateQueryForField(field, arguments))) + "}";
         }
 
-        private string GenerateQueryForField(GraphQLField field, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        private string GenerateQueryForField(IGraphQLField field, IReadOnlyDictionary<IGraphQLArguments, GraphQLQueryArgument> arguments)
         {
             StringBuilder builder = new StringBuilder();
 
@@ -250,7 +257,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
             return queryType + argumentVariableDeclaration + fields;
         }
 
-        private string GetQueryRequest(string query, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        private string GetQueryRequest(string query, IReadOnlyDictionary<IGraphQLArguments, GraphQLQueryArgument> arguments)
         {
             var variables = arguments.Where(e => !ShouldInlineArgument(e)).ToArray();
             if (variables.Any())

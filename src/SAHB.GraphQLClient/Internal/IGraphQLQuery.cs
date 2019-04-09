@@ -1,8 +1,23 @@
-﻿using SAHB.GraphQLClient.QueryGenerator;
+﻿using SAHB.GraphQL.Client.FieldBuilder;
+using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQLClient.QueryGenerator;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SAHB.GraphQLClient
 {
+    // ReSharper disable once InconsistentNaming
+    /// <summary>
+    /// Generated Query which supports executing the query
+    /// </summary>
+    public interface IGraphQLQuery
+    {
+        /// <summary>
+        /// Execute the query
+        /// </summary>
+        Task<dynamic> Execute();
+    }
+
     // ReSharper disable once InconsistentNaming
     /// <summary>
     /// Generated Query which supports executing the query

@@ -26,9 +26,13 @@ namespace SAHB.GraphQLClient
                 new GraphQLFieldBuilder() {LoggerFactory = provider.GetService<ILoggerFactory>()});
             services.AddSingleton<IGraphQLQueryGeneratorFromFields>(provider =>
                 new GraphQLQueryGeneratorFromFields() { LoggerFactory = provider.GetService<ILoggerFactory>() });
-            services.AddSingleton<IGraphQLHttpExecutor>(provider =>
-                new GraphQLHttpExecutor() { LoggerFactory = provider.GetService<ILoggerFactory>() });
             services.AddSingleton<IGraphQLDeserialization, GraphQLDeserilization>();
+
+            services.AddSingleton<IGraphQLHttpExecutor>(provider =>
+               new GraphQLHttpExecutor()
+               {
+                   LoggerFactory = provider.GetService<ILoggerFactory>()
+               });
             services.AddSingleton<IGraphQLHttpClient>(provider =>
                 new GraphQLHttpClient(provider.GetRequiredService<IGraphQLHttpExecutor>(),
                     provider.GetRequiredService<IGraphQLFieldBuilder>(),

@@ -24,8 +24,11 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock
 
         public HttpRequestMessage LastRequest { get; private set; }
 
-        public Task<string> ExecuteQuery(string query, string url, HttpMethod method, string authorizationToken = null,
-            string authorizationMethod = "Bearer")
+        public HttpClient Client => throw new NotImplementedException();
+
+        public HttpMethod DefaultMethod { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public Task<string> ExecuteQuery(string query, string url = null, HttpMethod method = null, string authorizationToken = null, string authorizationMethod = "Bearer", IDictionary<string, string> headers = null)
         {
             // Check if query is correct
             Assert.Equal(_requiredQuery, query);

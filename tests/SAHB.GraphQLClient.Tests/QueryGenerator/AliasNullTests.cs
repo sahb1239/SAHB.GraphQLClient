@@ -19,7 +19,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
 
             var expected = "{\"query\":\"query{Field1}\"}";
 
-            var actual = _queryGenerator.GenerateQuery(new GraphQLOperation(GraphQLOperationType.Query, new[] { field }));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, new[] { field });
 
             Assert.Equal(expected, actual);
         }

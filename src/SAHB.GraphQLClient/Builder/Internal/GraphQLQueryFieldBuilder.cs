@@ -52,7 +52,7 @@ namespace SAHB.GraphQLClient.Builder.Internal
             return this;
         }
 
-        internal GraphQLField GetField()
+        internal IGraphQLField GetField()
         {
             return new GraphQLField(alias: _alias, field: _field, fields: GetFields(), arguments: _arguments);
         }

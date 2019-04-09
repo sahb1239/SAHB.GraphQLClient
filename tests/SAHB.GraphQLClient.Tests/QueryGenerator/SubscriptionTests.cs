@@ -20,18 +20,19 @@ namespace SAHB.GraphQL.Client.Tests.QueryGenerator
         public void TestSubscriptionQueryGeneration()
         {
             // Arrange
-            var operation = new GraphQLOperation(GraphQLOperationType.Subscription, new List<GraphQLField>()
+            var operationType = GraphQLOperationType.Subscription;
+            var selectionSet = new List<GraphQLField>()
             {
                 new GraphQLField(null, "newMessage", new List<GraphQLField> {
                     new GraphQLField(null, "body", null, null),
                     new GraphQLField(null, "sender", null, null)
                 }, null)
-            });
+            };
 
             string expected = "{\"query\":\"subscription newMessage{newMessage{body sender}}\"}";
 
             // Act
-            var actual = _queryGenerator.GenerateQuery(operation);
+            var actual = _queryGenerator.GenerateQuery(operationType, selectionSet);
 
             // Assert
             Assert.Equal(expected, actual);

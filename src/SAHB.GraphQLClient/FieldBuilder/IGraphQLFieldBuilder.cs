@@ -6,16 +6,23 @@ namespace SAHB.GraphQLClient.FieldBuilder
 {
     // ReSharper disable once InconsistentNaming
     /// <summary>
-    /// Generates a <see cref="IEnumerable{T}"/> of <see cref="GraphQLField"/> which contains metadata from a given <see cref="Type"/>
+    /// Generates a selectionSet <see cref="IEnumerable{T}"/> of <see cref="IGraphQLField"/> which represents the selection from a given <see cref="Type"/>
     /// </summary>
     public interface IGraphQLFieldBuilder
     {
         /// <summary>
-        /// Generates a <see cref="IGraphQLOperation"/> for a given <see cref="Type"/>
+        /// Generates a selectionSet for a given <see cref="Type"/>
         /// </summary>
         /// <param name="type">The type which to generate the operation from</param>
-        /// <param name="operationType">The operation type to generate</param>
-        /// <returns>A <see cref="IGraphQLOperation"/></returns>
-        IGraphQLOperation GenerateOperation(Type type, GraphQLOperationType operationType);
+        /// <returns>The selectionSet</returns>
+        IEnumerable<IGraphQLField> GenerateSelectionSet(Type type);
+
+        /// <summary>
+        /// Generates a <see cref="IEnumerable{T}"/> of <see cref="GraphQLField"/> which contains metadata from a given <see cref="Type"/>
+        /// </summary>
+        /// <param name="type">The type which to generate the fields from</param>
+        /// <returns>The metadata from the type</returns>
+        [Obsolete]
+        IEnumerable<IGraphQLField> GetFields(Type type);
     }
 }

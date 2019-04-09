@@ -101,8 +101,8 @@ namespace SAHB.GraphQL.Client.Subscription
             var operationType = MessageType.GQL_START;
 
             // Get query
-            var operation = fieldBuilder.GenerateOperation(typeof(T), GraphQLOperationType.Subscription);
-            var query = queryGenerator.GenerateQuery(operation, arguments);
+            var selectionSet = fieldBuilder.GenerateSelectionSet(typeof(T));
+            var query = queryGenerator.GenerateQuery(GraphQLOperationType.Subscription, selectionSet, arguments);
 
             // Generate OperationMessage
             var message = new OperationMessage
@@ -126,7 +126,7 @@ namespace SAHB.GraphQL.Client.Subscription
             });
 
             // Create IGraphQLSubscriptionOperation
-            var subscription = new GraphQLSubscriptionOperation<T>(operationSource, operation, deserialization);
+            var subscription = new GraphQLSubscriptionOperation<T>(operationSource, selectionSet, deserialization);
 
             // Add to list
             _operations.Add(operationId.ToString(), operationSource);

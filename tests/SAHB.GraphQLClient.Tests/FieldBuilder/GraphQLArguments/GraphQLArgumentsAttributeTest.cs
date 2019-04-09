@@ -21,7 +21,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         public void Test_Single_Usage_Argument()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest1), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest1)).ToList<IGraphQLField>();
 
             // Check if single field is found
             Assert.Contains(fields,
@@ -39,7 +39,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         public void Test_Multiple_Usage_Argument()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest2), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest2)).ToList<IGraphQLField>();
 
             // Check if fields is found
             Assert.Contains(fields,
@@ -61,7 +61,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         public void Test_Multiple_Usage_ClassArgument_Argument()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest3), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest3)).ToList<IGraphQLField>();
 
             // Check if fields is found
             Assert.Contains(fields,
@@ -92,7 +92,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         public void Test_Inline_Argument_True()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest4), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest4)).ToList<IGraphQLField>();
 
             // Check if single field is found
             Assert.Contains(fields,
@@ -111,7 +111,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         public void Test_Inline_Argument_Required_True()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest5), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest5)).ToList<IGraphQLField>();
 
             // Check if single field is found
             Assert.Contains(fields,
@@ -130,7 +130,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         public void Test_Inline_Argument_Required_False()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest6), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest6)).ToList<IGraphQLField>();
 
             // Check if single field is found
             Assert.Contains(fields,
@@ -149,7 +149,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         public void Test_Inline_Argument_Required_Default_False()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateOperation(typeof(QueryToTest7), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest7)).ToList<IGraphQLField>();
 
             // Check if single field is found
             Assert.Contains(fields,
@@ -168,7 +168,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         public void Test_Default_Value()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateOperation(typeof(DefaultValueQuery), GraphQLOperationType.Query).SelectionSet.ToList<GraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(DefaultValueQuery)).ToList<IGraphQLField>();
 
             // Check if single field is found
             Assert.Contains(fields,

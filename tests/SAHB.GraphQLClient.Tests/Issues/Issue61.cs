@@ -26,7 +26,7 @@ namespace SAHB.GraphQL.Client.Tests.Issues
             var exception = Assert.Throws<GraphQLArgumentVariableNotFoundException>(() =>
             {
                 // Get the query
-                var query = queryGenerator.GenerateQuery(fieldGenerator.GenerateOperation(typeof(SampleQuery), GraphQLOperationType.Query),
+                var query = queryGenerator.GenerateQuery(GraphQLOperationType.Query, fieldGenerator.GenerateSelectionSet(typeof(SampleQuery)),
                     new GraphQLQueryArgument("helloArgument", "Value"));
             });
 
@@ -53,7 +53,7 @@ namespace SAHB.GraphQL.Client.Tests.Issues
             var exception = Assert.Throws<GraphQLArgumentVariableNotFoundException>(() =>
             {
                 // Get the query
-                var query = queryGenerator.GenerateQuery(fieldGenerator.GenerateOperation(typeof(SampleQuery), GraphQLOperationType.Query),
+                var query = queryGenerator.GenerateQuery(GraphQLOperationType.Query, fieldGenerator.GenerateSelectionSet(typeof(SampleQuery)),
                     argument1, argument2);
             });
 
@@ -108,7 +108,7 @@ namespace SAHB.GraphQL.Client.Tests.Issues
             var exception = Assert.Throws<GraphQLArgumentVariableNotFoundException>(() =>
             {
                 // Get the query
-                var query = queryGenerator.GenerateQuery(fieldGenerator.GenerateOperation(typeof(SampleQuery2), GraphQLOperationType.Query),
+                var query = queryGenerator.GenerateQuery(GraphQLOperationType.Query, fieldGenerator.GenerateSelectionSet(typeof(SampleQuery2)),
                     new GraphQLQueryArgument("hello1Argument", "Value1"), new GraphQLQueryArgument("hello2Argument", "Value2"));
             });
 

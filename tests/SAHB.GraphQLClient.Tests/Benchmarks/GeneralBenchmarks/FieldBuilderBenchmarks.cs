@@ -8,7 +8,7 @@ namespace SAHB.GraphQLClient.Tests.Benchmarks.GeneralBenchmarks
 
         public override void RunBenchmark<T>()
         {
-            _fieldBuilder.GenerateOperation(typeof(T), GraphQLOperationType.Query);
+            _fieldBuilder.GenerateSelectionSet(typeof(T));
         }
     }
 }

@@ -7,16 +7,18 @@ namespace SAHB.GraphQLClient.Tests.Mocks
 {
     public class FieldBuilderMock : IGraphQLFieldBuilder
     {
-        private readonly IEnumerable<GraphQLField> _fields;
+        private readonly IEnumerable<IGraphQLField> _fields;
 
-        public FieldBuilderMock(IEnumerable<GraphQLField> fields)
+        public FieldBuilderMock(IEnumerable<IGraphQLField> fields)
         {
             _fields = fields;
         }
 
-        public IGraphQLOperation GenerateOperation(Type type, GraphQLOperationType operationType)
+        public IEnumerable<IGraphQLField> GenerateSelectionSet(Type type)
         {
-            return new GraphQLOperation(operationType, _fields);
+            return _fields;
         }
+
+        public IEnumerable<IGraphQLField> GetFields(Type type) => GenerateSelectionSet(type);
     }
 }

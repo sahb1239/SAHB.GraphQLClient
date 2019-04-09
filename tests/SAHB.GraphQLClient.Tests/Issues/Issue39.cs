@@ -20,8 +20,8 @@ namespace SAHB.GraphQLClient.Tests.Issues
             // Act
             // Get fields
             var fields =
-                fieldBuilder.GenerateOperation(typeof(Query_Test_Single_Field_Should_Not_Generate_Seperate_Field_And_Alias), GraphQLOperationType.Query).SelectionSet;
-            var actual = queryBuilder.GenerateQuery(new GraphQLOperation(GraphQLOperationType.Query, fields));
+                fieldBuilder.GenerateSelectionSet(typeof(Query_Test_Single_Field_Should_Not_Generate_Seperate_Field_And_Alias));
+            var actual = queryBuilder.GenerateQuery(GraphQLOperationType.Query, fields);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -43,8 +43,8 @@ namespace SAHB.GraphQLClient.Tests.Issues
             // Act
             // Get fields
             var fields =
-                fieldBuilder.GenerateOperation(typeof(Query_Test_Case_Hero), GraphQLOperationType.Query).SelectionSet;
-            var actual = queryBuilder.GenerateQuery(new GraphQLOperation(GraphQLOperationType.Query, fields));
+                fieldBuilder.GenerateSelectionSet(typeof(Query_Test_Case_Hero));
+            var actual = queryBuilder.GenerateQuery(GraphQLOperationType.Query, fields);
 
             // Assert
             Assert.Equal(expected, actual);

@@ -4,6 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SAHB.GraphQL.Client.Internal;
+using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Result;
 
@@ -14,7 +15,7 @@ namespace SAHB.GraphQL.Client.Deserialization
     /// </summary>
     public class GraphQLDeserilization : IGraphQLDeserialization
     {
-        public GraphQLDataResult<T> DeserializeResult<T>(string graphQLResult, IEnumerable<GraphQLField> fields) where T : class
+        public GraphQLDataResult<T> DeserializeResult<T>(string graphQLResult, IEnumerable<IGraphQLField> fields) where T : class
         {
             // Get all fieldConverters
             var converters = GetFieldConverters(fields);
@@ -30,7 +31,7 @@ namespace SAHB.GraphQL.Client.Deserialization
             return JsonConvert.DeserializeObject<GraphQLDataResult<T>>(graphQLResult, settings);
         }
 
-        public T DeserializeResult<T>(JObject jsonObject, IEnumerable<GraphQLField> fields) where T : class
+        public T DeserializeResult<T>(JObject jsonObject, IEnumerable<IGraphQLField> fields) where T : class
         {
             // Get all fieldConverters
             var converters = GetFieldConverters(fields);
@@ -45,7 +46,7 @@ namespace SAHB.GraphQL.Client.Deserialization
             return jsonObject.ToObject<T>(settings);
         }
 
-        private IEnumerable<GraphQLFieldConverter> GetFieldConverters(IEnumerable<GraphQLField> fields)
+        private IEnumerable<GraphQLFieldConverter> GetFieldConverters(IEnumerable<IGraphQLField> fields)
         {
             if (fields == null)
                 yield break;
@@ -71,16 +72,16 @@ namespace SAHB.GraphQL.Client.Deserialization
 
         private class GraphQLFieldConverter : JsonConverter
         {
-            private readonly GraphQLField graphQLField;
+            private readonly IGraphQLField graphQLField;
 
-            public GraphQLFieldConverter(GraphQLField graphQLField)
+            public GraphQLFieldConverter(IGraphQLField graphQLField)
             {
                 this.graphQLField = graphQLField;
             }
 
             public override bool CanConvert(Type objectType)
             {
-                return objectType == graphQLField.Type;
+                return objectType == graphQLField.BaseType;
             }
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
