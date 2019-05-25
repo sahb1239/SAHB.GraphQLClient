@@ -30,6 +30,17 @@ namespace SAHB.GraphQLClient.Executor
             DefaultMethod = HttpMethod.Post;
         }
 
+        /// <summary>
+        /// Initializes a new instance of a GraphQL executor which executes a query against a http GraphQL server using the specified <see cref="HttpClient"/>
+        /// </summary>
+        /// <param name="client">Http Client to use</param>
+        public GraphQLHttpExecutor(HttpClient client)
+        {
+            // Add httpClient
+            Client = client;
+            DefaultMethod = HttpMethod.Post;
+        }
+
         /// <inheritdoc />
         public async Task<string> ExecuteQuery(string query, string url = null, HttpMethod method = null, string authorizationToken = null, string authorizationMethod = "Bearer", IDictionary<string, string> headers = null)
         {
