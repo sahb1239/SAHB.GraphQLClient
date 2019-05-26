@@ -17,8 +17,10 @@ namespace SAHB.GraphQLClient.Batching.Internal
     // ReSharper disable once InconsistentNaming
     internal class GraphQLBatchMerger
     {
+        private readonly GraphQLOperationType _graphQLOperationType;
         private readonly string _url;
         private readonly HttpMethod _httpMethod;
+        private readonly IDictionary<string, string> _headers;
         private readonly string _authorizationToken;
         private readonly string _authorizationMethod;
         private readonly IGraphQLHttpExecutor _executor;
@@ -32,10 +34,12 @@ namespace SAHB.GraphQLClient.Batching.Internal
         private GraphQLDataResult<JObject> _result;
         private string _executedQuery;
 
-        public GraphQLBatchMerger(string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization graphQLDeserialization)
+        public GraphQLBatchMerger(GraphQLOperationType graphQLOperationType, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization graphQLDeserialization)
         {
+            _graphQLOperationType = graphQLOperationType;
             _url = url;
             _httpMethod = httpMethod;
+            _headers = headers;
             _authorizationToken = authorizationToken;
             _authorizationMethod = authorizationMethod;
             _executor = executor;
@@ -108,11 +112,11 @@ namespace SAHB.GraphQLClient.Batching.Internal
             var fields = _fields.SelectMany(e => e.Value).ToList();
 
             // Generate query
-            _executedQuery = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields,
+            _executedQuery = _queryGenerator.GenerateQuery(_graphQLOperationType, fields,
                 _arguments.SelectMany(e => e.Value).ToArray());
 
             // Execute query
-            var serverResult = await _executor.ExecuteQuery(_executedQuery, _url, _httpMethod, _authorizationToken, _authorizationMethod).ConfigureAwait(false);
+            var serverResult = await _executor.ExecuteQuery(query: _executedQuery, url: _url, method: _httpMethod, authorizationToken: _authorizationToken, authorizationMethod: _authorizationMethod, headers: _headers).ConfigureAwait(false);
 
             // Deserilize result
             _result = _graphQLDeserialization.DeserializeResult<JObject>(serverResult, fields);

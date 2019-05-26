@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -90,6 +90,12 @@ namespace SAHB.GraphQLClient
 
             // Execute
             return Execute<dynamic>(operationType, selectionSet, arguments, url: url, httpMethod: httpMethod, headers: headers, authorizationMethod: authorizationMethod, authorizationToken: authorizationToken);
+        }
+
+        /// <inheritdoc />
+        public IGraphQLBatch CreateBatch(GraphQLOperationType operationType, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer")
+        {
+            return new GraphQLBatch(operationType, url, httpMethod, headers, authorizationToken, authorizationMethod, HttpExecutor, FieldBuilder, QueryGenerator, Deserialization);
         }
 
         private async Task<T> Execute<T>(GraphQLOperationType operationType, IEnumerable<IGraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationMethod, string authorizationToken) where T : class
@@ -197,7 +203,7 @@ namespace SAHB.GraphQLClient
         public IGraphQLBatch CreateBatch(string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer")
         {
-            return new GraphQLBatch(url, httpMethod, authorizationToken, authorizationMethod, HttpExecutor, FieldBuilder, QueryGenerator, Deserialization);
+            return new GraphQLBatch(GraphQLOperationType.Query, url, httpMethod, null, authorizationToken, authorizationMethod, HttpExecutor, FieldBuilder, QueryGenerator, Deserialization);
         }
 
         // ReSharper disable once InconsistentNaming
