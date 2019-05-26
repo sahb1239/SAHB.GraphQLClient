@@ -1,8 +1,4 @@
-﻿using SAHB.GraphQL.Client.FieldBuilder;
-using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.QueryGenerator;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace SAHB.GraphQLClient
 {

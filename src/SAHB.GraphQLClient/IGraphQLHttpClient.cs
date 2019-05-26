@@ -17,8 +17,6 @@ namespace SAHB.GraphQLClient
     /// </summary>
     public interface IGraphQLHttpClient
     {
-        IGraphQLFieldBuilder FieldBuilder { get; }
-        
         Task<T> Execute<T>(GraphQLOperationType operationType, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class;
         Task<dynamic> Execute(GraphQLOperationType operationType, Action<IGraphQLBuilder> builder, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments);
         
@@ -151,13 +149,5 @@ namespace SAHB.GraphQLClient
         /// <returns></returns>
         [Obsolete]
         IGraphQLBatch CreateBatch(string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer");
-    }
-
-
-    public interface IGraphQLQueryToExecute
-    {
-        GraphQLOperationType OperationType { get; }
-        IEnumerable<IGraphQLField> SelectionSet { get; }
-        IEnumerable<GraphQLQueryArgument> Arguments { get; }
     }
 }

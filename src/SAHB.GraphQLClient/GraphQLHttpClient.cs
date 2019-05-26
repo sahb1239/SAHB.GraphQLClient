@@ -1,10 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using SAHB.GraphQL.Client;
 using SAHB.GraphQL.Client.Deserialization;
 using SAHB.GraphQLClient.Batching;
 using SAHB.GraphQLClient.Batching.Internal;
@@ -55,11 +54,8 @@ namespace SAHB.GraphQLClient
             // Generate selectionSet
             var selectionSet = FieldBuilder.GenerateSelectionSet(typeof(T));
 
-            // Generate query
-            var query = new GraphQLQueryToExecute(operationType, selectionSet, arguments);
-
             // Execute
-            return Execute<T>(query: query, url: url, httpMethod: httpMethod, headers: headers, authorizationMethod: authorizationMethod, authorizationToken: authorizationToken);
+            return Execute<T>(operationType, selectionSet, arguments, url: url, httpMethod: httpMethod, headers: headers, authorizationMethod: authorizationMethod, authorizationToken: authorizationToken);
         }
 
         /// <inheritdoc />
@@ -72,29 +68,26 @@ namespace SAHB.GraphQLClient
             // Get the fields and query
             var selectionSet = build.GetFields();
 
-            // Generate query
-            var query = new GraphQLQueryToExecute(operationType, selectionSet, arguments);
-
             // Execute
-            return Execute<dynamic>(query: query, url: url, httpMethod: httpMethod, headers: headers, authorizationMethod: authorizationMethod, authorizationToken: authorizationToken);
+            return Execute<dynamic>(operationType, selectionSet, arguments, url: url, httpMethod: httpMethod, headers: headers, authorizationMethod: authorizationMethod, authorizationToken: authorizationToken);
         }
 
-        private async Task<T> Execute<T>(IGraphQLQueryToExecute query, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationMethod, string authorizationToken) where T : class
+        private async Task<T> Execute<T>(GraphQLOperationType operationType, IEnumerable<IGraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationMethod, string authorizationToken) where T : class
         {
-            var result = await ExecuteQuery<T>(query, url, httpMethod, headers, authorizationMethod, authorizationToken).ConfigureAwait(false);
+            var result = await ExecuteQuery<T>(operationType, selectionSet, arguments, url, httpMethod, headers, authorizationMethod, authorizationToken).ConfigureAwait(false);
             return result.Data;
         }
 
-        private async Task<GraphQLDataResult<T>> ExecuteQuery<T>(IGraphQLQueryToExecute query, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationMethod, string authorizationToken) where T : class
+        private async Task<GraphQLDataResult<T>> ExecuteQuery<T>(GraphQLOperationType operationType, IEnumerable<IGraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationMethod, string authorizationToken) where T : class
         {
             // Generate query
-            var requestQuery = QueryGenerator.GenerateQuery(query.OperationType, query.SelectionSet, query.Arguments.ToArray());
+            var requestQuery = QueryGenerator.GenerateQuery(operationType, selectionSet, arguments.ToArray());
             
             // Get response
             string stringResponse = await HttpExecutor.ExecuteQuery(requestQuery, url, httpMethod, headers: headers, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod).ConfigureAwait(false);
 
             // Deserilize
-            var result = Deserialization.DeserializeResult<T>(stringResponse, query.SelectionSet);
+            var result = Deserialization.DeserializeResult<T>(stringResponse, selectionSet);
             if (result?.Errors?.Any() ?? false)
                 throw new GraphQLErrorException(query: requestQuery, errors: result.Errors);
 
