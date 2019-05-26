@@ -59,4 +59,11 @@ namespace SAHB.GraphQLClient.Internal
             return deserilizationResult?.Data;
         }
     }
+
+    internal class GraphQLQuery : GraphQLQuery<dynamic>, IGraphQLQuery
+    {
+        public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<IGraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization) : base(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, queryGenerator, executor, deserilization)
+        {
+        }
+    }
 }

@@ -121,7 +121,7 @@ namespace SAHB.GraphQLClient
         }
 
         /// <inheritdoc />
-        public IGraphQLQuery<dynamic> CreateQuery(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null,
+        public IGraphQLQuery CreateQuery(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null,
              string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {
             return CreateQuery(builder, url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
@@ -135,7 +135,7 @@ namespace SAHB.GraphQLClient
         }
 
         /// <inheritdoc />
-        public IGraphQLQuery<dynamic> CreateMutation(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null,
+        public IGraphQLQuery CreateMutation(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {
             return CreateMutation(builder, url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
@@ -149,7 +149,7 @@ namespace SAHB.GraphQLClient
         }
 
         /// <inheritdoc />
-        public IGraphQLQuery<dynamic> CreateMutation(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null,
+        public IGraphQLQuery CreateMutation(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {
             var build = new GraphQLBuilder();
@@ -171,7 +171,7 @@ namespace SAHB.GraphQLClient
         }
 
         /// <inheritdoc />
-        public IGraphQLQuery<dynamic> CreateQuery(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null,
+        public IGraphQLQuery CreateQuery(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {
             var build = new GraphQLBuilder();
@@ -207,11 +207,11 @@ namespace SAHB.GraphQLClient
         }
 
         // ReSharper disable once InconsistentNaming
-        private IGraphQLQuery<dynamic> GetGraphQLQuery(GraphQLOperationType operationType, IEnumerable<IGraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod,
+        private IGraphQLQuery GetGraphQLQuery(GraphQLOperationType operationType, IEnumerable<IGraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod,
             string authorizationToken = null,
             string authorizationMethod = "Bearer")
         {
-            return new GraphQLQuery<dynamic>(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, QueryGenerator, HttpExecutor, Deserialization);
+            return new GraphQLQuery(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, QueryGenerator, HttpExecutor, Deserialization);
         }
 
         // ReSharper disable once InconsistentNaming

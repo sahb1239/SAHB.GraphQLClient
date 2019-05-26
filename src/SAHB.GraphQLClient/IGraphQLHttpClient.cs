@@ -67,7 +67,7 @@ namespace SAHB.GraphQLClient
         /// <param name="arguments">The arguments used in the query which is inserted in the variables</param>
         /// <returns>The query generated ready to be executed</returns>
         /// <exception cref="GraphQLErrorException">Thrown when validation or GraphQL endpoint returns an error</exception>
-        IGraphQLQuery<dynamic> CreateQuery(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments);
+        IGraphQLQuery CreateQuery(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments);
 
         /// <summary>
         /// Generates a query to a GraphQL server using a specified type, the specified URL and the HttpMethod Post
@@ -91,7 +91,7 @@ namespace SAHB.GraphQLClient
         /// <param name="arguments">The arguments used in the query which is inserted in the variables</param>
         /// <returns>The query generated ready to be executed</returns>
         /// <exception cref="GraphQLErrorException">Thrown when validation or GraphQL endpoint returns an error</exception>
-        IGraphQLQuery<dynamic> CreateMutation(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments);
+        IGraphQLQuery CreateMutation(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments);
 
         /// <summary>
         /// Generates a mutation to a GraphQL server using a specified type, the specified URL and the HttpMethod Post
@@ -116,7 +116,7 @@ namespace SAHB.GraphQLClient
         /// <param name="arguments">The arguments used in the query which is inserted in the variables</param>
         /// <returns>The query generated ready to be executed</returns>
         /// <exception cref="GraphQLErrorException">Thrown when validation or GraphQL endpoint returns an error</exception>
-        IGraphQLQuery<dynamic> CreateMutation(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments);
+        IGraphQLQuery CreateMutation(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments);
 
         /// <summary>
         /// Generates a mutation to a GraphQL server using a specified type, the specified URL and the HttpMethod
@@ -142,7 +142,7 @@ namespace SAHB.GraphQLClient
         /// <param name="arguments">The arguments used in the query which is inserted in the variables</param>
         /// <returns>The query generated ready to be executed</returns>
         /// <exception cref="GraphQLErrorException">Thrown when validation or GraphQL endpoint returns an error</exception>
-        IGraphQLQuery<dynamic> CreateQuery(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments);
+        IGraphQLQuery CreateQuery(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments);
 
         /// <summary>
         /// Generates a query to a GraphQL server using a specified type, the specified URL and the HttpMethod
