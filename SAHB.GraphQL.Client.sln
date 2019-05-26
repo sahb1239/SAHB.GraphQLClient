@@ -20,9 +20,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAHB.GraphQL.Client.Subscri
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAHB.GraphQL.Client.Subscription.Examples", "examples\SAHB.GraphQL.Client.Subscription.Examples\SAHB.GraphQL.Client.Subscription.Examples.csproj", "{08D480C7-E9DE-4E68-B785-41063D854F51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAHB.GraphQL.Client.Integration.Tests", "tests\SAHB.GraphQL.Client.Integration.Tests\SAHB.GraphQL.Client.Integration.Tests.csproj", "{F8B79FA0-4C95-4FE1-955B-0DEA9F4CB3F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAHB.GraphQL.Client.Integration.Tests", "tests\SAHB.GraphQL.Client.Integration.Tests\SAHB.GraphQL.Client.Integration.Tests.csproj", "{F8B79FA0-4C95-4FE1-955B-0DEA9F4CB3F3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C954F0A7-3B76-492B-9035-EAFE106C79BD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{57FBCC7E-CBA0-4CF6-BFFE-7BF46849D674}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,6 +66,9 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{34800ABC-031C-4EF5-A864-FFB71FE02CF7} = {C954F0A7-3B76-492B-9035-EAFE106C79BD}
+		{0D1513DA-7802-47C3-A919-17603F8AD570} = {C954F0A7-3B76-492B-9035-EAFE106C79BD}
+		{08166E2A-B42A-4B7E-BD7B-D86933D30EDE} = {57FBCC7E-CBA0-4CF6-BFFE-7BF46849D674}
+		{08D480C7-E9DE-4E68-B785-41063D854F51} = {57FBCC7E-CBA0-4CF6-BFFE-7BF46849D674}
 		{F8B79FA0-4C95-4FE1-955B-0DEA9F4CB3F3} = {C954F0A7-3B76-492B-9035-EAFE106C79BD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
