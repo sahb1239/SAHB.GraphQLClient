@@ -1,4 +1,4 @@
-﻿namespace SAHB.GraphQL.Client.Subscription
+﻿namespace SAHB.GraphQLClient.Subscription
 {
     /// <summary>
     ///     Protocol message types defined in

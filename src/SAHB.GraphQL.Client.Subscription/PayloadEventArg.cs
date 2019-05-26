@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 
-namespace SAHB.GraphQL.Client.Subscription
+namespace SAHB.GraphQLClient.Subscription
 {
     public class PayloadEventArgs : EventArgs
     {

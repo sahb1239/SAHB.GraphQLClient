@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace SAHB.GraphQL.Client.Subscription
+namespace SAHB.GraphQLClient.Subscription
 {
     /// <summary>
     /// Implements GraphQL subscriptions-transport-ws protocol

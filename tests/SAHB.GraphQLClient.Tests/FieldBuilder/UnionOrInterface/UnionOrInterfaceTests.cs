@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SAHB.GraphQL.Client.Exceptions;
-using SAHB.GraphQL.Client.FieldBuilder.Attributes;
+using SAHB.GraphQLClient.Exceptions;
+using SAHB.GraphQLClient.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.FieldBuilder;
 using Xunit;
 
-namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
+namespace SAHB.GraphQLClient.Tests.FieldBuilder.UnionOrInterface
 {
     public class UnionOrInterfaceTests
     {

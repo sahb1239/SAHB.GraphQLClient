@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SAHB.GraphQL.Client.Deserialization;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
+using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.Result;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SAHB.GraphQL.Client.Subscription
+namespace SAHB.GraphQLClient.Subscription
 {
 
     // Inspired by https://gist.github.com/xamlmonkey/4737291

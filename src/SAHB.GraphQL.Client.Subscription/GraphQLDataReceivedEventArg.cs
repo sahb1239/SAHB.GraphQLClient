@@ -1,7 +1,7 @@
 ﻿using SAHB.GraphQLClient.Result;
 using System;
 
-namespace SAHB.GraphQL.Client.Subscription
+namespace SAHB.GraphQLClient.Subscription
 {
     public class GraphQLDataReceivedEventArg<T> : EventArgs
         where T : class

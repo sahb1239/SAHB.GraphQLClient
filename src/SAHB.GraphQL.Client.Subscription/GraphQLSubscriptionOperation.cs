@@ -1,15 +1,14 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SAHB.GraphQL.Client.Deserialization;
-using SAHB.GraphQL.Client.FieldBuilder;
 using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.Result;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SAHB.GraphQL.Client.Subscription
+namespace SAHB.GraphQLClient.Subscription
 {
     internal class GraphQLSubscriptionOperation<T> : IGraphQLSubscriptionOperation<T>
         where T : class

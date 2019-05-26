@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SAHB.GraphQL.Client.FieldBuilder.Attributes
+namespace SAHB.GraphQLClient.FieldBuilder.Attributes
 { 
     /// <summary>
     /// Attribute which defines that another class should be deserilized based on the __typename on a GraphQL result. This is useful for handling union or interface GraphQL types

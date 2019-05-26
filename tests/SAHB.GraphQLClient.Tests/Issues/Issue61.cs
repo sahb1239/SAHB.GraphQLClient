@@ -11,7 +11,7 @@ using SAHB.GraphQLClient.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.QueryGenerator;
 using Xunit;
 
-namespace SAHB.GraphQL.Client.Tests.Issues
+namespace SAHB.GraphQLClient.Tests.Issues
 {
     public class Issue61
     {

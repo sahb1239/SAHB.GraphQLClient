@@ -4,7 +4,7 @@ using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Extentions;
 using Xunit;
-using SAHB.GraphQL.Client.Deserialization;
+using SAHB.GraphQLClient.Deserialization;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
 {

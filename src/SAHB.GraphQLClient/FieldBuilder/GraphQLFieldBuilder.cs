@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
-using SAHB.GraphQL.Client;
-using SAHB.GraphQL.Client.Exceptions;
-using SAHB.GraphQL.Client.FieldBuilder;
-using SAHB.GraphQL.Client.FieldBuilder.Attributes;
-using SAHB.GraphQL.Client.Internal;
+using SAHB.GraphQLClient;
+using SAHB.GraphQLClient.Exceptions;
+using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
+using SAHB.GraphQLClient.Internal;
 
 namespace SAHB.GraphQLClient.FieldBuilder
 {

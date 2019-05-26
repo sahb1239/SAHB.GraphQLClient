@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SAHB.GraphQLClient
+namespace SAHB.GraphQLClient.FieldBuilder
 {
     /// <summary>
     /// GraphQL field used to contain metadata which can be used for generating a GraphQL query

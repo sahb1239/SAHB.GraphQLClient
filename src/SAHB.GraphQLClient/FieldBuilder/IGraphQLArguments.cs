@@ -1,4 +1,4 @@
-﻿namespace SAHB.GraphQLClient
+﻿namespace SAHB.GraphQLClient.FieldBuilder
 {
     /// <summary>
     /// GraphQL argument used to contain metadata which can be used for generating a GraphQL query

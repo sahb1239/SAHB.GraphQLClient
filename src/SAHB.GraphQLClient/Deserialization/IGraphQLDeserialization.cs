@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SAHB.GraphQL.Client.Deserialization
+namespace SAHB.GraphQLClient.Deserialization
 {
     /// <summary>
     /// Handles deserilization of GraphQL responses

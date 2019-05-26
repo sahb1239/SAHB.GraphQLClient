@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SAHB.GraphQL.Client.Internal
+namespace SAHB.GraphQLClient.Internal
 {
     internal static class Constants
     {

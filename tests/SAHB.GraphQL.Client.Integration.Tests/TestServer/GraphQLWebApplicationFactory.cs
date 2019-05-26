@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.TestHost;
 
-namespace SAHB.GraphQL.Client.Integration.Tests.TestServer
+namespace SAHB.GraphQLClient.Integration.Tests.TestServer
 {
     public class GraphQLWebApplicationFactory<TSchema> : WebApplicationFactory<TestserverStartup<TSchema>>
         where TSchema : Schema

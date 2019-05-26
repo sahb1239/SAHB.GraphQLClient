@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace SAHB.GraphQL.Client.Tests.QueryGenerator
+namespace SAHB.GraphQLClient.Tests.QueryGenerator
 {
     public class SubscriptionTests
     {

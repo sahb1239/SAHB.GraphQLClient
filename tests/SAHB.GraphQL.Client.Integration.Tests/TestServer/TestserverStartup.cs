@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace SAHB.GraphQL.Client.Integration.Tests.TestServer
+namespace SAHB.GraphQLClient.Integration.Tests.TestServer
 {
     public class TestserverStartup<TSchema>
         where TSchema : Schema

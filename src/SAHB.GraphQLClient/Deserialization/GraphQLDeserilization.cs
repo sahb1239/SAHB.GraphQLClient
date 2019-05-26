@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SAHB.GraphQL.Client.Internal;
+using SAHB.GraphQLClient.Internal;
 using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Result;
 
-namespace SAHB.GraphQL.Client.Deserialization
+namespace SAHB.GraphQLClient.Deserialization
 {
     /// <summary>
     /// Default implementation of the <see cref="IGraphQLDeserialization"/>

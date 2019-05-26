@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using SAHB.GraphQL.Client;
+using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.Batching;
 using SAHB.GraphQLClient.Builder;
 using SAHB.GraphQLClient.Exceptions;

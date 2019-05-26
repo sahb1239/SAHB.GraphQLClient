@@ -1,4 +1,4 @@
-﻿namespace SAHB.GraphQL.Client.Subscription
+﻿namespace SAHB.GraphQLClient.Subscription
 {
     /// <summary>
     ///     GraphQL operation messages

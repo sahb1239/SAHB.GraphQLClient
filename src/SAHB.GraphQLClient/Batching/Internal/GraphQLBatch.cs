@@ -1,5 +1,5 @@
 ﻿using System.Net.Http;
-using SAHB.GraphQL.Client.Deserialization;
+using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;

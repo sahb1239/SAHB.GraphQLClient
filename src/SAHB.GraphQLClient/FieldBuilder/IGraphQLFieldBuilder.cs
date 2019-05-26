@@ -1,4 +1,4 @@
-﻿using SAHB.GraphQL.Client.FieldBuilder;
+﻿using SAHB.GraphQLClient.FieldBuilder;
 using System;
 using System.Collections.Generic;
 

@@ -1,4 +1,4 @@
-﻿using SAHB.GraphQL.Client.FieldBuilder.Attributes;
+﻿using SAHB.GraphQLClient.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.FieldBuilder;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace SAHB.GraphQL.Client.Tests.FieldBuilder.UnionOrInterface
+namespace SAHB.GraphQLClient.Tests.FieldBuilder.UnionOrInterface
 {
     public class UnionOrInterfaceShouldIncludeTypeNameFieldTests
     {

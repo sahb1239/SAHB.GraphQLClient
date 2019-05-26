@@ -1,4 +1,4 @@
-﻿using SAHB.GraphQL.Client.Deserialization;
+﻿using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
@@ -6,7 +6,7 @@ using SAHB.GraphQLClient.QueryGenerator;
 using System;
 using System.Threading.Tasks;
 
-namespace SAHB.GraphQL.Client.Subscription.Examples
+namespace SAHB.GraphQLClient.Subscription.Examples
 {
     class Program
     {

@@ -1,10 +1,10 @@
 using GraphQL.Types;
-using SAHB.GraphQL.Client.Integration.Tests.TestServer;
+using SAHB.GraphQLClient.Integration.Tests.TestServer;
 using SAHB.GraphQLClient;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SAHB.GraphQL.Client.Integration.Tests
+namespace SAHB.GraphQLClient.Integration.Tests
 {
     public class TestMutation : IClassFixture<GraphQLWebApplicationFactory<TestMutation.TestSchema>>
     {

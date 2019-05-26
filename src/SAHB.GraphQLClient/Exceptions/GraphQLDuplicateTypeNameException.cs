@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using SAHB.GraphQLClient.Exceptions;
 
-namespace SAHB.GraphQL.Client.Exceptions
+namespace SAHB.GraphQLClient.Exceptions
 {
     /// <summary>
     /// Exception thrown when duplicate type names in interface or union attributes

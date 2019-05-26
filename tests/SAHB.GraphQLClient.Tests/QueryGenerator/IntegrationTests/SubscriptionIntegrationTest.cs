@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace SAHB.GraphQL.Client.Tests.QueryGenerator.IntegrationTests
+namespace SAHB.GraphQLClient.Tests.QueryGenerator.IntegrationTests
 {
     public class SubscriptionIntegrationTests
     {

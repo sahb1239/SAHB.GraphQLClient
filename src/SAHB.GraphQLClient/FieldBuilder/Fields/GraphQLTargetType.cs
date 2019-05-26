@@ -1,10 +1,11 @@
 ﻿using SAHB.GraphQLClient;
+using SAHB.GraphQLClient.FieldBuilder;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SAHB.GraphQL.Client.FieldBuilder
+namespace SAHB.GraphQLClient.FieldBuilder
 {
     /// <inheritdoc />
     public class GraphQLTargetType : IGraphQLTargetType

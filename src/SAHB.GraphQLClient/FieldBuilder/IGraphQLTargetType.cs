@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SAHB.GraphQLClient
+namespace SAHB.GraphQLClient.FieldBuilder
 {
     public interface IGraphQLTargetType
     {
