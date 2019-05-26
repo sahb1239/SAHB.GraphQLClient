@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{557C65CE-E3C0-43D6-8A39-FCB9D146AE2B}"
 	ProjectSection(SolutionItems) = preProject
 		src\Common.props = src\Common.props
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAHB.GraphQL.Client.Benchmarks", "benchmarks\SAHB.GraphQLClient.Benchmarks\SAHB.GraphQL.Client.Benchmarks.csproj", "{0D1513DA-7802-47C3-A919-17603F8AD570}"
