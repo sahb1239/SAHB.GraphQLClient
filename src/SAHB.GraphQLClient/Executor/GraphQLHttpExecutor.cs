@@ -15,8 +15,10 @@ namespace SAHB.GraphQLClient.Executor
     /// <inheritdoc />
     public class GraphQLHttpExecutor : IGraphQLHttpExecutor
     {
+        /// <inheritdoc />
         public HttpClient Client { get; }
 
+        /// <inheritdoc />
         public HttpMethod DefaultMethod { get; set; }
         
         /// <summary>

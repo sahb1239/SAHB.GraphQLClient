@@ -12,7 +12,14 @@ namespace SAHB.GraphQLClient.Executor
     /// </summary>
     public interface IGraphQLHttpExecutor
     {
+        /// <summary>
+        /// HttpClient used to send all requests
+        /// </summary>
         HttpClient Client { get; }
+
+        /// <summary>
+        /// Default method used for all request if not set
+        /// </summary>
         HttpMethod DefaultMethod { get; set; }
 
         /// <summary>

@@ -25,7 +25,8 @@ namespace SAHB.GraphQLClient.FieldBuilder
             return selectionSet;
         }
 
-        [Obsolete]
+        [Obsolete("Please use GenerateSelectionSet instead")]
+        /// <inheritdoc />
         public IEnumerable<IGraphQLField> GetFields(Type type) => GenerateSelectionSet(type);
 
         /// <inheritdoc />

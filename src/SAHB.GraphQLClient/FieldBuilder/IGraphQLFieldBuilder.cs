@@ -22,7 +22,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// </summary>
         /// <param name="type">The type which to generate the fields from</param>
         /// <returns>The metadata from the type</returns>
-        [Obsolete]
-        IEnumerable<IGraphQLField> GetFields(Type type);
+        [Obsolete("Please use GenerateSelectionSet instead")]
+        IEnumerable <IGraphQLField> GetFields(Type type);
     }
 }

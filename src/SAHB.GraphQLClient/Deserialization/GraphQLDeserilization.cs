@@ -15,6 +15,7 @@ namespace SAHB.GraphQL.Client.Deserialization
     /// </summary>
     public class GraphQLDeserilization : IGraphQLDeserialization
     {
+        /// <inheritdoc />
         public GraphQLDataResult<T> DeserializeResult<T>(string graphQLResult, IEnumerable<IGraphQLField> fields) where T : class
         {
             // Get all fieldConverters
@@ -31,6 +32,7 @@ namespace SAHB.GraphQL.Client.Deserialization
             return JsonConvert.DeserializeObject<GraphQLDataResult<T>>(graphQLResult, settings);
         }
 
+        /// <inheritdoc />
         public T DeserializeResult<T>(JObject jsonObject, IEnumerable<IGraphQLField> fields) where T : class
         {
             // Get all fieldConverters

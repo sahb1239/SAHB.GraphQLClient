@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -19,6 +19,7 @@ using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient
 {
+    /// <inheritdoc />
     public class GraphQLHttpClient : IGraphQLHttpClient
     {
         public IGraphQLFieldBuilder FieldBuilder { get; }
@@ -36,16 +37,19 @@ namespace SAHB.GraphQLClient
             Deserialization = deserialization ?? throw new ArgumentNullException(nameof(deserialization));
         }
 
+        /// <inheritdoc />
         public static GraphQLHttpClient Default()
         {
             return new GraphQLHttpClient(new GraphQLHttpExecutor(), new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
         }
 
+        /// <inheritdoc />
         public static GraphQLHttpClient Default(HttpClient client)
         {
             return new GraphQLHttpClient(new GraphQLHttpExecutor(client), new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
         }
 
+        /// <inheritdoc />
         public Task<T> Execute<T>(GraphQLOperationType operationType, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             // Generate selectionSet
@@ -58,6 +62,7 @@ namespace SAHB.GraphQLClient
             return Execute<T>(query: query, url: url, httpMethod: httpMethod, headers: headers, authorizationMethod: authorizationMethod, authorizationToken: authorizationToken);
         }
 
+        /// <inheritdoc />
         public Task<dynamic> Execute(GraphQLOperationType operationType, Action<IGraphQLBuilder> builder, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {
             // Get builder
@@ -97,6 +102,7 @@ namespace SAHB.GraphQLClient
         }
 
         #region Old methods
+        /// <inheritdoc />
         public IGraphQLQuery<dynamic> CreateQuery(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null,
              string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {
@@ -110,6 +116,7 @@ namespace SAHB.GraphQLClient
             return CreateQuery<T>(url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
         }
 
+        /// <inheritdoc />
         public IGraphQLQuery<dynamic> CreateMutation(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {
@@ -123,6 +130,7 @@ namespace SAHB.GraphQLClient
             return CreateMutation<T>(url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
         }
 
+        /// <inheritdoc />
         public IGraphQLQuery<dynamic> CreateMutation(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {
@@ -144,6 +152,7 @@ namespace SAHB.GraphQLClient
             return GetGraphQLQuery<T>(GraphQLOperationType.Mutation, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod);
         }
 
+        /// <inheritdoc />
         public IGraphQLQuery<dynamic> CreateQuery(Action<IGraphQLBuilder> builder, string url, HttpMethod httpMethod, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
         {
