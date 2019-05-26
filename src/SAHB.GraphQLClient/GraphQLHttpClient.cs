@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -21,11 +21,24 @@ namespace SAHB.GraphQLClient
     /// <inheritdoc />
     public class GraphQLHttpClient : IGraphQLHttpClient
     {
+        /// <summary>
+        /// The <see cref="IGraphQLFieldBuilder"/> used
+        /// </summary>
         public IGraphQLFieldBuilder FieldBuilder { get; }
 
+        /// <summary>
+        /// The <see cref="IGraphQLHttpExecutor"/> used
+        /// </summary>
         public IGraphQLHttpExecutor HttpExecutor { get; }
+
+        /// <summary>
+        /// The <see cref="IGraphQLQueryGeneratorFromFields"/> used
+        /// </summary>
         public IGraphQLQueryGeneratorFromFields QueryGenerator { get; }
 
+        /// <summary>
+        /// The <see cref="IGraphQLDeserialization"/> used
+        /// </summary>
         private IGraphQLDeserialization Deserialization { get; }
 
         public GraphQLHttpClient(IGraphQLHttpExecutor httpExecutor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization)
@@ -36,13 +49,20 @@ namespace SAHB.GraphQLClient
             Deserialization = deserialization ?? throw new ArgumentNullException(nameof(deserialization));
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Returns a default <see cref="GraphQLHttpClient"/> using default implementations of <see cref="IGraphQLHttpExecutor"/>, <see cref="IGraphQLFieldBuilder"/>, <see cref="IGraphQLQueryGeneratorFromFields"/> and <see cref="IGraphQLDeserialization"/>
+        /// </summary>
+        /// <returns>Returns a default <see cref="GraphQLHttpClient"/></returns>
         public static GraphQLHttpClient Default()
         {
             return new GraphQLHttpClient(new GraphQLHttpExecutor(), new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Returns a default <see cref="GraphQLHttpClient"/> using default implementations of <see cref="IGraphQLHttpExecutor"/> (using the specified <see cref="HttpClient"/>), <see cref="IGraphQLFieldBuilder"/>, <see cref="IGraphQLQueryGeneratorFromFields"/> and <see cref="IGraphQLDeserialization"/>
+        /// </summary>
+        /// <param name="client">The <see cref="HttpClient"/> to use for requesting the GraphQL server</param>
+        /// <returns>Returns a default <see cref="GraphQLHttpClient"/> using the specified <see cref="HttpClient"/></returns>
         public static GraphQLHttpClient Default(HttpClient client)
         {
             return new GraphQLHttpClient(new GraphQLHttpExecutor(client), new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());

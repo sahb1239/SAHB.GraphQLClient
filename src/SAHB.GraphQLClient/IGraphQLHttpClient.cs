@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -17,7 +17,32 @@ namespace SAHB.GraphQLClient
     /// </summary>
     public interface IGraphQLHttpClient
     {
+        /// <summary>
+        /// Executes a query on a GraphQL server using a specified type <typeparamref name="T"/>
+        /// </summary>
+        /// <typeparam name="T">The type to generate the query from</typeparam>
+        /// <param name="operationType">The GraphQL Operation to execute</param>
+        /// <param name="url">The endpoint to request the GraphQL server from</param>
+        /// <param name="httpMethod">The httpMethod to use requesting the GraphQL server</param>
+        /// <param name="headers">Headers to add to the request</param>
+        /// <param name="authorizationToken">Authorization token inserted in the Authorization header</param>
+        /// <param name="authorizationMethod">The authorization method inserted in the Authorization header. This is only used when authorizationToken is not null</param>
+        /// <param name="arguments">The arguments used in the query which is inserted in the variables</param>
+        /// <returns>The result of the query</returns>
         Task<T> Execute<T>(GraphQLOperationType operationType, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class;
+
+        /// <summary>
+        /// Executes a query on a GraphQL server using the specified <paramref name="builder"/>
+        /// </summary>
+        /// <param name="operationType">The GraphQL Operation to execute</param>
+        /// <param name="builder">The builder used to generate the query</param>
+        /// <param name="url">The endpoint to request the GraphQL server from</param>
+        /// <param name="httpMethod">The httpMethod to use requesting the GraphQL server</param>
+        /// <param name="headers">Headers to add to the request</param>
+        /// <param name="authorizationToken">Authorization token inserted in the Authorization header</param>
+        /// <param name="authorizationMethod">The authorization method inserted in the Authorization header. This is only used when authorizationToken is not null</param>
+        /// <param name="arguments">The arguments used in the query which is inserted in the variables</param>
+        /// <returns>The result of the query</returns>
         Task<dynamic> Execute(GraphQLOperationType operationType, Action<IGraphQLBuilder> builder, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments);
         
         /// <summary>

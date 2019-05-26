@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SAHB.GraphQLClient;
-using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 
