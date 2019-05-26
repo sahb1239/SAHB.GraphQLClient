@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
-using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
 
 namespace SAHB.GraphQLClient.Internal
