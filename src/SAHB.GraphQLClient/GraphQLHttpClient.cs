@@ -120,7 +120,6 @@ namespace SAHB.GraphQLClient
             return result;
         }
 
-        #region Old methods
         /// <inheritdoc />
         public IGraphQLQuery<dynamic> CreateQuery(Action<IGraphQLBuilder> builder, string url, string authorizationToken = null,
              string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
@@ -193,6 +192,7 @@ namespace SAHB.GraphQLClient
             return GetGraphQLQuery<T>(GraphQLOperationType.Query, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod);
         }
 
+        #region Old methods
         /// <inheritdoc />
         public IGraphQLBatch CreateBatch(string url, string authorizationToken = null, string authorizationMethod = "Bearer")
         {
