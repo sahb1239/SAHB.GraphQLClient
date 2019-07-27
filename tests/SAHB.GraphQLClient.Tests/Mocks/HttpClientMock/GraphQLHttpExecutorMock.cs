@@ -14,16 +14,15 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock
         private readonly HttpResponseHeaders _requiredHeaders;
         private readonly string _response;
 
-        public GraphQLHttpExecutorMock(string response, string requiredQuery, HttpResponseHeaders requiredHeaders)
+        public GraphQLHttpExecutorMock(string response, string requiredQuery)
         {
             _requiredQuery = requiredQuery;
-            _requiredHeaders = requiredHeaders;
             _response = response;
         }
 
-        public GraphQLHttpExecutorMock(string response, string requiredQuery) : this(response, requiredQuery, null)
+        public GraphQLHttpExecutorMock(string response, string requiredQuery, HttpResponseHeaders requiredHeaders) : this(response, requiredQuery)
         {
-
+            _requiredHeaders = requiredHeaders;
         }
 
         public HttpRequestMessage LastRequest { get; private set; }
