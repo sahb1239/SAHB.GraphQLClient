@@ -67,10 +67,10 @@ namespace SAHB.GraphQLClient.Executor
                 }
                 catch (Exception ex)
                 {
-                    throw new GraphQLHttpExecutorServerErrorStatusCodeException(response.StatusCode, query, errorResponse, "Response from server was not successfully", ex);
+                    throw new GraphQLHttpExecutorServerErrorStatusCodeException(response.StatusCode, query, errorResponse, "Response from server was not successful", ex);
                 }
 
-                throw new GraphQLHttpExecutorServerErrorStatusCodeException(response.StatusCode, query, errorResponse, "Response from server was not successfully");
+                throw new GraphQLHttpExecutorServerErrorStatusCodeException(response.StatusCode, query, errorResponse, "Response from server was not successful");
             }
 
             // Get response
@@ -85,6 +85,8 @@ namespace SAHB.GraphQLClient.Executor
             // Deserialize response
             var result = JsonConvert.DeserializeObject<GraphQLDataResult<T>>(stringResponse);
 
+            result.Headers = response.Headers;
+
             // Logging errors
             if (result.ContainsErrors && Logger != null && Logger.IsEnabled(LogLevel.Error))
             {
@@ -93,7 +95,7 @@ namespace SAHB.GraphQLClient.Executor
 
             return result;
         }
-        
+
         #region Logging
 
         private ILoggerFactory _loggerFactory;

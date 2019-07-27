@@ -11,15 +11,24 @@ using Xunit;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock
 {
+    using System.Net.Http.Headers;
+
     public class GraphQLHttpExecutorMock : IGraphQLHttpExecutor
     {
         private readonly string _requiredQuery;
+        private readonly HttpResponseHeaders _requiredHeaders;
         private readonly string _response;
 
-        public GraphQLHttpExecutorMock(string response, string requiredQuery)
+        public GraphQLHttpExecutorMock(string response, string requiredQuery, HttpResponseHeaders requiredHeaders)
         {
             _requiredQuery = requiredQuery;
+            _requiredHeaders = requiredHeaders;
             _response = response;
+        }
+
+        public GraphQLHttpExecutorMock(string response, string requiredQuery) : this(response, requiredQuery, null)
+        {
+
         }
 
         public HttpRequestMessage LastRequest { get; private set; }
@@ -30,7 +39,10 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock
             // Check if query is correct
             Assert.Equal(_requiredQuery, query);
 
-            return Task.FromResult(JsonConvert.DeserializeObject<GraphQLDataResult<T>>(_response));
+            var result = JsonConvert.DeserializeObject<GraphQLDataResult<T>>(_response);
+            result.Headers = _requiredHeaders;
+
+            return Task.FromResult(result);
         }
     }
 }

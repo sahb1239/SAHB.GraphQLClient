@@ -87,6 +87,36 @@ namespace SAHB.GraphQLClient.Batching.Internal
             return deserilizeFrom.ToObject<T>();
         }
 
+        public async Task<GraphQLDataDetailedResult<T>> GetDetailedValue<T>(string identitifer)
+            where T : class
+        {
+            if (!_isExecuted)
+                await Execute().ConfigureAwait(false);
+
+            if (_result.ContainsErrors)
+            {
+                throw new GraphQLErrorException(query: _executedQuery, errors: _result.Errors);
+            }
+
+            // Create new JObject
+            JObject deserilizeFrom = new JObject();
+
+            // Get all fields
+            foreach (var field in _fields[identitifer])
+            {
+                // Add field with previous alias to JObject
+                deserilizeFrom.Add(field.Inner.Alias, _result.Data[field.Alias]);
+            }
+
+            // Deserialize from
+            var deserialized = deserilizeFrom.ToObject<T>();
+            return new GraphQLDataDetailedResult<T>
+            {
+                Data = deserialized,
+                Headers = _result.Headers
+            };
+        }
+
         public async Task Execute()
         {
             if (_isExecuted)

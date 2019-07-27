@@ -2,6 +2,8 @@
 
 namespace SAHB.GraphQLClient.Batching.Internal
 {
+    using Result;
+
     // ReSharper disable once InconsistentNaming
     /// <inheritdoc />
     internal class GraphQLBatchQuery<T> : IGraphQLQuery<T>
@@ -20,6 +22,11 @@ namespace SAHB.GraphQLClient.Batching.Internal
         public Task<T> Execute()
         {
             return _batch.GetValue<T>(_identitifer);
+        }
+
+        public Task<GraphQLDataDetailedResult<T>> ExecuteDetailed()
+        {
+            return _batch.GetDetailedValue<T>(_identitifer);
         }
     }
 }
