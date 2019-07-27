@@ -7,7 +7,7 @@ namespace SAHB.GraphQLClient.FieldBuilder.Attributes
     /// <summary>
     /// Attribute which defines that another class should be deserilized based on the __typename on a GraphQL result. This is useful for handling union or interface GraphQL types
     /// </summary>    
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Interface, AllowMultiple = true)]
     public class GraphQLUnionOrInterfaceAttribute : Attribute
     {
         /// <summary>
