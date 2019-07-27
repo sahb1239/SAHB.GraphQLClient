@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Text;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.Result;
 using Xunit;
+using System.Net.Http.Headers;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock
 {
-    using System.Net.Http.Headers;
-
     public class GraphQLHttpExecutorMock : IGraphQLHttpExecutor
     {
         private readonly string _requiredQuery;

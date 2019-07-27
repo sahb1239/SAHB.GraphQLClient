@@ -1,7 +1,7 @@
-﻿namespace SAHB.GraphQLClient.Result
-{
-    using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 
+namespace SAHB.GraphQLClient.Result
+{
     // ReSharper disable once InconsistentNaming
     /// <summary>
     /// Contains the GraphQL data result with response headers

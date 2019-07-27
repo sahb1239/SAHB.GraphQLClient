@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
+using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient.Batching.Internal
 {
-    using Result;
-
     // ReSharper disable once InconsistentNaming
     /// <inheritdoc />
     internal class GraphQLBatchQuery<T> : IGraphQLQuery<T>

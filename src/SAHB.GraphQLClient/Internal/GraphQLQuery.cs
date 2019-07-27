@@ -4,11 +4,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
+using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient.Internal
 {
-    using Result;
-
     // ReSharper disable once InconsistentNaming
     /// <inheritdoc />
     internal class GraphQLQuery : IGraphQLQuery

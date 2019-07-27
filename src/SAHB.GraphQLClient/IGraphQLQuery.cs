@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
+using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient
 {
-    using Result;
-
     // ReSharper disable once InconsistentNaming
     /// <summary>
     /// Generated Query which supports executing the query

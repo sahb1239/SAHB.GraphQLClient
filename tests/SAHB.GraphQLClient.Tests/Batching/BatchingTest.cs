@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SAHB.GraphQLClient.Exceptions;
@@ -9,12 +7,10 @@ using SAHB.GraphQLClient.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock;
 using Xunit;
+using System.Net.Http;
 
 namespace SAHB.GraphQLClient.Tests.Batching
 {
-    using System.Net.Http;
-    using System.Net.Http.Headers;
-
     public class BatchingTest
     {
         [Fact]
