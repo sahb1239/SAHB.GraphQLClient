@@ -165,7 +165,6 @@ namespace SAHB.GraphQLClient
         /// <param name="authorizationToken">The token used to authenticate with the GraphQL server</param>
         /// <param name="authorizationMethod">The method used for authentication</param>
         /// <returns></returns>
-        [Obsolete]
         IGraphQLBatch CreateBatch(string url, string authorizationToken = null, string authorizationMethod = "Bearer");
 
         /// <summary>
@@ -176,7 +175,6 @@ namespace SAHB.GraphQLClient
         /// <param name="authorizationToken">The token used to authenticate with the GraphQL server</param>
         /// <param name="authorizationMethod">The method used for authentication</param>
         /// <returns></returns>
-        [Obsolete]
         IGraphQLBatch CreateBatch(string url, HttpMethod httpMethod, string authorizationToken = null, string authorizationMethod = "Bearer");
     }
 }
