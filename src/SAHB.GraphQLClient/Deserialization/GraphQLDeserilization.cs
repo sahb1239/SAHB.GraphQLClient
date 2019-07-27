@@ -16,7 +16,7 @@ namespace SAHB.GraphQLClient.Deserialization
     public class GraphQLDeserilization : IGraphQLDeserialization
     {
         /// <inheritdoc />
-        public GraphQLDataResult<T> DeserializeResult<T>(string graphQLResult, IEnumerable<IGraphQLField> fields) where T : class
+        public GraphQLDataResult<T> DeserializeResult<T>(string graphQLResult, IEnumerable<GraphQLField> fields) where T : class
         {
             // Get all fieldConverters
             var converters = GetFieldConverters(fields);
@@ -33,7 +33,7 @@ namespace SAHB.GraphQLClient.Deserialization
         }
 
         /// <inheritdoc />
-        public T DeserializeResult<T>(JObject jsonObject, IEnumerable<IGraphQLField> fields) where T : class
+        public T DeserializeResult<T>(JObject jsonObject, IEnumerable<GraphQLField> fields) where T : class
         {
             // Get all fieldConverters
             var converters = GetFieldConverters(fields);
@@ -48,7 +48,7 @@ namespace SAHB.GraphQLClient.Deserialization
             return jsonObject.ToObject<T>(settings);
         }
 
-        private IEnumerable<GraphQLFieldConverter> GetFieldConverters(IEnumerable<IGraphQLField> fields)
+        private IEnumerable<GraphQLFieldConverter> GetFieldConverters(IEnumerable<GraphQLField> fields)
         {
             if (fields == null)
                 yield break;
@@ -74,9 +74,9 @@ namespace SAHB.GraphQLClient.Deserialization
 
         private class GraphQLFieldConverter : JsonConverter
         {
-            private readonly IGraphQLField graphQLField;
+            private readonly GraphQLField graphQLField;
 
-            public GraphQLFieldConverter(IGraphQLField graphQLField)
+            public GraphQLFieldConverter(GraphQLField graphQLField)
             {
                 this.graphQLField = graphQLField;
             }

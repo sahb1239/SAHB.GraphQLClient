@@ -20,7 +20,7 @@ namespace SAHB.GraphQLClient.Deserialization
         /// <param name="graphQLResult">The GraphQL result from the server</param>
         /// <param name="fields">The GraphQL fields</param>
         /// <returns>The GraphQL Result</returns>
-        GraphQLDataResult<T> DeserializeResult<T>(string graphQLResult, IEnumerable<IGraphQLField> fields) where T : class;
+        GraphQLDataResult<T> DeserializeResult<T>(string graphQLResult, IEnumerable<GraphQLField> fields) where T : class;
 
         /// <summary>
         /// Desilize a GraphQL result into a <see cref="GraphQLDataResult{T}"/>
@@ -29,6 +29,6 @@ namespace SAHB.GraphQLClient.Deserialization
         /// <param name="jsonObject">The GraphQL result from the server represented as a JObject</param>
         /// <param name="fields">The GraphQL fields</param>
         /// <returns>The GraphQL Result</returns>
-        T DeserializeResult<T>(JObject jsonObject, IEnumerable<IGraphQLField> fields) where T : class;
+        T DeserializeResult<T>(JObject jsonObject, IEnumerable<GraphQLField> fields) where T : class;
     }
 }

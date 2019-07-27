@@ -6,7 +6,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
 {
     // ReSharper disable once InconsistentNaming
     /// <summary>
-    /// Generates a selectionSet <see cref="IEnumerable{T}"/> of <see cref="IGraphQLField"/> which represents the selection from a given <see cref="Type"/>
+    /// Generates a selectionSet <see cref="IEnumerable{T}"/> of <see cref="GraphQLField"/> which represents the selection from a given <see cref="Type"/>
     /// </summary>
     public interface IGraphQLFieldBuilder
     {
@@ -15,7 +15,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// </summary>
         /// <param name="type">The type which to generate the operation from</param>
         /// <returns>The selectionSet</returns>
-        IEnumerable<IGraphQLField> GenerateSelectionSet(Type type);
+        IEnumerable<GraphQLField> GenerateSelectionSet(Type type);
 
         /// <summary>
         /// Generates a <see cref="IEnumerable{T}"/> of <see cref="GraphQLField"/> which contains metadata from a given <see cref="Type"/>
@@ -23,6 +23,6 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <param name="type">The type which to generate the fields from</param>
         /// <returns>The metadata from the type</returns>
         [Obsolete("Please use GenerateSelectionSet instead")]
-        IEnumerable <IGraphQLField> GetFields(Type type);
+        IEnumerable <GraphQLField> GetFields(Type type);
     }
 }

@@ -17,7 +17,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
     public class GraphQLFieldBuilder : IGraphQLFieldBuilder
     {
         /// <inheritdoc />
-        public IEnumerable<IGraphQLField> GenerateSelectionSet(Type type)
+        public IEnumerable<GraphQLField> GenerateSelectionSet(Type type)
         {
             // Get selectionSet
             var selectionSet = GetSelectionSet(type);
@@ -26,7 +26,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
 
         [Obsolete("Please use GenerateSelectionSet instead")]
         /// <inheritdoc />
-        public IEnumerable<IGraphQLField> GetFields(Type type) => GenerateSelectionSet(type);
+        public IEnumerable<GraphQLField> GetFields(Type type) => GenerateSelectionSet(type);
 
         /// <inheritdoc />
         private IEnumerable<GraphQLField> GetSelectionSet(Type type)
@@ -93,7 +93,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
             // Get types
             // TODO: Possible problems if types is IEnumerable types
             var types = GetTypes(property)
-                .Select(e => new { typeName = e.Key, field = (IGraphQLTargetType) new GraphQLTargetType(e.Value, GetSelectionSet(e.Value)) })
+                .Select(e => new { typeName = e.Key, field = new GraphQLTargetType(e.Value, GetSelectionSet(e.Value)) })
                 .ToDictionary(e => e.typeName, e => e.field);
 
             // Get selectionSet
@@ -247,7 +247,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
             return property.Name.ToLower();
         }
 
-        protected virtual IEnumerable<IGraphQLArguments> GetPropertyArguments(PropertyInfo property)
+        protected virtual IEnumerable<GraphQLFieldArguments> GetPropertyArguments(PropertyInfo property)
         {
             // Get GraphQLArgumentsAttribute on class
             var propertyType = property.PropertyType;

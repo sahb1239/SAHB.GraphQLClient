@@ -35,6 +35,6 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// <param name="operation">The GraphQL operation to generate the query from</param>
         /// <param name="arguments">The argument values which is inserted using a variable on specified arguments with the <see cref="GraphQLArgumentsAttribute"/></param>
         /// <returns>The generated query</returns>
-        string GenerateQuery(GraphQLOperationType operationType, IEnumerable<IGraphQLField> selectionSet, params GraphQLQueryArgument[] arguments);
+        string GenerateQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, params GraphQLQueryArgument[] arguments);
     }
 }

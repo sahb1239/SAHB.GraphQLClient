@@ -8,9 +8,9 @@ using System.Text;
 namespace SAHB.GraphQLClient.FieldBuilder
 {
     /// <inheritdoc />
-    public class GraphQLTargetType : IGraphQLTargetType
+    public class GraphQLTargetType
     {
-        public GraphQLTargetType(Type type, IEnumerable<IGraphQLField> selectionSet)
+        public GraphQLTargetType(Type type, IEnumerable<GraphQLField> selectionSet)
         {
             Type = type ?? throw new ArgumentNullException(nameof(type));
             SelectionSet = selectionSet?.ToList() ?? throw new ArgumentNullException(nameof(selectionSet));
@@ -20,6 +20,6 @@ namespace SAHB.GraphQLClient.FieldBuilder
         public Type Type { get; }
 
         /// <inheritdoc />
-        public ICollection<IGraphQLField> SelectionSet { get; }
+        public ICollection<GraphQLField> SelectionSet { get; }
     }
 }

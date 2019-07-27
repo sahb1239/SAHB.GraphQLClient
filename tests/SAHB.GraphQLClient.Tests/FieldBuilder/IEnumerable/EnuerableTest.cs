@@ -18,7 +18,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.IEnumerable
         public void Correct_Count_With_IEnumerable_Field()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest)).ToList<IGraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest)).ToList<GraphQLField>();
 
             // Expect one element in root
             Assert.Equal(1, fields.Count);
@@ -28,7 +28,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.IEnumerable
         public void Correct_Count_Fields()
         {
             // Get all fields for the type QueryToTest
-            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest)).ToList<IGraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(QueryToTest)).ToList<GraphQLField>();
 
             // Expect 
             Assert.Equal(1, fields.First().SelectionSet.Count());

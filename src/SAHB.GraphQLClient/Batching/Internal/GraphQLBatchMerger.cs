@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -182,14 +182,14 @@ namespace SAHB.GraphQLClient.Batching.Internal
         /// <inheritdoc />
         private class GraphQLFieldWithOverridedAlias : GraphQLField
         {
-            public GraphQLFieldWithOverridedAlias(string alias, IGraphQLField field)
+            public GraphQLFieldWithOverridedAlias(string alias, GraphQLField field)
                 : base(alias, field: field.Field, fields: field.SelectionSet,
                     arguments: field.Arguments, type: field.BaseType, targetTypes: field.TargetTypes)
             {
                 Inner = field;
             }
 
-            public IGraphQLField Inner { get; }
+            public GraphQLField Inner { get; }
         }
     }
 }

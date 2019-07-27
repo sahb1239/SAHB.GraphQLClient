@@ -17,7 +17,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
         public void Check_Count_Is_2()
         {
             // Get all fields for the type GraphQLStringQuery
-            var fields = _fieldBuilder.GenerateSelectionSet(typeof(GraphQLIntQuery)).ToList<IGraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(GraphQLIntQuery)).ToList();
 
             // Check if contains exactly 2 fields
             Assert.Equal(2, fields.Count);
@@ -27,7 +27,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
         public void Check_Field_Is_camelCase()
         {
             // Get all fields for the type GraphQLStringQuery
-            var fields = _fieldBuilder.GenerateSelectionSet(typeof(GraphQLIntQuery)).ToList<IGraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(GraphQLIntQuery)).ToList();
 
             // Check if containing the 2 fields - it's automatically changing to camelCase
             Assert.Contains(fields, field => field.Field == nameof(GraphQLIntQuery.Int1).ToLower());
@@ -38,7 +38,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
         public void Check_Alias_Is_PropertyName()
         {
             // Get all fields for the type GraphQLStringQuery
-            var fields = _fieldBuilder.GenerateSelectionSet(typeof(GraphQLIntQuery)).ToList<IGraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(GraphQLIntQuery)).ToList();
 
             // Check if containing the 2 fields - it's automatically changing to camelCase
             Assert.Contains(fields, field => field.Alias == nameof(GraphQLIntQuery.Int1));
@@ -49,7 +49,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
         public void Check_SubFields_Is_Empty()
         {
             // Get all fields for the type GraphQLStringQuery
-            var fields = _fieldBuilder.GenerateSelectionSet(typeof(GraphQLIntQuery)).ToList<IGraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(GraphQLIntQuery)).ToList();
 
             // Check if fields is empty on both fields since it's strings (which internally is IEnumerable)
             Assert.Empty(fields.SelectMany(e => e.SelectionSet));
@@ -59,7 +59,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
         public void Check_Arguments_Is_Empty()
         {
             // Get all fields for the type GraphQLStringQuery
-            var fields = _fieldBuilder.GenerateSelectionSet(typeof(GraphQLIntQuery)).ToList<IGraphQLField>();
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(GraphQLIntQuery)).ToList();
 
             // Arguments should also be empty
             Assert.Empty(fields.SelectMany(e => e.Arguments));

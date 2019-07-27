@@ -21,7 +21,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
                     null,
                     null,
                     null,
-                    new Dictionary<string, IGraphQLTargetType> {
+                    new Dictionary<string, GraphQLTargetType> {
                         {
                             "interfaceConcreteType",
                             new GraphQLTargetType(typeof(string), new List<GraphQLField>() {
@@ -42,10 +42,10 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         [Fact]
         public void Test_Single_Other_Possible_Type_With_Extra_Field()
         {
-            var fields = new IGraphQLField[]
+            var fields = new GraphQLField[]
             {
                 new GraphQLField("alias", "field",  null, null, null,
-                    new Dictionary<string, IGraphQLTargetType>
+                    new Dictionary<string, GraphQLTargetType>
                     {
                         {
                             "interfaceConcreteType",
@@ -75,7 +75,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             var fields = new[]
             {
                 new GraphQLField("alias", "field", null, null, null,
-                     new Dictionary<string, IGraphQLTargetType>
+                     new Dictionary<string, GraphQLTargetType>
                     {
                         {
                             "interfaceConcreteType1",
@@ -118,7 +118,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             var fields = new[]
            {
                 new GraphQLField("alias", "field", null, null, null,
-                     new Dictionary<string, IGraphQLTargetType>
+                     new Dictionary<string, GraphQLTargetType>
                     {
                         {
                             "interfaceConcreteType1",

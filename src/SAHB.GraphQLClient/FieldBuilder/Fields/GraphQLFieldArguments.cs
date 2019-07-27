@@ -7,7 +7,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
     /// <summary>
     /// GraphQL argument used to contain metadata which can be used for generating a GraphQL query
     /// </summary>
-    public class GraphQLFieldArguments : IGraphQLArguments
+    public class GraphQLFieldArguments
     {
         /// <summary>
         /// Initializes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query

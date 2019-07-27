@@ -25,7 +25,7 @@ namespace SAHB.GraphQLClient.Internal
         private readonly string _url;
         private readonly GraphQLQueryArgument[] _arguments;
 
-        public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<IGraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization)
+        public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization)
         {
             _url = url ?? throw new ArgumentNullException(nameof(url));
             _httpMethod = httpMethod ?? throw new ArgumentNullException(nameof(httpMethod));
@@ -40,7 +40,7 @@ namespace SAHB.GraphQLClient.Internal
         }
 
         private GraphQLOperationType OperationType { get; }
-        private IEnumerable<IGraphQLField> SelectionSet { get; }
+        private IEnumerable<GraphQLField> SelectionSet { get; }
 
         /// <inheritdoc />
         public async Task<T> Execute()
@@ -82,7 +82,7 @@ namespace SAHB.GraphQLClient.Internal
 
     internal class GraphQLQuery : GraphQLQuery<dynamic>, IGraphQLQuery
     {
-        public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<IGraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization) : base(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, queryGenerator, executor, deserilization)
+        public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization) : base(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, queryGenerator, executor, deserilization)
         {
         }
     }

@@ -25,7 +25,7 @@ namespace SAHB.GraphQLClient.Builder.Internal
             return this;
         }
 
-        internal IEnumerable<IGraphQLField> GetFields()
+        internal IEnumerable<GraphQLField> GetFields()
         {
             return Fields.Select(field => field.GetField());
         }

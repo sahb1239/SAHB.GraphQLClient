@@ -14,14 +14,14 @@ namespace SAHB.GraphQLClient.Subscription
         where T : class
     {
         private readonly GraphQLOperationSource operationSource;
-        private readonly IEnumerable<IGraphQLField> selectionSet;
+        private readonly IEnumerable<GraphQLField> selectionSet;
         private readonly IGraphQLDeserialization deserialization;
 
         public event EventHandler<GraphQLDataReceivedEventArg<T>> DataRecieved;
         public event EventHandler<GraphQLDataReceivedEventArg<T>> ErrorRecieved;
         public event EventHandler Completed;
 
-        public GraphQLSubscriptionOperation(GraphQLOperationSource operationSource, IEnumerable<IGraphQLField> selectionSet, IGraphQLDeserialization deserialization)
+        public GraphQLSubscriptionOperation(GraphQLOperationSource operationSource, IEnumerable<GraphQLField> selectionSet, IGraphQLDeserialization deserialization)
         {
             this.operationSource = operationSource;
             this.selectionSet = selectionSet;
