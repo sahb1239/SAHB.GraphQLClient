@@ -70,29 +70,22 @@ namespace SAHB.GraphQLClient.Batching.Internal
             return new GraphQLBatchQuery<T>(this, identifier);
         }
 
-        public async Task<T> GetValue<T>(string identitifer) 
+        public Task<T> GetValue<T>(string identifier) 
             where T : class
         {
-            if (!_isExecuted)
-                await Execute().ConfigureAwait(false);
-            
-            if (_result.ContainsErrors)
-            {
-                throw new GraphQLErrorException(query: _executedQuery , errors: _result.Errors);
-            }
-            
-            // Create new JObject
-            JObject deserilizeFrom = new JObject();
+            return GetDeserializedResult<T>(identifier);
+        }
 
-            // Get all fields
-            foreach (var field in _fields[identitifer])
-            {
-                // Add field with previous alias to JObject
-                deserilizeFrom.Add(field.Inner.Alias, _result.Data[field.Alias]);
-            }
+        public async Task<GraphQLDataDetailedResult<T>> GetDetailedValue<T>(string identifier)
+            where T : class
+        {
+            var deserialized = await GetDeserializedResult<T>(identifier);
 
-            // Deserilize
-            return _graphQLDeserialization.DeserializeResult<T>(deserilizeFrom, _fields[identitifer]);
+            return new GraphQLDataDetailedResult<T>
+            {
+                Data = deserialized,
+                Headers = _result.Headers
+            };
         }
 
         public async Task Execute()
@@ -119,7 +112,10 @@ namespace SAHB.GraphQLClient.Batching.Internal
             var serverResult = await _executor.ExecuteQuery(query: _executedQuery, url: _url, method: _httpMethod, authorizationToken: _authorizationToken, authorizationMethod: _authorizationMethod, headers: _headers).ConfigureAwait(false);
 
             // Deserilize result
-            _result = _graphQLDeserialization.DeserializeResult<JObject>(serverResult, fields);
+            _result = _graphQLDeserialization.DeserializeResult<JObject>(serverResult.Response, fields);
+
+            // Set headers
+            _result.Headers = serverResult.Headers;
         }
 
         private void UpdateAlias()
@@ -153,6 +149,31 @@ namespace SAHB.GraphQLClient.Batching.Internal
                     argument.VariableName = argumentsWithIdentitfier.Key + "_" +  argument.VariableName;
                 }
             }
+        }
+
+        private async Task<T> GetDeserializedResult<T>(string identifier)
+            where T : class
+        {
+            if (!_isExecuted)
+                await Execute().ConfigureAwait(false);
+
+            if (_result.ContainsErrors)
+            {
+                throw new GraphQLErrorException(query: _executedQuery, errors: _result.Errors);
+            }
+
+            // Create new JObject
+            JObject deserilizeFrom = new JObject();
+
+            // Get all fields
+            foreach (var field in _fields[identifier])
+            {
+                // Add field with previous alias to JObject
+                deserilizeFrom.Add(field.Inner.Alias, _result.Data[field.Alias]);
+            }
+
+            // Deserialize from
+            return _graphQLDeserialization.DeserializeResult<T>(jsonObject: deserilizeFrom, fields: _fields[identifier]);
         }
 
         public bool Executed => _isExecuted;

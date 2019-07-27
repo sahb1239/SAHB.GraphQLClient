@@ -8,6 +8,7 @@ using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.QueryGenerator;
+using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient.Internal
 {
@@ -44,6 +45,22 @@ namespace SAHB.GraphQLClient.Internal
         /// <inheritdoc />
         public async Task<T> Execute()
         {
+            var result = await GetDataResult().ConfigureAwait(false);
+            return result?.Data;
+        }
+
+        public async Task<GraphQLDataDetailedResult<T>> ExecuteDetailed()
+        {
+            var result = await GetDataResult().ConfigureAwait(false);
+            return new GraphQLDataDetailedResult<T>
+            {
+                Data = result.Data,
+                Headers = result.Headers
+            };
+        }
+
+        private async Task<GraphQLDataResult<T>> GetDataResult()
+        {
             // Generate query
             var query = _queryGenerator.GenerateQuery(OperationType, SelectionSet, _arguments);
 
@@ -51,12 +68,15 @@ namespace SAHB.GraphQLClient.Internal
             var result = await _executor.ExecuteQuery(query, _url, _httpMethod, _authorizationToken, _authorizationMethod).ConfigureAwait(false);
 
             // Deserilize
-            var deserilizationResult = _deserilization.DeserializeResult<T>(result, SelectionSet);
+            var deserilizationResult = _deserilization.DeserializeResult<T>(result.Response, SelectionSet);
 
             if (deserilizationResult?.Errors?.Any() ?? false)
                 throw new GraphQLErrorException(query: query, errors: deserilizationResult.Errors);
 
-            return deserilizationResult?.Data;
+            // Set headers
+            deserilizationResult.Headers = result.Headers;
+
+            return deserilizationResult;
         }
     }
 

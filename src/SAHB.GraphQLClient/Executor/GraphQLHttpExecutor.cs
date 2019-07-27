@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -44,7 +44,7 @@ namespace SAHB.GraphQLClient.Executor
         }
 
         /// <inheritdoc />
-        public async Task<string> ExecuteQuery(string query, string url = null, HttpMethod method = null, string authorizationToken = null, string authorizationMethod = "Bearer", IDictionary<string, string> headers = null)
+        public async Task<GraphQLExecutorResponse> ExecuteQuery(string query, string url = null, HttpMethod method = null, string authorizationToken = null, string authorizationMethod = "Bearer", IDictionary<string, string> headers = null)
         {
             // Check parameters for null
             if (query == null) throw new ArgumentNullException(nameof(query));
@@ -95,10 +95,10 @@ namespace SAHB.GraphQLClient.Executor
                 }
                 catch (Exception ex)
                 {
-                    throw new GraphQLHttpExecutorServerErrorStatusCodeException(response.StatusCode, query, errorResponse, "Response from server was not successfully", ex);
+                    throw new GraphQLHttpExecutorServerErrorStatusCodeException(response.StatusCode, query, errorResponse, "Response from server was not successful", ex);
                 }
 
-                throw new GraphQLHttpExecutorServerErrorStatusCodeException(response.StatusCode, query, errorResponse, "Response from server was not successfully");
+                throw new GraphQLHttpExecutorServerErrorStatusCodeException(response.StatusCode, query, errorResponse, "Response from server was not successful");
             }
 
             // Get response
@@ -110,9 +110,14 @@ namespace SAHB.GraphQLClient.Executor
                 Logger.LogInformation($"Response: {stringResponse}");
             }
 
-            return stringResponse;
+            // Return
+            return new GraphQLExecutorResponse
+            {
+                Response = stringResponse,
+                Headers = response.Headers
+            };
         }
-        
+
         #region Logging
 
         private ILoggerFactory _loggerFactory;

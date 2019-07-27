@@ -31,6 +31,6 @@ namespace SAHB.GraphQLClient.Executor
         /// <param name="authorizationToken">The authorization token which should be used</param>
         /// <param name="authorizationMethod">Authorization method used for the authorization token</param>
         /// <returns></returns>
-        Task<string> ExecuteQuery(string query, string url = null, HttpMethod method = null, string authorizationToken = null, string authorizationMethod = "Bearer", IDictionary<string, string> headers = null);
+        Task<GraphQLExecutorResponse> ExecuteQuery(string query, string url = null, HttpMethod method = null, string authorizationToken = null, string authorizationMethod = "Bearer", IDictionary<string, string> headers = null);
     }
 }

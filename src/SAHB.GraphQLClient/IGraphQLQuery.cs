@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient
 {
@@ -12,6 +13,11 @@ namespace SAHB.GraphQLClient
         /// Execute the query
         /// </summary>
         Task<dynamic> Execute();
+
+        /// <summary>
+        /// Execute query and return the result with response headers
+        /// </summary>
+        Task<GraphQLDataDetailedResult<dynamic>> ExecuteDetailed();
     }
 
     // ReSharper disable once InconsistentNaming
@@ -27,5 +33,11 @@ namespace SAHB.GraphQLClient
         /// </summary>
         /// <returns>The result of the query</returns>
         Task<T> Execute();
+
+        /// <summary>
+        /// Execute query and return the result with response headers
+        /// </summary>
+        /// <returns>Object containing query result and response headers</returns>
+        Task<GraphQLDataDetailedResult<T>> ExecuteDetailed();
     }
 }

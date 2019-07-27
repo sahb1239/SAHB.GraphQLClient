@@ -110,12 +110,15 @@ namespace SAHB.GraphQLClient
             var requestQuery = QueryGenerator.GenerateQuery(operationType, selectionSet, arguments.ToArray());
             
             // Get response
-            string stringResponse = await HttpExecutor.ExecuteQuery(requestQuery, url, httpMethod, headers: headers, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod).ConfigureAwait(false);
+            GraphQLExecutorResponse response = await HttpExecutor.ExecuteQuery(requestQuery, url, httpMethod, headers: headers, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod).ConfigureAwait(false);
 
             // Deserilize
-            var result = Deserialization.DeserializeResult<T>(stringResponse, selectionSet);
+            var result = Deserialization.DeserializeResult<T>(response.Response, selectionSet);
             if (result?.Errors?.Any() ?? false)
                 throw new GraphQLErrorException(query: requestQuery, errors: result.Errors);
+
+            // Set headers
+            result.Headers = response.Headers;
 
             return result;
         }

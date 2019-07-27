@@ -88,7 +88,7 @@ namespace SAHB.GraphQLClient.Examples
                 "https://mpjk0plp9.lp.gql.zone/graphql", HttpMethod.Post);
             IGraphQLDeserialization graphQLDeserialization = new GraphQLDeserilization();
 
-            var deserilizedResult = graphQLDeserialization.DeserializeResult<HeroQuery>(result, null);
+            var deserilizedResult = graphQLDeserialization.DeserializeResult<HeroQuery>(result.Response, null);
 
             Console.WriteLine(deserilizedResult.Data.Hero.Name);
 
