@@ -49,10 +49,10 @@ namespace SAHB.GraphQLClient.Internal
             return result?.Data;
         }
 
-        public async Task<GraphQLDataDetailedResult<T>> ExecuteDetailed()
+        public async Task<GraphQLDataResult<T>> ExecuteDetailed()
         {
             var result = await GetDataResult().ConfigureAwait(false);
-            return new GraphQLDataDetailedResult<T>
+            return new GraphQLDataResult<T>
             {
                 Data = result.Data,
                 Headers = result.Headers
