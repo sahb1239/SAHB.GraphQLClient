@@ -1,3 +1,7 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+
 namespace SAHB.GraphQLClient.Result
 {
     // ReSharper disable once InconsistentNaming
@@ -15,5 +19,8 @@ namespace SAHB.GraphQLClient.Result
         /// The column which the error occured
         /// </summary>
         public int Column { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
     }
 }
