@@ -19,7 +19,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
             var expected = "{\"query\":\"query{alias:field}\"}";
 
-            var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
+            var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Type parameter is ignored since it just returns the fields
 
             Assert.Equal(expected, actual);
         }
@@ -35,7 +35,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
             var expected = "{\"query\":\"mutation{alias:field}\"}";
 
-            var actual = queryGenerator.GetMutation<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
+            var actual = queryGenerator.GetMutation<string>(fieldBuilder); // Type parameter is ignored since it just returns the fields
 
             Assert.Equal(expected, actual);
         }
@@ -52,7 +52,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
             var expected = "{\"query\":\"query{alias:field alias2:field2}\"}";
 
-            var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
+            var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Type parameter is ignored since it just returns the fields
 
             Assert.Equal(expected, actual);
         }
@@ -69,7 +69,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
             var expected = "{\"query\":\"mutation{alias:field alias2:field2}\"}";
 
-            var actual = queryGenerator.GetMutation<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
+            var actual = queryGenerator.GetMutation<string>(fieldBuilder); // Type parameter is ignored since it just returns the fields
 
             Assert.Equal(expected, actual);
         }
@@ -97,7 +97,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
             var expected = "{\"query\":\"query{alias:field{alias2:field2}}\"}";
 
-            var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
+            var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Type parameter is ignored since it just returns the fields
 
             Assert.Equal(expected, actual);
         }
@@ -137,7 +137,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
             var expected = "{\"query\":\"query{alias:field{alias2:field2 alias3:field3} alias4:field4}\"}";
 
-            var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Typeparameter is ignored since it just returns the fields
+            var actual = queryGenerator.GetQuery<string>(fieldBuilder); // Type parameter is ignored since it just returns the fields
 
             Assert.Equal(expected, actual);
         }

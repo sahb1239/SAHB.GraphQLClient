@@ -15,7 +15,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <inheritdoc />
         public IEnumerable<GraphQLField> GetFields(Type type)
         {
-            // Initilize list with fields and arguments
+            // Initialize list with fields and arguments
             var fields = new List<GraphQLField>();
 
             // Get all properties which has a public get method and can read and write
@@ -218,7 +218,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <summary>
         ///     Gets type parameter from a the type <param name="typeInfo"></param> which inherits from <see cref="IEnumerable{T}"/>
         /// </summary>
-        /// <returns>Returns the typeparameter from the <see cref="IEnumerable{T}" /></returns>
+        /// <returns>Returns the type parameter from the <see cref="IEnumerable{T}" /></returns>
         private static Type GetIEnumerableType(Type typeInfo)
         {
             // Check if the type is a array

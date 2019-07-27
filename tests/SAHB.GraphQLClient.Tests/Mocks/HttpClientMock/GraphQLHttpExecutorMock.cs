@@ -1,25 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Text;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.Result;
 using Xunit;
+using System.Net.Http.Headers;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock
 {
     public class GraphQLHttpExecutorMock : IGraphQLHttpExecutor
     {
         private readonly string _requiredQuery;
+        private readonly HttpResponseHeaders _requiredHeaders;
         private readonly string _response;
 
         public GraphQLHttpExecutorMock(string response, string requiredQuery)
         {
             _requiredQuery = requiredQuery;
             _response = response;
+        }
+
+        public GraphQLHttpExecutorMock(string response, string requiredQuery, HttpResponseHeaders requiredHeaders) : this(response, requiredQuery)
+        {
+            _requiredHeaders = requiredHeaders;
         }
 
         public HttpRequestMessage LastRequest { get; private set; }
@@ -30,7 +33,10 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock
             // Check if query is correct
             Assert.Equal(_requiredQuery, query);
 
-            return Task.FromResult(JsonConvert.DeserializeObject<GraphQLDataResult<T>>(_response));
+            var result = JsonConvert.DeserializeObject<GraphQLDataResult<T>>(_response);
+            result.Headers = _requiredHeaders;
+
+            return Task.FromResult(result);
         }
     }
 }

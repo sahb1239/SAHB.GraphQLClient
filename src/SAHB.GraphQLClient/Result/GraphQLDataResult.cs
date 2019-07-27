@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 
 namespace SAHB.GraphQLClient.Result
 {
@@ -14,6 +15,11 @@ namespace SAHB.GraphQLClient.Result
         /// Contains the output from the GraphQL server. This is null, when errors has occured
         /// </summary>
         public T Data { get; set; }
+
+        /// <summary>
+        /// Contains the response headers
+        /// </summary>
+        public HttpResponseHeaders Headers { get; set; }
 
         /// <summary>
         /// The errors which occured on execution of the query

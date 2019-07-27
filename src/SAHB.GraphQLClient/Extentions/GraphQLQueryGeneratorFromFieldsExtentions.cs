@@ -7,7 +7,7 @@ namespace SAHB.GraphQLClient.Extentions
 {
     // ReSharper disable once InconsistentNaming
     /// <summary>
-    /// Extentions for the <see cref="IGraphQLQueryGeneratorFromFields"/> interface
+    /// Extensions for the <see cref="IGraphQLQueryGeneratorFromFields"/> interface
     /// </summary>
     public static class GraphQLQueryGeneratorFromFieldsExtentions
     {

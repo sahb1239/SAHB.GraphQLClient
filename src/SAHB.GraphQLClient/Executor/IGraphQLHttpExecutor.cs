@@ -13,7 +13,7 @@ namespace SAHB.GraphQLClient.Executor
         /// <summary>
         /// Execute the specified GraphQL query
         /// </summary>
-        /// <typeparam name="T">The retun type in the data property</typeparam>
+        /// <typeparam name="T">The return type in the data property</typeparam>
         /// <param name="query">The GraphQL query which should be executed</param>
         /// <param name="url">Url to the GraphQL endpoint</param>
         /// <param name="method">HttpMethod which should be used for the GraphQL endpoint</param>

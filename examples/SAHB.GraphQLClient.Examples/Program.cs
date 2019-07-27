@@ -72,7 +72,7 @@ namespace SAHB.GraphQLClient.Examples
                 "https://mpjk0plp9.lp.gql.zone/graphql", HttpMethod.Post);
             Console.WriteLine(result.Data.Hero.Name);
 
-            // Using dependency injection and concole logging
+            // Using dependency injection and console logging
             var serviceCollection = new ServiceCollection();
             serviceCollection
                 .AddLogging(logging => logging.AddConsole().SetMinimumLevel(LogLevel.Information))
