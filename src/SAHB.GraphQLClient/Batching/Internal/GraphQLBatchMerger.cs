@@ -62,10 +62,10 @@ namespace SAHB.GraphQLClient.Batching.Internal
             return new GraphQLBatchQuery<T>(this, identifier);
         }
 
-        public async Task<T> GetValue<T>(string identifier) 
+        public Task<T> GetValue<T>(string identifier) 
             where T : class
         {
-            return await GetDeserializedResult<T>(identifier);
+            return GetDeserializedResult<T>(identifier);
         }
 
         public async Task<GraphQLDataDetailedResult<T>> GetDetailedValue<T>(string identifier)

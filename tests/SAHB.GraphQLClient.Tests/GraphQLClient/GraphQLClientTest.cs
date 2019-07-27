@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
-using SAHB.GraphQLClient.Tests.Batching;
 using SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock;
 using Xunit;
+using System.Net.Http;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient
 {
     public class GraphQLClientTest
     {
         [Fact]
-        public async Task Test_Client_Should_Deserilize_Errors()
+        public async Task Test_Client_Should_Deserialize_Errors()
         {
             // Arrange
             var expected =
@@ -122,6 +120,42 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
 
             // Assert
             await Assert.ThrowsAsync<GraphQLErrorException>(() => query.Execute());
+        }
+
+        [Fact]
+        public async Task Test_ExecuteDetailed_Returns_Expected_Headers_And_Data()
+        {
+            // Arrange
+            var expected =
+                "{\"query\":\"query{field}\"}";
+            var headers = new HttpResponseMessage().Headers;
+            headers.Add("TestHeader", "TestValue");
+
+            var httpClientMock = new GraphQLHttpExecutorMock(
+                JsonConvert.SerializeObject(new
+                {
+                    Data = new
+                    {
+                        Field = "FieldValue"
+                    }
+                }), expected, headers);
+            var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
+                new GraphQLQueryGeneratorFromFields());
+
+            // Act
+            var query = client.CreateQuery<Query>("url");
+            var result = await query.ExecuteDetailed();
+            
+            // Assert
+            Assert.Equal(result.Data.Field, "FieldValue");
+
+            IEnumerable<string> expectedHeaders = new List<string>();
+            IEnumerable<string> actualHeaders = new List<string>();
+
+            headers.TryGetValues("TestHeader", out expectedHeaders);
+            result.Headers.TryGetValues("TestHeader", out actualHeaders);
+
+            Assert.Equal(actualHeaders, expectedHeaders);
         }
 
         public class Query
