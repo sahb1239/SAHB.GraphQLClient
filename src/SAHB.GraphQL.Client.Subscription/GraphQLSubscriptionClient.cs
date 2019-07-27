@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
-using SAHB.GraphQLClient.Deserialization;
-using SAHB.GraphQLClient.Result;
+using SAHB.GraphQLClient.Subscription;
 using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
@@ -11,88 +11,109 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SAHB.GraphQLClient.Subscription
+namespace SAHB.GraphQL.Client.Subscription
 {
-
-    // Inspired by https://gist.github.com/xamlmonkey/4737291
-    [Obsolete]
-    public class GraphQLSubscriptionWebSocketClient : IGraphQLSubscriptionWebSocketClient
+    public class GraphQLSubscriptionClient : IGraphQLSubscriptionClient
     {
-        private readonly ClientWebSocket _webSocket = new ClientWebSocket();
-
         private readonly Dictionary<string, GraphQLOperationSource> _operations = new Dictionary<string, GraphQLOperationSource>();
         private long _counter = 1;
 
         private const int ReceiveChunkSize = 1024;
         private const int SendChunkSize = 1024;
 
-        private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
         private readonly CancellationToken _cancellationToken;
-
-        private readonly IGraphQLFieldBuilder fieldBuilder;
-        private readonly IGraphQLQueryGeneratorFromFields queryGenerator;
-        private readonly IGraphQLDeserialization deserialization;
 
         byte[] buffer = new byte[ReceiveChunkSize];
 
-        public bool IsConnected => _webSocket.State == WebSocketState.Open;
-
-        public GraphQLSubscriptionWebSocketClient(IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization)
+        public GraphQLSubscriptionClient(WebSocket webSocket, CancellationToken cancellationToken) 
+            : this(webSocket, cancellationToken, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), 
+                  new GraphQLDeserilization())
         {
-            _cancellationToken = _tokenSource.Token;
-            _webSocket.Options.AddSubProtocol("graphql-ws");
-            this.fieldBuilder = fieldBuilder;
-            this.queryGenerator = queryGenerator;
-            this.deserialization = deserialization;
+
         }
 
-        /// <summary>
-        /// Initilizes a new instance of GraphQL subscription client which supports generating GraphQL subscriptions from a <see cref="Type"/>
-        /// </summary>
-        /// <returns>A new instance of the GraphQL subscription client</returns>
-        public static IGraphQLSubscriptionWebSocketClient Default()
+        public GraphQLSubscriptionClient(WebSocket webSocket, CancellationToken cancellationToken, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization)
         {
-            return new GraphQLSubscriptionWebSocketClient(new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
+            WebSocket = webSocket;
+            FieldBuilder = fieldBuilder;
+            QueryGenerator = queryGenerator;
+            Deserialization = deserialization;
+            _cancellationToken = cancellationToken;
         }
 
-        public async Task<bool> Connect(Uri url)
+        public static async Task<GraphQLSubscriptionClient> CreateAndConnectSubscriptionClient(Uri uri, CancellationToken cancellationToken)
         {
-            if (_webSocket.State == WebSocketState.Open)
-                throw new InvalidOperationException("Connection is already open");
+            // Create and connect to websocket
+            var websocket = await CreateWebsocket(uri, cancellationToken).ConfigureAwait(false);
+
+            // Create client
+            var client = new GraphQLSubscriptionClient(websocket, cancellationToken);
+
+            // Connect to GraphQL
+            await client.Connect().ConfigureAwait(false);
+
+            return client;
+        }
+
+        public static async Task<GraphQLSubscriptionClient> CreateAndConnectSubscriptionClient(Uri uri, CancellationToken cancellationToken, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization)
+        {
+            // Create and connect to websocket
+            var websocket = await CreateWebsocket(uri, cancellationToken).ConfigureAwait(false);
+
+            // Create client
+            var client = new GraphQLSubscriptionClient(websocket, cancellationToken, fieldBuilder, queryGenerator, deserialization);
+
+            // Connect to GraphQL
+            await client.Connect().ConfigureAwait(false);
+
+            return client;
+        }
+
+        private static async Task<WebSocket> CreateWebsocket(Uri uri, CancellationToken cancellationToken)
+        {
+            ClientWebSocket clientWebSocket = new ClientWebSocket();
+            clientWebSocket.Options.AddSubProtocol("graphql-ws");
 
             // Connect to web socket
-            await _webSocket.ConnectAsync(url, _cancellationToken);
+            await clientWebSocket.ConnectAsync(uri, cancellationToken);
 
-            if (_webSocket.State == WebSocketState.Open)
-            {
-                // Sent GQL_CONNECTION_INIT
-                await SendOperationMessage(new OperationMessage
-                {
-                    Type = MessageType.GQL_CONNECTION_INIT,
-                    Payload = new object()
-                });
-
-                // Wait for ack
-                var ackMessage = await ReadMessage();
-                var serverAck = JsonConvert.DeserializeObject<OperationMessage>(ackMessage);
-                if (serverAck.Type != MessageType.GQL_CONNECTION_ACK)
-                {
-                    throw new NotImplementedException("Unknown websocket response: " + serverAck.Type);
-                }
-
-                // Start listening into new task
-                await Task.Factory.StartNew(() => StartListen());
-            }
-
-            return _webSocket.State == WebSocketState.Open;
+            return clientWebSocket;
         }
 
-        public async Task Disconnect()
+        public WebSocket WebSocket { get; }
+        public IGraphQLFieldBuilder FieldBuilder { get; }
+        public IGraphQLQueryGeneratorFromFields QueryGenerator { get; }
+        public IGraphQLDeserialization Deserialization { get; }
+
+        public bool IsConnected => WebSocket.State == WebSocketState.Open;
+
+        public async Task Connect()
         {
-            if (_webSocket != null)
+            if (!IsConnected)
+                throw new InvalidOperationException("Connection is not open");
+
+            // Sent GQL_CONNECTION_INIT
+            await SendOperationMessage(new OperationMessage
             {
-                await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, _cancellationToken);
+                Type = MessageType.GQL_CONNECTION_INIT,
+                Payload = new object()
+            });
+
+            // Wait for ack
+            string ackMessage = null;
+            for (int i = 0; i < 10 && string.IsNullOrWhiteSpace(ackMessage); i++)
+            {
+                ackMessage = await ReadMessage();
             }
+
+            var serverAck = JsonConvert.DeserializeObject<OperationMessage>(ackMessage);
+            if (serverAck.Type != MessageType.GQL_CONNECTION_ACK)
+            {
+                throw new NotImplementedException("Unknown websocket response: " + serverAck.Type);
+            }
+
+            // Start listening into new task
+            await Task.Factory.StartNew(() => StartListen());
         }
 
         public async Task<IGraphQLSubscriptionOperation<T>> ExecuteOperation<T>(params GraphQLQueryArgument[] arguments) where T : class
@@ -102,8 +123,8 @@ namespace SAHB.GraphQLClient.Subscription
             var operationType = MessageType.GQL_START;
 
             // Get query
-            var selectionSet = fieldBuilder.GenerateSelectionSet(typeof(T));
-            var query = queryGenerator.GenerateQuery(GraphQLOperationType.Subscription, selectionSet, arguments);
+            var selectionSet = FieldBuilder.GenerateSelectionSet(typeof(T));
+            var query = QueryGenerator.GenerateQuery(GraphQLOperationType.Subscription, selectionSet, arguments);
 
             // Generate OperationMessage
             var message = new OperationMessage
@@ -127,7 +148,7 @@ namespace SAHB.GraphQLClient.Subscription
             });
 
             // Create IGraphQLSubscriptionOperation
-            var subscription = new GraphQLSubscriptionOperation<T>(operationSource, selectionSet, deserialization);
+            var subscription = new GraphQLSubscriptionOperation<T>(operationSource, selectionSet, Deserialization);
 
             // Add to list
             _operations.Add(operationId.ToString(), operationSource);
@@ -139,17 +160,12 @@ namespace SAHB.GraphQLClient.Subscription
             return subscription;
         }
 
-        public void Dispose()
-        {
-            _webSocket.Dispose();
-        }
-
         private void OnOperationRecieved(OperationMessage operationMessage)
         {
             if (operationMessage == null)
                 return;
 
-            switch(operationMessage.Type)
+            switch (operationMessage.Type)
             {
                 case MessageType.GQL_DATA:
                 case MessageType.GQL_ERROR:
@@ -171,7 +187,7 @@ namespace SAHB.GraphQLClient.Subscription
 
         private void OnDisconnected()
         {
-            
+
         }
 
         private async Task SendOperationMessage(OperationMessage operationMessage)
@@ -187,12 +203,12 @@ namespace SAHB.GraphQLClient.Subscription
             WebSocketReceiveResult result;
             do
             {
-                result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), _cancellationToken);
+                result = await WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), _cancellationToken);
 
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
                     await
-                        _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                        WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
                     OnDisconnected();
                 }
                 else
@@ -210,7 +226,7 @@ namespace SAHB.GraphQLClient.Subscription
         {
             try
             {
-                while (_webSocket.State == WebSocketState.Open)
+                while (WebSocket.State == WebSocketState.Open)
                 {
                     var message = await ReadMessage();
 
@@ -225,7 +241,7 @@ namespace SAHB.GraphQLClient.Subscription
 
         private async Task SendMessageAsync(string message)
         {
-            if (_webSocket.State != WebSocketState.Open)
+            if (WebSocket.State != WebSocketState.Open)
             {
                 throw new Exception("Connection is not open.");
             }
@@ -244,7 +260,7 @@ namespace SAHB.GraphQLClient.Subscription
                     count = messageBuffer.Length - offset;
                 }
 
-                await _webSocket.SendAsync(new ArraySegment<byte>(messageBuffer, offset, count), WebSocketMessageType.Text, lastMessage, _cancellationToken);
+                await WebSocket.SendAsync(new ArraySegment<byte>(messageBuffer, offset, count), WebSocketMessageType.Text, lastMessage, _cancellationToken);
             }
         }
     }

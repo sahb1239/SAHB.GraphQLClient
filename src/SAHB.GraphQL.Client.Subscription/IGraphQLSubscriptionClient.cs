@@ -8,12 +8,9 @@ namespace SAHB.GraphQLClient.Subscription
     /// Implements GraphQL subscriptions-transport-ws protocol
     /// https://github.com/apollographql/subscriptions-transport-ws/blob/master/PROTOCOL.md
     /// </summary>
-    [Obsolete]
-    public interface IGraphQLSubscriptionWebSocketClient : IDisposable
+    public interface IGraphQLSubscriptionClient
     {
-        Task<bool> Connect(Uri url);
-
-        Task Disconnect();
+        Task Connect();
 
         bool IsConnected { get; }
 
