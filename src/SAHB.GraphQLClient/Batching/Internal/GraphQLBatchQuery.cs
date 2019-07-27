@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient.Batching.Internal
 {
@@ -20,6 +21,11 @@ namespace SAHB.GraphQLClient.Batching.Internal
         public Task<T> Execute()
         {
             return _batch.GetValue<T>(_identitifer);
+        }
+
+        public Task<GraphQLDataDetailedResult<T>> ExecuteDetailed()
+        {
+            return _batch.GetDetailedValue<T>(_identitifer);
         }
     }
 }
