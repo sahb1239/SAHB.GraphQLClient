@@ -24,7 +24,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.UnionOrInterface
 
         public class SubSubClass : SubClass
         {
-            public string Test2 { get; set; }
+            public string Test3 { get; set; }
         }
 
         [Fact]
