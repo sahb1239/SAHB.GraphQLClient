@@ -48,7 +48,7 @@ namespace SAHB.GraphQLClient.Subscription.Integration.Tests
             var websocket = await wsClient.ConnectAsync(wsUri, tokenSource.Token);
 
             var graphQLSubscriptionClient = new GraphQLSubscriptionClient(websocket, tokenSource.Token, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
-            await graphQLSubscriptionClient.Connect();
+            await graphQLSubscriptionClient.Initilize();
 
             // Act
             // Registrer operation

@@ -10,9 +10,11 @@ namespace SAHB.GraphQLClient.Subscription
     /// </summary>
     public interface IGraphQLSubscriptionClient
     {
-        Task Connect();
+        Task Initilize();
 
         bool IsConnected { get; }
+
+        bool IsInitilized { get; }
 
         Task<IGraphQLSubscriptionOperation<T>> ExecuteOperation<T>(params GraphQLQueryArgument[] arguments) where T : class;
     }

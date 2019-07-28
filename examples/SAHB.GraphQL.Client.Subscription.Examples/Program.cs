@@ -14,7 +14,9 @@ namespace SAHB.GraphQLClient.Subscription.Examples
         {
             using (IGraphQLSubscriptionWebSocketClient wssClient = GraphQLSubscriptionWebSocketClient.Default())
             {
-                if (!await wssClient.Connect(new Uri("ws://localhost:60340/graphql")))
+                // Connect
+                var graphQLSubscriptionClient = await wssClient.Connect(new Uri("ws://localhost:60340/graphql"));
+                if (!graphQLSubscriptionClient.IsConnected)
                 {
                     Console.WriteLine("Could not connect!");
                     Console.ReadKey();
@@ -22,19 +24,29 @@ namespace SAHB.GraphQLClient.Subscription.Examples
                     return;
                 }
 
-                var operation = await wssClient.ExecuteOperation<MessageSubscription>();
+                // Initilize
+                await graphQLSubscriptionClient.Initilize();
+                if (!graphQLSubscriptionClient.IsInitilized)
+                {
+                    Console.WriteLine("Could not initilize!");
+                    Console.ReadKey();
+
+                    return;
+                }
+
+                var operation = await graphQLSubscriptionClient.ExecuteOperation<MessageSubscription>();
                 operation.DataRecieved += (sender, e) =>
                 {
                     Console.WriteLine("Opration 1: " + e.ReceivedData.Data.MessageAdded.From.Id + ": " + e.ReceivedData.Data.MessageAdded.Content);
                 };
 
-                var operation2 = await wssClient.ExecuteOperation<MessageSubscription>();
+                var operation2 = await graphQLSubscriptionClient.ExecuteOperation<MessageSubscription>();
                 operation2.DataRecieved += (sender, e) =>
                 {
                     Console.WriteLine("Operation 2: " + e.ReceivedData.Data.MessageAdded.From.Id + ": " + e.ReceivedData.Data.MessageAdded.Content);
                 };
 
-                var operation3 = await wssClient.ExecuteOperation<MessageSubscription>();
+                var operation3 = await graphQLSubscriptionClient.ExecuteOperation<MessageSubscription>();
                 operation3.DataRecieved += (sender, e) =>
                 {
                     Console.WriteLine("Operation 3: " + e.ReceivedData.Data.MessageAdded.From.Id + ": " + e.ReceivedData.Data.MessageAdded.Content);
