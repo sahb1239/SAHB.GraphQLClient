@@ -105,7 +105,7 @@ namespace SAHB.GraphQL.Client.Integration.Tests
 
         public class CatOrDog
         {
-            public int Number { get; set; } = GetNumber();
+            public int Number { get; } = GetNumber();
         }
 
 
