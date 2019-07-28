@@ -245,6 +245,9 @@ var result = await executor.ExecuteQuery<HeroQuery>(@"{""query"":""query{Hero:he
 Console.WriteLine(result.Data.Hero.Name);
 ```
 
+## Subscriptions
+Please see example program (SAHB.GraphQL.Client.Subscription.Examples)
+
 ## Benchmarks
 Some benchmarks has been developed to see how much impact the GraphQL client has on the performance when generating queries. Theese are located under benchmarks.
 
