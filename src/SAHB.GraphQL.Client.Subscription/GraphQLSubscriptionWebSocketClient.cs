@@ -1,16 +1,10 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SAHB.GraphQLClient.FieldBuilder;
+﻿using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Deserialization;
-using SAHB.GraphQLClient.Result;
 using System;
-using System.Collections.Generic;
 using System.Net.WebSockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using SAHB.GraphQL.Client.Subscription;
 
 namespace SAHB.GraphQLClient.Subscription
 {

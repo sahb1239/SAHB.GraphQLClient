@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 
-namespace SAHB.GraphQLClient.Subscription
+namespace SAHB.GraphQLClient.Subscription.Internal
 {
-    public class PayloadEventArgs : EventArgs
+    internal class PayloadEventArgs : EventArgs
     {
         public PayloadEventArgs(JObject payload)
         {

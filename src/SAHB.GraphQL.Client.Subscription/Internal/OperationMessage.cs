@@ -1,10 +1,10 @@
-﻿namespace SAHB.GraphQLClient.Subscription
+﻿namespace SAHB.GraphQLClient.Subscription.Internal
 {
     /// <summary>
     ///     GraphQL operation messages
     ///     File from: https://github.com/graphql-dotnet/server/blob/develop/src/Transports.Subscriptions.Abstractions/OperationMessage.cs
     /// </summary>
-    public class OperationMessage
+    internal class OperationMessage
     {
         /// <summary>
         ///     Nullable Id

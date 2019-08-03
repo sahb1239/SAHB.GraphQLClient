@@ -1,6 +1,4 @@
-﻿using SAHB.GraphQL.Client.Subscription;
-using SAHB.GraphQLClient.QueryGenerator;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace SAHB.GraphQLClient.Subscription

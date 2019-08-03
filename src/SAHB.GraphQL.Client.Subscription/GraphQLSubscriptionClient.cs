@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
-using SAHB.GraphQLClient.Subscription;
+using SAHB.GraphQLClient.Subscription.Internal;
 using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
@@ -11,19 +11,19 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SAHB.GraphQL.Client.Subscription
+namespace SAHB.GraphQLClient.Subscription
 {
+    /// <inheritdoc />
     public class GraphQLSubscriptionClient : IGraphQLSubscriptionClient
     {
+        private long _operationCounter = 1;
         private readonly Dictionary<string, GraphQLOperationSource> _operations = new Dictionary<string, GraphQLOperationSource>();
-        private long _counter = 1;
 
         private const int ReceiveChunkSize = 1024;
         private const int SendChunkSize = 1024;
 
         private readonly CancellationToken _cancellationToken;
-
-        byte[] buffer = new byte[ReceiveChunkSize];
+        private readonly byte[] buffer = new byte[ReceiveChunkSize];
 
         public GraphQLSubscriptionClient(WebSocket webSocket, CancellationToken cancellationToken) 
             : this(webSocket, cancellationToken, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), 
@@ -46,10 +46,13 @@ namespace SAHB.GraphQL.Client.Subscription
         public IGraphQLQueryGeneratorFromFields QueryGenerator { get; }
         public IGraphQLDeserialization Deserialization { get; }
 
+        /// <inheritdoc />
         public bool IsConnected => WebSocket.State == WebSocketState.Open;
 
+        /// <inheritdoc />
         public bool IsInitilized { get; private set; }
 
+        /// <inheritdoc />
         public async Task Initilize()
         {
             if (!IsConnected)
@@ -63,11 +66,7 @@ namespace SAHB.GraphQL.Client.Subscription
             });
 
             // Wait for ack
-            string ackMessage = null;
-            for (int i = 0; i < 10 && string.IsNullOrWhiteSpace(ackMessage); i++)
-            {
-                ackMessage = await ReadMessage();
-            }
+            string ackMessage = await ReadMessage();
 
             var serverAck = JsonConvert.DeserializeObject<OperationMessage>(ackMessage);
             if (serverAck.Type != MessageType.GQL_CONNECTION_ACK)
@@ -82,6 +81,7 @@ namespace SAHB.GraphQL.Client.Subscription
             IsInitilized = true;
         }
 
+        /// <inheritdoc />
         public async Task<IGraphQLSubscriptionOperation<T>> ExecuteOperation<T>(params GraphQLQueryArgument[] arguments) where T : class
         {
             if (!IsConnected)
@@ -91,25 +91,25 @@ namespace SAHB.GraphQL.Client.Subscription
                 throw new InvalidOperationException("GraphQLSubscriptionClient is not initilized");
 
             // Get operationId
-            var operationId = _counter++;
-            var operationType = MessageType.GQL_START;
+            var operationId = _operationCounter++;
 
             // Get query
             var selectionSet = FieldBuilder.GenerateSelectionSet(typeof(T));
             var query = QueryGenerator.GenerateQuery(GraphQLOperationType.Subscription, selectionSet, arguments);
 
-            // Generate OperationMessage
+            // Generate OperationMessage for starting the operation
             var message = new OperationMessage
             {
                 Id = operationId.ToString(),
-                Type = operationType,
+                Type = MessageType.GQL_START,
                 Payload = JsonConvert.DeserializeObject(query)
             };
 
             // Generate stop message
             var stopMessage = new OperationMessage
             {
-                Id = operationId.ToString()
+                Id = operationId.ToString(),
+                Type = MessageType.GQL_STOP
             };
 
             // Create GraphQLOperationSource
@@ -137,14 +137,17 @@ namespace SAHB.GraphQL.Client.Subscription
             if (operationMessage == null)
                 return;
 
+            // Find id
+            var source = _operations[operationMessage.Id];
+
             switch (operationMessage.Type)
             {
                 case MessageType.GQL_DATA:
                 case MessageType.GQL_ERROR:
-                    // Find id
-                    var source = _operations[operationMessage.Id];
-
                     source.HandlePayload(operationMessage.Payload as JObject);
+                    break;
+                case MessageType.GQL_COMPLETE:
+                    source.HandleCompleted();
                     break;
                 default:
                     // TODO: Handle the opration type
@@ -215,7 +218,7 @@ namespace SAHB.GraphQL.Client.Subscription
         {
             if (WebSocket.State != WebSocketState.Open)
             {
-                throw new Exception("Connection is not open.");
+                throw new InvalidOperationException("Connection is not open.");
             }
 
             var messageBuffer = Encoding.UTF8.GetBytes(message);

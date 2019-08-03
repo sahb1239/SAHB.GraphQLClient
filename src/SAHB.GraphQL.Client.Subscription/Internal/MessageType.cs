@@ -1,4 +1,4 @@
-﻿namespace SAHB.GraphQLClient.Subscription
+﻿namespace SAHB.GraphQLClient.Subscription.Internal
 {
     /// <summary>
     ///     Protocol message types defined in
@@ -6,7 +6,7 @@
     ///     File from:
     ///     https://github.com/graphql-dotnet/server/blob/develop/src/Transports.Subscriptions.Abstractions/MessageType.cs
     /// </summary>
-    public class MessageType
+    internal class MessageType
     {
         /// <summary>
         ///     Client sends this message after plain websocket connection to start the communication with the server

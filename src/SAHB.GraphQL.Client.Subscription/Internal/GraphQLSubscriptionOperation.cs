@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SAHB.GraphQLClient;
+﻿using Newtonsoft.Json.Linq;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.Result;
@@ -8,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SAHB.GraphQLClient.Subscription
+namespace SAHB.GraphQLClient.Subscription.Internal
 {
     internal class GraphQLSubscriptionOperation<T> : IGraphQLSubscriptionOperation<T>
         where T : class
@@ -73,33 +71,5 @@ namespace SAHB.GraphQLClient.Subscription
             _isStopped = true;
             return this.operationSource.Stop();
         }
-    }
-
-    internal class GraphQLOperationSource
-    {
-        private readonly Func<Task> stop;
-
-        public GraphQLOperationSource(Func<Task> stop)
-        {
-            this.stop = stop;
-        }
-
-        public void HandlePayload(JObject payload)
-        {
-            RecievePayload?.Invoke(this, new PayloadEventArgs(payload));
-        }
-
-        public void HandleCompleted()
-        {
-            Completed?.Invoke(this, new EventArgs());
-        }
-
-        public Task Stop()
-        {
-            return stop();
-        }
-
-        public event EventHandler<PayloadEventArgs> RecievePayload;
-        public event EventHandler Completed;
     }
 }

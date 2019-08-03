@@ -1,12 +1,9 @@
-using GraphQL.Types;
 using SAHB.GraphQLClient.Subscription.Integration.Tests.TestServer;
-using SAHB.GraphQLClient;
 using System.Threading.Tasks;
 using Xunit;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQL.Client.Subscription.Integration.Tests.ChatSchema;
 using System;
-using SAHB.GraphQL.Client.Subscription;
 using System.Threading;
 using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Deserialization;
@@ -26,7 +23,7 @@ namespace SAHB.GraphQLClient.Subscription.Integration.Tests
         }
 
         [Fact]
-        public async Task Test()
+        public async Task Test_Recieve_Message()
         {
             // Arrange
             var tokenSource = new CancellationTokenSource();
@@ -36,7 +33,6 @@ namespace SAHB.GraphQLClient.Subscription.Integration.Tests
 
             // Create websocket GraphQL client
             var wsClient = _factory.Server.CreateWebSocketClient();
-            //wsClient.SubProtocols.Add("graphql-ws");
             wsClient.ConfigureRequest = request => request.Headers.Add("Sec-WebSocket-Protocol", "graphql-ws");
 
             var wsUri = new UriBuilder(_factory.Server.BaseAddress)
