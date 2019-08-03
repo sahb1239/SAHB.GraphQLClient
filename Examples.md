@@ -6,33 +6,33 @@ Examples for the [https://swapi.apis.guru/](https://swapi.apis.guru/).
 var response = await client.Query<SwapiQuery>("https://swapi.apis.guru/");
 foreach (var movie in response.AllFilms.Films)
 {
-	Console.WriteLine(movie.Title);
+    Console.WriteLine(movie.Title);
 }
 
 public class SwapiQuery
 {
-	public FilmConnection AllFilms { get; set; }
+    public FilmConnection AllFilms { get; set; }
 }
 
 public class FilmConnection : Connection
 {
-	public IEnumerable<Film> Films { get; set; }
+    public IEnumerable<Film> Films { get; set; }
 }
 
 public class Film
 {
-	public string Title { get; set; }
+    public string Title { get; set; }
 }
 
 public abstract class Connection
 {
-	public PageInfo PageInfo { get; set; }
-	public int TotalCount { get; set; }
+    public PageInfo PageInfo { get; set; }
+    public int TotalCount { get; set; }
 }
 
 public class PageInfo
 {
-	public bool HasNextPage { get; set; }
+    public bool HasNextPage { get; set; }
 }
 ```
 
@@ -45,18 +45,18 @@ This generates the following query:
 ## Film
 ```csharp
 var response = await client.Query<FilmQuery>("https://swapi.apis.guru/",
-	arguments: new GraphQLQueryArgument("filmIdVariable", "6"));
+    arguments: new GraphQLQueryArgument("filmIdVariable", "6"));
 Console.WriteLine(response.Film.Title);
 
 public class FilmQuery
 {
-	[GraphQLArguments("filmID", "ID", "filmIdVariable")]
-	public Film Film { get; set; }
+    [GraphQLArguments("filmID", "ID", "filmIdVariable")]
+    public Film Film { get; set; }
 }
 
 public class Film
 {
-	public string Title { get; set; }
+    public string Title { get; set; }
 }
 ```
 

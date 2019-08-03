@@ -166,8 +166,8 @@ Console.WriteLine(queryId1001Result.Human.Name);
 // Class used
 public class HumanQuery
 {
-	[GraphQLArguments("id", "ID!", "humanID")]
-	public CharacterOrPerson Human { get; set; }
+    [GraphQLArguments("id", "ID!", "humanID")]
+    public CharacterOrPerson Human { get; set; }
 }
 ```
 
@@ -200,15 +200,15 @@ using (IGraphQLSubscriptionWebSocketClient graphQLSubscriptionWebsocketClient = 
     // Initilize
     await graphQLSubscriptionClient.Initilize();
 
-	// It is possible to execute multiple operations over each connection
+    // It is possible to execute multiple operations over each connection
     var operation = await graphQLSubscriptionClient.ExecuteOperation<MessageSubscription>();
     operation.DataRecieved += (sender, e) =>
     {
         Console.WriteLine(e.ReceivedData.Data.MessageAdded.From.Id + ": " + e.ReceivedData.Data.MessageAdded.Content);
     };
-	operation.ErrorRecieved += (sender, e) =>
+    operation.ErrorRecieved += (sender, e) =>
     {
-		// TODO: Do something with the errors
+        // TODO: Do something with the errors
         Console.WriteLine("Error recieved: " + e.ReceivedData.Errors);
     };
     operation.Completed += (sender, e) =>
@@ -216,11 +216,11 @@ using (IGraphQLSubscriptionWebSocketClient graphQLSubscriptionWebsocketClient = 
         Console.WriteLine("Subscription operation completed");
     };
 
-	// The individual operation can be stopped (other open operations will continue to recieve data)
-	await operation.Stop();
+    // The individual operation can be stopped (other open operations will continue to recieve data)
+    await operation.Stop();
 
-	// The client can be disconnected again
-	await graphQLSubscriptionWebsocketClient.Disconnect();
+    // The client can be disconnected again
+    await graphQLSubscriptionWebsocketClient.Disconnect();
 }
 ```
 
