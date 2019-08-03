@@ -26,8 +26,10 @@ var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql"
 
 // Get name etc.
 Console.WriteLine(response.Hero.Name);
+```
 
-// The query classses used:
+The example uses the following query classes:
+```csharp
 public class Query
 {
    public CharacterOrPerson Hero { get; set; }
