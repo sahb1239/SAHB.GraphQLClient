@@ -23,12 +23,11 @@ namespace SAHB.GraphQLClient.Extentions
         /// <param name="arguments">The arguments used in the query which is inserted in the variables</param>
         /// <returns>The data returned from the query</returns>
         /// <exception cref="GraphQLErrorException">Thrown when validation or GraphQL endpoint returns an error</exception>
-        public static Task<T> Query<T>(this IGraphQLHttpClient client, string url, string authorizationToken = null,
+        public static Task<T> Query<T>(this IGraphQLHttpClient client, string url = null, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            var query = client.CreateQuery<T>(url, authorizationToken, authorizationMethod, arguments);
-            return query.Execute();
+            return client.Execute<T>(FieldBuilder.GraphQLOperationType.Query, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
         }
 
         /// <summary>
@@ -42,12 +41,11 @@ namespace SAHB.GraphQLClient.Extentions
         /// <param name="arguments">The arguments used in the query which is inserted in the variables</param>
         /// <returns>The data returned from the query</returns>
         /// <exception cref="GraphQLErrorException">Thrown when validation or GraphQL endpoint returns an error</exception>
-        public static Task<T> Mutate<T>(this IGraphQLHttpClient client, string url, string authorizationToken = null,
+        public static Task<T> Mutate<T>(this IGraphQLHttpClient client, string url = null, string authorizationToken = null,
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            var query = client.CreateMutation<T>(url, authorizationToken, authorizationMethod, arguments);
-            return query.Execute();
+            return client.Execute<T>(FieldBuilder.GraphQLOperationType.Mutation, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
         }
 
         /// <summary>
@@ -66,8 +64,7 @@ namespace SAHB.GraphQLClient.Extentions
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            var query = client.CreateQuery<T>(url, httpMethod, authorizationToken, authorizationMethod, arguments);
-            return query.Execute();
+            return client.Execute<T>(FieldBuilder.GraphQLOperationType.Query, httpMethod: httpMethod, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
         }
 
         /// <summary>
@@ -87,8 +84,7 @@ namespace SAHB.GraphQLClient.Extentions
             params GraphQLQueryArgument[] arguments) where T : class
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            var query = client.CreateMutation<T>(url, httpMethod, authorizationToken, authorizationMethod, arguments);
-            return query.Execute();
+            return client.Execute<T>(FieldBuilder.GraphQLOperationType.Mutation, httpMethod: httpMethod, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
         }
     }
 }

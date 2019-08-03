@@ -13,9 +13,11 @@ namespace SAHB.GraphQLClient.Tests.Mocks
             _fields = fields;
         }
 
-        public IEnumerable<GraphQLField> GetFields(Type type)
+        public IEnumerable<GraphQLField> GenerateSelectionSet(Type type)
         {
             return _fields;
         }
+
+        public IEnumerable<GraphQLField> GetFields(Type type) => GenerateSelectionSet(type);
     }
 }

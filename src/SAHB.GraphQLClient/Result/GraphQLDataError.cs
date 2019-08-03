@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,5 +25,8 @@ namespace SAHB.GraphQLClient.Result
         /// Returns true if the GraphQL error contains locations
         /// </summary>
         public bool ContainLocations => Locations?.Any() ?? false;
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
     }
 }

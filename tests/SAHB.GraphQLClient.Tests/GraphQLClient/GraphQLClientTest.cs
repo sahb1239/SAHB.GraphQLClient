@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
@@ -60,7 +61,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
                     }
                 }), expected);
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var query = client.CreateQuery<Query>("url");
@@ -113,7 +114,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
                     }
                 }), expected);
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var query = client.CreateQuery<Query>("url");
@@ -140,7 +141,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
                     }
                 }), expected, headers);
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
             // Act
             var query = client.CreateQuery<Query>("url");

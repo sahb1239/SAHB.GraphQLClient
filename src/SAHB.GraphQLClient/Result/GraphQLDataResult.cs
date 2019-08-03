@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 
@@ -35,5 +37,8 @@ namespace SAHB.GraphQLClient.Result
         /// Return true if the result contains data
         /// </summary>
         public bool ContainsData => Data != null;
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalData { get; set; }
     }
 }

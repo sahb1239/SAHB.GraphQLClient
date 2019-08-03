@@ -1,93 +1,58 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using SAHB.GraphQLClient.Deserialization;
+using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
+using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient.Internal
 {
     // ReSharper disable once InconsistentNaming
     /// <inheritdoc />
-    internal class GraphQLQuery : IGraphQLQuery
-    {
-        private readonly string _authorizationToken;
-        private readonly string _authorizationMethod;
-        private readonly IGraphQLHttpExecutor _executor;
-        private readonly HttpMethod _httpMethod;
-        private readonly string _url;
-        private readonly string _query;
-
-        public GraphQLQuery(string query, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor)
-        {
-            _query = query ?? throw new ArgumentNullException(nameof(query));
-            _url = url ?? throw new ArgumentNullException(nameof(url));
-            _httpMethod = httpMethod ?? throw new ArgumentNullException(nameof(httpMethod));
-            _executor = executor ?? throw new ArgumentNullException(nameof(executor));
-            _authorizationMethod = authorizationMethod;
-            _authorizationToken = authorizationToken;
-        }
-
-        /// <inheritdoc />
-        public async Task<dynamic> Execute()
-        {
-            var result = await GetDataResult();
-            return result?.Data;
-        }
-
-        public async Task<GraphQLDataDetailedResult<dynamic>> ExecuteDetailed()
-        {
-            var result = await GetDataResult();
-            return new GraphQLDataDetailedResult<dynamic>
-            {
-                Data = result.Data,
-                Headers = result.Headers
-            };
-        }
-
-        private async Task<GraphQLDataResult<dynamic>> GetDataResult()
-        {
-            var result = await _executor.ExecuteQuery<dynamic>(_query, _url, _httpMethod, _authorizationToken, _authorizationMethod).ConfigureAwait(false);
-            if (result?.Errors?.Any() ?? false)
-                throw new GraphQLErrorException(query: _query, errors: result.Errors);
-
-            return result;
-        }
-    }
-
-    // ReSharper disable once InconsistentNaming
-    /// <inheritdoc />
     internal class GraphQLQuery<T> : IGraphQLQuery<T> where T : class
     {
         private readonly string _authorizationToken;
         private readonly string _authorizationMethod;
+        private readonly IGraphQLQueryGeneratorFromFields _queryGenerator;
         private readonly IGraphQLHttpExecutor _executor;
+        private readonly IGraphQLDeserialization _deserilization;
         private readonly HttpMethod _httpMethod;
         private readonly string _url;
-        private readonly string _query;
+        private readonly GraphQLQueryArgument[] _arguments;
 
-        public GraphQLQuery(string query, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor)
+        public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization)
         {
-            _query = query ?? throw new ArgumentNullException(nameof(query));
             _url = url ?? throw new ArgumentNullException(nameof(url));
             _httpMethod = httpMethod ?? throw new ArgumentNullException(nameof(httpMethod));
             _executor = executor ?? throw new ArgumentNullException(nameof(executor));
+            this._deserilization = deserilization;
             _authorizationMethod = authorizationMethod;
+            this._queryGenerator = queryGenerator;
             _authorizationToken = authorizationToken;
+            OperationType = operationType;
+            SelectionSet = selectionSet;
+            _arguments = arguments;
         }
+
+        private GraphQLOperationType OperationType { get; }
+        private IEnumerable<GraphQLField> SelectionSet { get; }
 
         /// <inheritdoc />
         public async Task<T> Execute()
         {
-            var result = await GetDataResult();
+            var result = await GetDataResult().ConfigureAwait(false);
             return result?.Data;
         }
 
-        public async Task<GraphQLDataDetailedResult<T>> ExecuteDetailed()
+        public async Task<GraphQLDataResult<T>> ExecuteDetailed()
         {
-            var result = await GetDataResult();
-            return new GraphQLDataDetailedResult<T>
+            var result = await GetDataResult().ConfigureAwait(false);
+            return new GraphQLDataResult<T>
             {
                 Data = result.Data,
                 Headers = result.Headers
@@ -96,11 +61,29 @@ namespace SAHB.GraphQLClient.Internal
 
         private async Task<GraphQLDataResult<T>> GetDataResult()
         {
-            var result = await _executor.ExecuteQuery<T>(_query, _url, _httpMethod, _authorizationToken, _authorizationMethod).ConfigureAwait(false);
-            if (result?.Errors?.Any() ?? false)
-                throw new GraphQLErrorException(query: _query, errors: result.Errors);
+            // Generate query
+            var query = _queryGenerator.GenerateQuery(OperationType, SelectionSet, _arguments);
 
-            return result;
+            // Get result
+            var result = await _executor.ExecuteQuery(query, _url, _httpMethod, _authorizationToken, _authorizationMethod).ConfigureAwait(false);
+
+            // Deserilize
+            var deserilizationResult = _deserilization.DeserializeResult<T>(result.Response, SelectionSet);
+
+            if (deserilizationResult?.Errors?.Any() ?? false)
+                throw new GraphQLErrorException(query: query, errors: deserilizationResult.Errors);
+
+            // Set headers
+            deserilizationResult.Headers = result.Headers;
+
+            return deserilizationResult;
+        }
+    }
+
+    internal class GraphQLQuery : GraphQLQuery<dynamic>, IGraphQLQuery
+    {
+        public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization) : base(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, queryGenerator, executor, deserilization)
+        {
         }
     }
 }

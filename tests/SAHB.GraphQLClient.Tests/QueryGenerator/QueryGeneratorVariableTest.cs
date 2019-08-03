@@ -30,7 +30,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", "value"));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", "value"));
 
             // Assert
             Assert.Equal(expected, actual);
@@ -53,7 +53,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName1", "value1"),
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName1", "value1"),
                 new GraphQLQueryArgument("variableName2", "value2"));
 
             // Assert
@@ -75,7 +75,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", JsonConvert.SerializeObject(new {arg1 = "value1", arg2 = "value2"})));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", JsonConvert.SerializeObject(new {arg1 = "value1", arg2 = "value2"})));
 
             // Assert
             Assert.Equal(expected, actual);
@@ -96,7 +96,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields,
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields,
                 new GraphQLQueryArgument("variableName", new { field1 = "value1", field2 = "value2" }));
 
             // Assert
@@ -118,7 +118,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields,
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields,
                 new GraphQLQueryArgument("variableName", new StaticArgument { Field1 = "value1", Field2 = "value2" }));
 
             // Assert
@@ -141,7 +141,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             // Act / assert
             Assert.Throws<GraphQLArgumentsRequiredException>(() =>
             {
-                var query = _queryGenerator.GetQuery(fields);
+                var query = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields);
             });
         }
 
@@ -159,7 +159,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act / Assert
-            Assert.Throws<GraphQLArgumentsRequiredException>(() => _queryGenerator.GetQuery(fields));
+            Assert.Throws<GraphQLArgumentsRequiredException>(() => _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields));
         }
 
         [Fact]
@@ -177,7 +177,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", "value"));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", "value"));
 
             // Assert
             Assert.Equal(expected, actual);
@@ -198,7 +198,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields);
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -219,7 +219,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", 1));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", 1));
 
             // Assert
             Assert.Equal(expected, actual);
@@ -240,7 +240,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", "test"));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", "test"));
 
             // Assert
             Assert.Equal(expected, actual);
@@ -261,7 +261,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", 1));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", 1));
 
             // Assert
             Assert.Equal(expected, actual);
@@ -282,7 +282,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", "test"));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", "test"));
 
             // Assert
             Assert.Equal(expected, actual);
@@ -303,7 +303,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", new {arg1 = "val1", arg2 = 2}));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", new {arg1 = "val1", arg2 = 2}));
 
             // Assert
             Assert.Equal(expected, actual);
@@ -324,7 +324,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", "test"));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", "test"));
 
             // Assert
             Assert.Equal(expected, actual);
@@ -346,7 +346,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", "test"), new GraphQLQueryArgument("variableName1", "test1"));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", "test"), new GraphQLQueryArgument("variableName1", "test1"));
 
             // Assert
             Assert.Equal(expected, actual);
@@ -368,7 +368,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GetQuery(fields, new GraphQLQueryArgument("variableName", "test"));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", "test"));
 
             // Assert
             Assert.Equal(expected, actual);
@@ -388,7 +388,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act / Assert
-            Assert.Throws<GraphQLDuplicateVariablesException>(() => _queryGenerator.GetQuery(fields,
+            Assert.Throws<GraphQLDuplicateVariablesException>(() => _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields,
                 new GraphQLQueryArgument("variableName", "test"), new GraphQLQueryArgument("variableName", "test")));
         }
 
@@ -406,7 +406,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act / Assert
-            var exception = Assert.Throws<GraphQLDuplicateVariablesException>(() => _queryGenerator.GetQuery(fields,
+            var exception = Assert.Throws<GraphQLDuplicateVariablesException>(() => _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields,
                 new GraphQLQueryArgument("variableName", "test"), new GraphQLQueryArgument("variableName", "test")));
 
             // Should only contain one duplicate variable name
@@ -427,7 +427,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act / Assert
-            var exception = Assert.Throws<GraphQLDuplicateVariablesException>(() => _queryGenerator.GetQuery(fields,
+            var exception = Assert.Throws<GraphQLDuplicateVariablesException>(() => _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields,
                 new GraphQLQueryArgument("variableName", "test"), new GraphQLQueryArgument("variableName", "test")));
 
             // Should only contain one duplicate variable name

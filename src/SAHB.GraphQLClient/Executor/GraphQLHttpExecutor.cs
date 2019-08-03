@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -14,24 +15,42 @@ namespace SAHB.GraphQLClient.Executor
     /// <inheritdoc />
     public class GraphQLHttpExecutor : IGraphQLHttpExecutor
     {
-        private readonly HttpClient _client;
+        /// <inheritdoc />
+        public HttpClient Client { get; }
 
+        /// <inheritdoc />
+        public HttpMethod DefaultMethod { get; set; }
+        
         /// <summary>
         /// Initializes a new instance of a GraphQL executor which executes a query against a http GraphQL server
         /// </summary>
         public GraphQLHttpExecutor()
         {
             // Add httpClient
-            _client = new HttpClient();
-            _client.DefaultRequestHeaders.Connection.Add("keep-alive");
+            Client = new HttpClient();
+            Client.DefaultRequestHeaders.Connection.Add("keep-alive");
+            DefaultMethod = HttpMethod.Post;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of a GraphQL executor which executes a query against a http GraphQL server using the specified <see cref="HttpClient"/>
+        /// </summary>
+        /// <param name="client">Http Client to use</param>
+        public GraphQLHttpExecutor(HttpClient client)
+        {
+            // Add httpClient
+            Client = client;
+            DefaultMethod = HttpMethod.Post;
         }
 
         /// <inheritdoc />
-        public async Task<GraphQLDataResult<T>> ExecuteQuery<T>(string query, string url, HttpMethod method, string authorizationToken = null, string authorizationMethod = "Bearer") where T : class
+        public async Task<GraphQLExecutorResponse> ExecuteQuery(string query, string url = null, HttpMethod method = null, string authorizationToken = null, string authorizationMethod = "Bearer", IDictionary<string, string> headers = null)
         {
             // Check parameters for null
             if (query == null) throw new ArgumentNullException(nameof(query));
-            if (url == null) throw new ArgumentNullException(nameof(url));
+
+            // Find method (set to default if null)
+            method = method ?? DefaultMethod;
             if (method == null) throw new ArgumentNullException(nameof(method));
 
             // Logging
@@ -46,6 +65,15 @@ namespace SAHB.GraphQLClient.Executor
                 Content = new StringContent(query, Encoding.UTF8, "application/json")
             };
 
+            // Add headers
+            if (headers != null)
+            {
+                foreach (var header in headers)
+                {
+                    requestMessage.Headers.Add(header.Key, header.Value);
+                }
+            }
+
             // Add authorization info
             if (authorizationToken != null)
             {
@@ -53,7 +81,7 @@ namespace SAHB.GraphQLClient.Executor
             }
 
             // Send request
-            HttpResponseMessage response = await _client.SendAsync(requestMessage).ConfigureAwait(false);
+            HttpResponseMessage response = await Client.SendAsync(requestMessage).ConfigureAwait(false);
 
             // Detect if response was not successfully
             if (!response.IsSuccessStatusCode)
@@ -82,18 +110,12 @@ namespace SAHB.GraphQLClient.Executor
                 Logger.LogInformation($"Response: {stringResponse}");
             }
 
-            // Deserialize response
-            var result = JsonConvert.DeserializeObject<GraphQLDataResult<T>>(stringResponse);
-
-            result.Headers = response.Headers;
-
-            // Logging errors
-            if (result.ContainsErrors && Logger != null && Logger.IsEnabled(LogLevel.Error))
+            // Return
+            return new GraphQLExecutorResponse
             {
-                Logger.LogError($"GraphQL error from query {query} and url {url}", result.Errors);
-            }
-
-            return result;
+                Response = stringResponse,
+                Headers = response.Headers
+            };
         }
 
         #region Logging

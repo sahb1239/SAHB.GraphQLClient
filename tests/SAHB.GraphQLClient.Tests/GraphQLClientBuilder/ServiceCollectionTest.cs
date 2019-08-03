@@ -4,7 +4,6 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.Batching;
 using SAHB.GraphQLClient.QueryGenerator;
 using Xunit;
 
