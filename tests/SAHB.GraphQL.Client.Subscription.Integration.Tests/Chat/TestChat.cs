@@ -1,4 +1,3 @@
-using SAHB.GraphQLClient.Subscription.Integration.Tests.TestServer;
 using System.Threading.Tasks;
 using Xunit;
 using SAHB.GraphQLClient.FieldBuilder;
@@ -10,6 +9,7 @@ using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 using System.Collections.Generic;
 using SAHB.GraphQLClient.Result;
+using SAHB.GraphQL.Client.TestServer;
 
 namespace SAHB.GraphQLClient.Subscription.Integration.Tests
 {
