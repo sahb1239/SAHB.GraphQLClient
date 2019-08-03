@@ -16,18 +16,28 @@ namespace SAHB.GraphQLClient.QueryGenerator
     public class GraphQLQueryGeneratorFromFields : IGraphQLQueryGeneratorFromFields
     {
         /// <inheritdoc />
-        public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
+        public string GenerateQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, params GraphQLQueryArgument[] arguments)
         {
-            return GetQuery("query", fields.ToList(), arguments);
+            switch (operationType)
+            {
+                case GraphQLOperationType.Query:
+                case GraphQLOperationType.Mutation:
+                case GraphQLOperationType.Subscription:
+                    return GetQuery(operationType, selectionSet.ToList(), arguments);
+            }
+
+            throw new NotImplementedException($"Operation {operationType} not implemented");
         }
 
+        [Obsolete("Please use GenerateQuery instead")]
         /// <inheritdoc />
-        public string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments)
-        {
-            return GetQuery("mutation", fields.ToList(), arguments);
-        }
+        public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments) => GenerateQuery(GraphQLOperationType.Query, fields, arguments);
 
-        private string GetQuery(string queryType, ICollection<GraphQLField> fields, params GraphQLQueryArgument[] queryArguments)
+        [Obsolete("Please use GenerateQuery instead")]
+        /// <inheritdoc />
+        public string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments) => GenerateQuery(GraphQLOperationType.Mutation, fields, arguments);
+
+        private string GetQuery(GraphQLOperationType operationType, ICollection<GraphQLField> fields, params GraphQLQueryArgument[] queryArguments)
         {
             // Get all the arguments from the fields
             var fieldArguments = Helper.GetAllArgumentsFromFields(fields).ToList();
@@ -94,7 +104,33 @@ namespace SAHB.GraphQLClient.QueryGenerator
             var readonlyArguments = new ReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument>(arguments);
 
             // Get query
-            var query = GetGraphQLQuery(queryType, GetArguments(readonlyArguments), GetFields(fields, readonlyArguments));
+            if (operationType == GraphQLOperationType.Subscription)
+            {
+                // Only support for one field
+                if (fields.Count > 1)
+                {
+                    throw new NotSupportedException("Subscriptions does not support more than one selection");
+                }
+            }
+
+            // Get queryType
+            string queryType;
+            switch (operationType)
+            {
+                case GraphQLOperationType.Query:
+                    queryType = "query";
+                    break;
+                case GraphQLOperationType.Mutation:
+                    queryType = "mutation";
+                    break;
+                case GraphQLOperationType.Subscription:
+                    queryType = "subscription " + (string.IsNullOrWhiteSpace(fields.First().Alias) ? fields.First().Field : fields.First().Alias);
+                    break;
+                default:
+                    throw new NotImplementedException($"Querytype {operationType} not implemented");
+            }
+
+            var query = GetGraphQLQuery(queryType, GetArguments(readonlyArguments), GenerateQueryForFields(fields, readonlyArguments));
             var request = GetQueryRequest(query, readonlyArguments);
 
             // Logging
@@ -138,53 +174,75 @@ namespace SAHB.GraphQLClient.QueryGenerator
             return string.Join(" ", arguments.Where(argument => !ShouldInlineArgument(argument)).Select(e => $"${e.Key.VariableName}:{e.Key.ArgumentType}"));
         }
 
-        private string GetFields(IEnumerable<GraphQLField> fields, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        private string GenerateQueryForFields(IEnumerable<GraphQLField> fields, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        {
+            return "{" + string.Join(" ", fields.Select(field => GenerateQueryForField(field, arguments))) + "}";
+        }
+
+        private string GenerateQueryForField(GraphQLField field, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
         {
             StringBuilder builder = new StringBuilder();
-            builder.Append("{");
 
-            builder.Append(string.Join(" ", fields.Select(field =>
+            // Append alias and field
+            if (field.Alias == null || field.Alias.Equals(field.Field, StringComparison.OrdinalIgnoreCase))
             {
-                var fieldBuilder = new StringBuilder();
+                builder.Append(field.Field);
+            }
+            else
+            {
+                builder.Append(field.Alias + ":" + field.Field);
+            }
 
-                // Append alias and field
-                if (field.Alias == null || field.Alias.Equals(field.Field, StringComparison.OrdinalIgnoreCase))
+            // Append arguments
+            // Format: (argumentName:$VariableName argumentName:$VariableName)
+            var fieldArguments = field.Arguments?.ToDictionary(argument => argument,
+                argument => arguments.FirstOrDefault(e => e.Key == argument).Value).Where(e => e.Value != null);
+            if (fieldArguments?.Any() ?? false)
+            {
+                builder.Append("(");
+
+                builder.Append(string.Join(" ",
+                    fieldArguments.Select(
+                        argument => argument.Key.ArgumentName + ":" +
+                                    (ShouldInlineArgument(argument)
+                                        ? JsonConvert.SerializeObject(argument.Value.ArgumentValue)
+                                        : "$" + argument.Key.VariableName))));
+
+                builder.Append(")");
+            }
+
+            // Append subquery
+            if ((field.SelectionSet?.Any() ?? false) || (field.TargetTypes?.Any() ?? false))
+            {
+                if (field.SelectionSet?.Any() ?? false)
                 {
-                    fieldBuilder.Append(field.Field);
+                    builder.Append("{");
+                    // SelectionSet
+                    builder.Append(string.Join(" ", field.SelectionSet.Select(e => GenerateQueryForField(e, arguments))));
                 }
-                else
+
+                // Get other possible subTypes
+                if (field.TargetTypes?.Any() ?? false)
                 {
-                    fieldBuilder.Append(field.Alias + ":" + field.Field);
+                    foreach (var possibleType in field.TargetTypes)
+                    {
+                        builder.Append($" ... on {possibleType.Key}");
+                        builder.Append("{");
+                        builder.Append(string.Join(" ", possibleType.Value.SelectionSet.Select(e => GenerateQueryForField(e, arguments))));
+                        builder.Append("}");
+
+                        // Append subquery
+                        //builder.Append(
+                        //    $" ... on {possibleType.Key}{GenerateQueryForFields(possibleType.Value.SelectionSet, arguments)}");
+                    }
                 }
 
-                // Append arguments
-                // Format: (argumentName:$VariableName argumentName:$VariableName)
-                var fieldArguments = field.Arguments?.ToDictionary(argument => argument,
-                    argument => arguments.FirstOrDefault(e => e.Key == argument).Value).Where(e => e.Value != null);
-                if (fieldArguments?.Any() ?? false)
+                if (field.SelectionSet?.Any() ?? false)
                 {
-                    fieldBuilder.Append("(");
-
-                    fieldBuilder.Append(string.Join(" ",
-                        fieldArguments.Select(
-                            argument => argument.Key.ArgumentName + ":" +
-                                        (ShouldInlineArgument(argument)
-                                            ? JsonConvert.SerializeObject(argument.Value.ArgumentValue)
-                                            : "$" + argument.Key.VariableName))));
-
-                    fieldBuilder.Append(")");
+                    builder.Append("}");
                 }
+            }
 
-                // Append subquery
-                if (field.Fields?.Any() ?? false)
-                {
-                    fieldBuilder.Append(GetFields(field.Fields, arguments));
-                }
-
-                return fieldBuilder.ToString();
-            })));
-
-            builder.Append("}");
             return builder.ToString();
         }
 

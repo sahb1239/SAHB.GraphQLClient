@@ -18,8 +18,8 @@ namespace SAHB.GraphQLClient.Tests.Issues
             // Act
             // Get fields
             var fields =
-                fieldBuilder.GetFields(typeof(Query));
-            var actual = queryBuilder.GetQuery(fields,
+                fieldBuilder.GenerateSelectionSet(typeof(Query));
+            var actual = queryBuilder.GenerateQuery(GraphQLOperationType.Query, fields,
                 new GraphQLQueryArgument("variableName", new {field1 = "value1", field2 = "value2"}));
 
             // Assert
@@ -37,8 +37,8 @@ namespace SAHB.GraphQLClient.Tests.Issues
             // Act
             // Get fields
             var fields =
-                fieldBuilder.GetFields(typeof(Query));
-            var actual = queryBuilder.GetQuery(fields,
+                fieldBuilder.GenerateSelectionSet(typeof(Query));
+            var actual = queryBuilder.GenerateQuery(GraphQLOperationType.Query, fields,
                 new GraphQLQueryArgument("variableName", new StaticArgument { Field1 = "value1", Field2 = "value2" }));
 
             // Assert

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
@@ -15,13 +17,16 @@ namespace SAHB.GraphQLClient.Batching.Internal
     // ReSharper disable once InconsistentNaming
     internal class GraphQLBatchMerger
     {
+        private readonly GraphQLOperationType _graphQLOperationType;
         private readonly string _url;
         private readonly HttpMethod _httpMethod;
+        private readonly IDictionary<string, string> _headers;
         private readonly string _authorizationToken;
         private readonly string _authorizationMethod;
         private readonly IGraphQLHttpExecutor _executor;
         private readonly IGraphQLFieldBuilder _fieldBuilder;
         private readonly IGraphQLQueryGeneratorFromFields _queryGenerator;
+        private readonly IGraphQLDeserialization _graphQLDeserialization;
         private readonly IDictionary<string, IEnumerable<GraphQLFieldWithOverridedAlias>> _fields;
         private readonly IDictionary<string, GraphQLQueryArgument[]> _arguments;
         private int _identifierCount = 0;
@@ -29,15 +34,18 @@ namespace SAHB.GraphQLClient.Batching.Internal
         private GraphQLDataResult<JObject> _result;
         private string _executedQuery;
 
-        public GraphQLBatchMerger(string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator)
+        public GraphQLBatchMerger(GraphQLOperationType graphQLOperationType, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization graphQLDeserialization)
         {
+            _graphQLOperationType = graphQLOperationType;
             _url = url;
             _httpMethod = httpMethod;
+            _headers = headers;
             _authorizationToken = authorizationToken;
             _authorizationMethod = authorizationMethod;
             _executor = executor;
             _fieldBuilder = fieldBuilder;
             _queryGenerator = queryGenerator;
+            _graphQLDeserialization = graphQLDeserialization;
             _fields = new Dictionary<string, IEnumerable<GraphQLFieldWithOverridedAlias>>();
             _arguments = new Dictionary<string, GraphQLQueryArgument[]>();
         }
@@ -51,7 +59,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             var identifier = $"batch{_identifierCount++}";
 
             // Get fields
-            var fields = _fieldBuilder.GetFields(typeof(T)).Select(field =>
+            var fields = _fieldBuilder.GenerateSelectionSet(typeof(T)).Select(field =>
                 new GraphQLFieldWithOverridedAlias(string.IsNullOrWhiteSpace(field.Alias) ? field.Field : field.Alias,
                     field)).ToList();
 
@@ -68,12 +76,12 @@ namespace SAHB.GraphQLClient.Batching.Internal
             return GetDeserializedResult<T>(identifier);
         }
 
-        public async Task<GraphQLDataDetailedResult<T>> GetDetailedValue<T>(string identifier)
+        public async Task<GraphQLDataResult<T>> GetDetailedValue<T>(string identifier)
             where T : class
         {
             var deserialized = await GetDeserializedResult<T>(identifier);
 
-            return new GraphQLDataDetailedResult<T>
+            return new GraphQLDataResult<T>
             {
                 Data = deserialized,
                 Headers = _result.Headers
@@ -93,13 +101,21 @@ namespace SAHB.GraphQLClient.Batching.Internal
             // Update arguments so they don't conflict
             UpdateArguments();
 
+            // Get all fields
+            var fields = _fields.SelectMany(e => e.Value).ToList();
+
             // Generate query
-            _executedQuery = _queryGenerator.GetQuery(_fields.SelectMany(e => e.Value),
+            _executedQuery = _queryGenerator.GenerateQuery(_graphQLOperationType, fields,
                 _arguments.SelectMany(e => e.Value).ToArray());
 
             // Execute query
-            _result =
-                await _executor.ExecuteQuery<JObject>(_executedQuery, _url, _httpMethod, _authorizationToken, _authorizationMethod).ConfigureAwait(false);
+            var serverResult = await _executor.ExecuteQuery(query: _executedQuery, url: _url, method: _httpMethod, authorizationToken: _authorizationToken, authorizationMethod: _authorizationMethod, headers: _headers).ConfigureAwait(false);
+
+            // Deserilize result
+            _result = _graphQLDeserialization.DeserializeResult<JObject>(serverResult.Response, fields);
+
+            // Set headers
+            _result.Headers = serverResult.Headers;
         }
 
         private void UpdateAlias()
@@ -136,6 +152,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
         }
 
         private async Task<T> GetDeserializedResult<T>(string identifier)
+            where T : class
         {
             if (!_isExecuted)
                 await Execute().ConfigureAwait(false);
@@ -156,7 +173,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             }
 
             // Deserialize from
-            return deserilizeFrom.ToObject<T>();
+            return _graphQLDeserialization.DeserializeResult<T>(jsonObject: deserilizeFrom, fields: _fields[identifier]);
         }
 
         public bool Executed => _isExecuted;
@@ -166,8 +183,8 @@ namespace SAHB.GraphQLClient.Batching.Internal
         private class GraphQLFieldWithOverridedAlias : GraphQLField
         {
             public GraphQLFieldWithOverridedAlias(string alias, GraphQLField field)
-                : base(alias, field: field.Field, fields: field.Fields,
-                    arguments: field.Arguments)
+                : base(alias, field: field.Field, fields: field.SelectionSet,
+                    arguments: field.Arguments, type: field.BaseType, targetTypes: field.TargetTypes)
             {
                 Inner = field;
             }

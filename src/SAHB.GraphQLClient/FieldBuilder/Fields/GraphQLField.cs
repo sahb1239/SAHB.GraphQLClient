@@ -19,13 +19,30 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <param name="fields">Subfields</param>
         /// <param name="arguments">Arguments for the current field</param>
         public GraphQLField(string alias, string field, IEnumerable<GraphQLField> fields,
-            IEnumerable<GraphQLFieldArguments> arguments)
+            IEnumerable<GraphQLFieldArguments> arguments) : this(alias, field, fields, arguments, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Initilizes a GraphQL field used to contain metadata which can be used for generating a GraphQL query
+        /// </summary>
+        /// <param name="alias">GraphQL alias</param>
+        /// <param name="field">GraphQL field</param>
+        /// <param name="fields">Subfields</param>
+        /// <param name="arguments">Arguments for the current field</param>
+        /// <param name="type">Default deserilzation type which should be deserilized to if no match is found in <paramref name="targetTypes"/></param>
+        /// <param name="targetTypes">The types which should be deserilized to based on the __typename GraphQL field</param>
+        public GraphQLField(string alias, string field, IEnumerable<GraphQLField> fields,
+            IEnumerable<GraphQLFieldArguments> arguments, Type type, IDictionary<string, GraphQLTargetType> targetTypes)
         {
             Field = field ?? throw new ArgumentNullException(nameof(field));
 
             Alias = alias;
-            Fields = (fields ?? Enumerable.Empty<GraphQLField>()).ToList();
+            SelectionSet = (fields ?? Enumerable.Empty<GraphQLField>()).ToList();
             Arguments = (arguments ?? Enumerable.Empty<GraphQLFieldArguments>()).ToList();
+
+            BaseType = type;
+            TargetTypes = (targetTypes ?? new Dictionary<string, GraphQLTargetType>());
         }
 
         /// <summary>
@@ -39,14 +56,24 @@ namespace SAHB.GraphQLClient.FieldBuilder
         public string Field { get; }
 
         /// <summary>
-        /// Subfields
+        /// The selection set for the field
         /// </summary>
-        public ICollection<GraphQLField> Fields { get; }
+        public ICollection<GraphQLField> SelectionSet { get; }
 
         /// <summary>
         /// Arguments for the current field
         /// </summary>
         public ICollection<GraphQLFieldArguments> Arguments { get; }
+
+        /// <summary>
+        /// Returns the type which should be deserilized to based on the __typename field
+        /// </summary>
+        public IDictionary<string, GraphQLTargetType> TargetTypes { get; }
+
+        /// <summary>
+        /// Returns the deserilzation type which should be deserilized to if no match is found in <see cref="TargetTypes"/>
+        /// </summary>
+        public Type BaseType { get; }
 
         /// <inheritdoc />
         public override string ToString()
@@ -54,13 +81,17 @@ namespace SAHB.GraphQLClient.FieldBuilder
             StringBuilder builder = new StringBuilder();
             builder.AppendLine($"Field: {Field}");
             builder.AppendLine($"Alias: {(Alias ?? "null")}");
+            if (BaseType != null)
+            {
+                builder.AppendLine($"Base type: {BaseType.FullName}");
+            }
             if (Arguments.Any())
             {
                 builder.AppendLine($"Arguments: {IndentAndAddStart(String.Join(Environment.NewLine, Arguments))}");
             }
-            if (Fields.Any())
+            if (SelectionSet.Any())
             {
-                builder.AppendLine($"Fields: {IndentAndAddStart(String.Join(Environment.NewLine, Fields))}");
+                builder.AppendLine($"Fields: {IndentAndAddStart(String.Join(Environment.NewLine, SelectionSet))}");
             }
             return builder.ToString();
         }

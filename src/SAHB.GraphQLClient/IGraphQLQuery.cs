@@ -17,7 +17,7 @@ namespace SAHB.GraphQLClient
         /// <summary>
         /// Execute query and return the result with response headers
         /// </summary>
-        Task<GraphQLDataDetailedResult<dynamic>> ExecuteDetailed();
+        Task<GraphQLDataResult<dynamic>> ExecuteDetailed();
     }
 
     // ReSharper disable once InconsistentNaming
@@ -38,6 +38,6 @@ namespace SAHB.GraphQLClient
         /// Execute query and return the result with response headers
         /// </summary>
         /// <returns>Object containing query result and response headers</returns>
-        Task<GraphQLDataDetailedResult<T>> ExecuteDetailed();
+        Task<GraphQLDataResult<T>> ExecuteDetailed();
     }
 }

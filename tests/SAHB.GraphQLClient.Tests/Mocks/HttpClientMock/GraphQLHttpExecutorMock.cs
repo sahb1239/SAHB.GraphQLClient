@@ -5,6 +5,8 @@ using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.Result;
 using Xunit;
 using System.Net.Http.Headers;
+using System;
+using System.Collections.Generic;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock
 {
@@ -27,15 +29,20 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock
 
         public HttpRequestMessage LastRequest { get; private set; }
 
-        public Task<GraphQLDataResult<T>> ExecuteQuery<T>(string query, string url, HttpMethod method, string authorizationToken = null,
-            string authorizationMethod = "Bearer") where T : class
+        public HttpClient Client => throw new NotImplementedException();
+
+        public HttpMethod DefaultMethod { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public Task<GraphQLExecutorResponse> ExecuteQuery(string query, string url = null, HttpMethod method = null, string authorizationToken = null, string authorizationMethod = "Bearer", IDictionary<string, string> headers = null)
         {
             // Check if query is correct
             Assert.Equal(_requiredQuery, query);
 
-            var result = JsonConvert.DeserializeObject<GraphQLDataResult<T>>(_response);
-            result.Headers = _requiredHeaders;
-
+            var result = new GraphQLExecutorResponse
+            {
+                Response = _response,
+                Headers = _requiredHeaders
+            };
             return Task.FromResult(result);
         }
     }
