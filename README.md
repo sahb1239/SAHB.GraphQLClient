@@ -189,7 +189,63 @@ var queryId1001 = batch.Query<HumanQuery>(new GraphQLQueryArgument("humanID", "1
 ```
 
 ## Subscriptions
-Please see example program (SAHB.GraphQL.Client.Subscription.Examples)
+The GraphQLclient also has a subscription client which can be found here: [SAHB.GraphQLClient.Subscription](https://www.nuget.org/packages/SAHB.GraphQL.Client.Subscription/).
+
+```csharp
+using (IGraphQLSubscriptionWebSocketClient graphQLSubscriptionWebsocketClient = GraphQLSubscriptionWebSocketClient.Default())
+{
+    // Connect
+    var graphQLSubscriptionClient = await graphQLSubscriptionWebsocketClient.Connect(new Uri("ws://localhost:60340/graphql"));
+
+    // Initilize
+    await graphQLSubscriptionClient.Initilize();
+
+	// It is possible to execute multiple operations over each connection
+    var operation = await graphQLSubscriptionClient.ExecuteOperation<MessageSubscription>();
+    operation.DataRecieved += (sender, e) =>
+    {
+        Console.WriteLine(e.ReceivedData.Data.MessageAdded.From.Id + ": " + e.ReceivedData.Data.MessageAdded.Content);
+    };
+	operation.ErrorRecieved += (sender, e) =>
+    {
+		// TODO: Do something with the errors
+        Console.WriteLine("Error recieved: " + e.ReceivedData.Errors);
+    };
+    operation.Completed += (sender, e) =>
+    {
+        Console.WriteLine("Subscription operation completed");
+    };
+
+	// The individual operation can be stopped (other open operations will continue to recieve data)
+	await operation.Stop();
+
+	// The client can be disconnected again
+	await graphQLSubscriptionWebsocketClient.Disconnect();
+}
+```
+
+The query classes used is the following:
+```csharp
+public class MessageSubscription
+{
+    public Message MessageAdded { get; set; }
+}
+
+public class Message
+{
+    public Author From { get; set; }
+    public string Content { get; set; }
+    public DateTime SentAt { get; set; }
+}
+
+public class Author
+{
+    public string Id { get; set; }
+    public string DisplayName { get; set; }
+}
+```
+
+Please also see example program (SAHB.GraphQL.Client.Subscription.Examples)
 
 ## Example project
 An example project can be found in the path examples
