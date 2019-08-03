@@ -27,7 +27,7 @@ var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql"
 // Get name etc.
 Console.WriteLine(response.Hero.Name);
 
-// The query class used is
+// The query classses used:
 public class Query
 {
    public CharacterOrPerson Hero { get; set; }
@@ -57,6 +57,28 @@ using SAHB.GraphQLClient.Extentions;
 ```
 
 More examples can be found in [Examples.md](Examples.md)
+
+### Arguments
+It's possible to add arguments to queries. This can be done with the attribute ```GraphQLArgumentAttribute```. This attribute takes 3 arguments where the first is argument name used on the GraphQL server. The second is the argument type, for example String. The third argument is the varible name which should be used when the query is requested.
+
+```csharp
+public class Query
+{
+   [GraphQLArgumentAttribute("argumentName", "ArgumentType", "variableName")]
+   public Hero Hero { get; set; }
+}
+```
+
+The client is requested as shown here:
+```csharp
+var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql", 
+   arguments: new GraphQLQueryArgument("variableName", "valueToBeSent"});
+```
+
+This will generate the query (Hero contains here only the Name property):
+```
+{"query":"query{hero(argumentName:\"valueToBeSent\"){name}}"}
+```
 
 ### Renaming of a field
 To rename a field name use the attribute ```GraphQLFieldNameAttribute``` on the class or property which you want to remap. For example request the field Fullname on the property Name do the follwing.
@@ -122,28 +144,6 @@ public class Query
 }
 ```
 
-### Arguments
-It's also possible to add arguments to queries. This can be done with the attribute ```GraphQLArgumentAttribute```. This attribute takes 3 arguments where the first is argument name used on the GraphQL server. The second is the argument type, for example String. The third argument is the varible name which should be used when the query is requested.
-
-```csharp
-public class Query
-{
-   [GraphQLArgumentAttribute("argumentName", "ArgumentType", "variableName")]
-   public Hero Hero { get; set; }
-}
-```
-
-The client is requested as shown here:
-```csharp
-var response = await client.Query<Query>("https://mpjk0plp9.lp.gql.zone/graphql", 
-   arguments: new GraphQLQueryArgument("variableName", "valueToBeSent"});
-```
-
-This will generate the query (Hero contains here only the Name property):
-```
-{"query":"query{hero(argumentName:\"valueToBeSent\"){name}}"}
-```
-
 ### Merging multiple queries (batching)
 The client supports merging multiple queries into one single query and returning the result for each query separate. This could reduce the number of request needed to a single server.
 
@@ -188,68 +188,8 @@ var queryId1000Result = await queryId1000.Execute();
 var queryId1001 = batch.Query<HumanQuery>(new GraphQLQueryArgument("humanID", "1001"));
 ```
 
-### Generate GraphQL query without using C# model
-It's also possible to generate a GraphQL query without using a C# model. The following example shows how to generate the query from the first example for the Starwars api (without the aliases).
-
-```csharp
-// Get response from url using a generated object
-var query = client.CreateQuery(builder => 
-	builder.Field("hero", 
-		hero => 
-			hero
-				.Field("name")
-				.Field("friends", 
-					friends => 
-						friends.Field("name"))),
-	"https://mpjk0plp9.lp.gql.zone/graphql");
-var builderResponse = await query.Execute();
-Console.WriteLine(builderResponse["hero"]["name"].Value);
-```
-
-The generated query is the following.
-```
-{"query":"query{hero{name friends{name}}}"}
-```
-
-To include the aliases the following code can be used.
-```csharp
-var query = client.CreateQuery(builder => 
-	builder.Field("hero", 
-		hero => 
-			hero
-				.Field("name")
-				.Field("friends", 
-					friends => 
-						friends.Alias("MyFriends").Field("name"))),
-	"https://mpjk0plp9.lp.gql.zone/graphql");
-var builderResponse = await query.Execute();
-Console.WriteLine(builderResponse["Hero"]["Name"].Value);
-```
-
-The query generated is the following which is equal to the query generated in the first example:
-```
-{"query":"query{hero{name MyFriends:friends{name}}}"}
-```
-
-The builder supports fields, subfields, alias and arguments.
-
-Note: If the alias and field name is case insensitive equal the alias is ignored
-
-### Execute custom GraphQL query
-If a custom GraphQL query is required to be executed it's also possible using the IGraphQLHttpExecutor. An example is shown here:
-
-```csharp
-IGraphQLHttpExecutor executor = new GraphQLHttpExecutor();
-var result = await executor.ExecuteQuery<HeroQuery>(@"{""query"":""query{Hero:hero{Name:name Friends:friends{Name:name}}}""}",
-	"https://mpjk0plp9.lp.gql.zone/graphql", HttpMethod.Post);
-Console.WriteLine(result.Data.Hero.Name);
-```
-
 ## Subscriptions
 Please see example program (SAHB.GraphQL.Client.Subscription.Examples)
-
-## Benchmarks
-Some benchmarks has been developed to see how much impact the GraphQL client has on the performance when generating queries. Theese are located under benchmarks.
 
 ## Example project
 An example project can be found in the path examples
