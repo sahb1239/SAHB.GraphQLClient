@@ -34,12 +34,30 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <param name="targetTypes">The types which should be deserilized to based on the __typename GraphQL field</param>
         public GraphQLField(string alias, string field, IEnumerable<GraphQLField> fields,
             IEnumerable<GraphQLFieldArguments> arguments, Type type, IDictionary<string, GraphQLTargetType> targetTypes)
+            : this(alias, field, fields, arguments, null, type, targetTypes)
+        {
+        }
+
+        /// <summary>
+        /// Initilizes a GraphQL field used to contain metadata which can be used for generating a GraphQL query
+        /// </summary>
+        /// <param name="alias">GraphQL alias</param>
+        /// <param name="field">GraphQL field</param>
+        /// <param name="fields">Subfields</param>
+        /// <param name="arguments">Arguments for the current field</param>
+        /// <param name="directives">Directives for the current field</param>
+        /// <param name="type">Default deserilzation type which should be deserilized to if no match is found in <paramref name="targetTypes"/></param>
+        /// <param name="targetTypes">The types which should be deserilized to based on the __typename GraphQL field</param>
+        public GraphQLField(string alias, string field, IEnumerable<GraphQLField> fields,
+            IEnumerable<GraphQLFieldArguments> arguments, IEnumerable<GraphQLFieldDirective> directives, 
+            Type type, IDictionary<string, GraphQLTargetType> targetTypes)
         {
             Field = field ?? throw new ArgumentNullException(nameof(field));
 
             Alias = alias;
             SelectionSet = (fields ?? Enumerable.Empty<GraphQLField>()).ToList();
             Arguments = (arguments ?? Enumerable.Empty<GraphQLFieldArguments>()).ToList();
+            Directives = (directives ?? Enumerable.Empty<GraphQLFieldDirective>()).ToList();
 
             BaseType = type;
             TargetTypes = (targetTypes ?? new Dictionary<string, GraphQLTargetType>());
@@ -75,6 +93,11 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// </summary>
         public Type BaseType { get; }
 
+        /// <summary>
+        /// The directives which should be applied to the field
+        /// </summary>
+        public ICollection<GraphQLFieldDirective> Directives { get; set; }
+
         /// <inheritdoc />
         public override string ToString()
         {
@@ -88,6 +111,10 @@ namespace SAHB.GraphQLClient.FieldBuilder
             if (Arguments.Any())
             {
                 builder.AppendLine($"Arguments: {IndentAndAddStart(String.Join(Environment.NewLine, Arguments))}");
+            }
+            if (Directives.Any())
+            {
+                builder.AppendLine($"Directives: {IndentAndAddStart(String.Join(Environment.NewLine, Directives))}");
             }
             if (SelectionSet.Any())
             {

@@ -21,6 +21,15 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <summary>
         /// Initializes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
         /// </summary>
+        /// <param name="argument">The directiveargument to initialize from</param>
+        internal GraphQLFieldArguments(GraphQLDirectiveArgumentAttribute argument)
+            : this(argument.ArgumentName, argument.ArgumentType, argument.VariableName, argument.IsRequired, argument.InlineArgument, argument.DefaultValue)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
+        /// </summary>
         /// <param name="argumentName">GraphQL argument name</param>
         /// <param name="argumentType">GraphQL argument type of the variable</param>
         /// <param name="variableName">GraphQL variable name</param>

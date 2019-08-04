@@ -22,10 +22,30 @@ namespace SAHB.GraphQLClient.Internal
                     currentPathPart : 
                     string.Join(".", path, currentPathPart);
 
+                // Get arguments
+                List<GraphQLFieldArguments> arguments = new List<GraphQLFieldArguments>();
+
                 // Add all arguments
-                if (field.Arguments.Any())
+                if (field?.Arguments.Any() ?? false)
                 {
-                    dictionary.Add(fieldPath, field.Arguments);
+                    arguments.AddRange(field.Arguments);
+                }
+
+                // Add all directive arguments
+                if (field?.Directives.Any() ?? false)
+                {
+                    foreach (var directive in field.Directives)
+                    {
+                        if (directive.Arguments?.Any() ?? false)
+                        {
+                            arguments.AddRange(directive.Arguments);
+                        }
+                    }
+                }
+
+                if (arguments.Any())
+                {
+                    dictionary.Add(fieldPath, arguments);
                 }
 
                 // Add all arguments from selectionSet (added by providing same dictionary)

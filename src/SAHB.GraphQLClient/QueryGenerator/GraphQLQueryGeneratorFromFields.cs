@@ -251,6 +251,30 @@ namespace SAHB.GraphQLClient.QueryGenerator
                 builder.Append(")");
             }
 
+            // Append directives
+            if (field.Directives?.Any() ?? false)
+            {
+                foreach (var directive in field.Directives)
+                {
+                    builder.Append($" @{directive.DirectiveName}");
+
+                    var directiveArguments = directive.Arguments?.ToDictionary(argument => argument,
+                        argument => arguments.FirstOrDefault(e => e.Key == argument).Value).Where(e => e.Value != null);
+
+                    if (directiveArguments?.Any() ?? false)
+                    {
+                        builder.Append("(");
+                        builder.Append(string.Join(" ",
+                            directiveArguments.Select(
+                                argument => argument.Key.ArgumentName + ":" +
+                                            (ShouldInlineArgument(argument)
+                                                ? GetArgumentValue(argument.Value.ArgumentValue)
+                                                : "$" + argument.Key.VariableName))));
+                        builder.Append(")");
+                    }
+                }
+            }
+
             // Append subquery
             if ((field.SelectionSet?.Any() ?? false) || (field.TargetTypes?.Any() ?? false))
             {
@@ -270,10 +294,6 @@ namespace SAHB.GraphQLClient.QueryGenerator
                         builder.Append("{");
                         builder.Append(string.Join(" ", possibleType.Value.SelectionSet.Select(e => GenerateQueryForField(e, arguments))));
                         builder.Append("}");
-
-                        // Append subquery
-                        //builder.Append(
-                        //    $" ... on {possibleType.Key}{GenerateQueryForFields(possibleType.Value.SelectionSet, arguments)}");
                     }
                 }
 
