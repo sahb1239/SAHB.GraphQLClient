@@ -45,7 +45,7 @@ namespace SAHB.GraphQL.Client.Introspection.Extentions
                     Type = new GraphQLIntrospectionTypeRef
                     {
                         Kind = GraphQLTypeKind.NonNull,
-                        OfType = new GraphQLIntrospectionTypeRef<GraphQLIntrospectionTypeRef<GraphQLIntrospectionTypeRef<GraphQLIntrospectionTypeRef<GraphQLIntrospectionTypeRef<GraphQLIntrospectionTypeRef<GraphQLIntrospectionOfType>>>>>>
+                        OfType = new GraphQLIntrospectionTypeRef
                         {
                             Kind = GraphQLTypeKind.Object,
                             Name = Implicit_Schema_Type
@@ -70,7 +70,7 @@ namespace SAHB.GraphQL.Client.Introspection.Extentions
                             Type = new GraphQLIntrospectionTypeRef
                             {
                                 Kind = GraphQLTypeKind.NonNull,
-                                OfType = new GraphQLIntrospectionTypeRef<GraphQLIntrospectionTypeRef<GraphQLIntrospectionTypeRef<GraphQLIntrospectionTypeRef<GraphQLIntrospectionTypeRef<GraphQLIntrospectionTypeRef<GraphQLIntrospectionOfType>>>>>>
+                                OfType = new GraphQLIntrospectionTypeRef
                                 {
                                     Kind = GraphQLTypeKind.Scalar,
                                     Name = Implicit_Type_Argument_Type

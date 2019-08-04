@@ -5,7 +5,6 @@ namespace SAHB.GraphQLClient.Introspection
 {
     public class GraphQLIntrospectionFullType : GraphQLIntrospectionType
     {
-        public GraphQLTypeKind Kind { get; set; }
         public string Description { get; set; }
 
         [GraphQLArguments("includeDeprecated", "Boolean", "fieldsIncludeDeprecated")]
