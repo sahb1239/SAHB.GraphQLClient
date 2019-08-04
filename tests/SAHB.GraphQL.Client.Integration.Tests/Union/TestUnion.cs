@@ -1,8 +1,8 @@
-﻿using GraphQL.Types;
+﻿using SAHB.GraphQL.Client.Testserver.Tests.Schemas.CatOrDog;
+using SAHB.GraphQL.Client.TestServer;
 using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
-using SAHB.GraphQLClient.Integration.Tests.TestServer;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,11 +10,11 @@ using Xunit;
 
 namespace SAHB.GraphQL.Client.Integration.Tests
 {
-    public class TestUnion : IClassFixture<GraphQLWebApplicationFactory<TestUnion.TestSchema>>
+    public class TestUnion : IClassFixture<GraphQLWebApplicationFactory<CatOrDogUnionSchema>>
     {
-        private readonly GraphQLWebApplicationFactory<TestSchema> _factory;
+        private readonly GraphQLWebApplicationFactory<CatOrDogUnionSchema> _factory;
 
-        public TestUnion(GraphQLWebApplicationFactory<TestSchema> factory)
+        public TestUnion(GraphQLWebApplicationFactory<CatOrDogUnionSchema> factory)
         {
             _factory = factory;
         }
@@ -74,73 +74,6 @@ namespace SAHB.GraphQL.Client.Integration.Tests
                 ((DogType)result2.Dog).Number
             };
             Assert.False(allNumbers.GroupBy(e => e).Where(e => e.Count() > 1).Any());
-        }
-
-        public class TestSchema : Schema
-        {
-            public TestSchema()
-            {
-                Query = new TestSchemaQuery();
-            }
-        }
-
-        private class TestSchemaQuery : ObjectGraphType
-        {
-            public TestSchemaQuery()
-            {
-                Field<CatOrDog>("cat", resolve: context => new Cat());
-                Field<CatOrDog>("dog", resolve: context => new Dog());
-            }
-        }
-
-        public class CatOrDog : UnionGraphType
-        {
-            public CatOrDog()
-            {
-                Type<CatGraphType>();
-                Type<DogGraphType>();
-            }
-        }
-
-        static int Number = 0;
-        static object _locker = new object();
-        static int GetNumber()
-        {
-            lock (_locker)
-            {
-                Number++;
-                return Number;
-            }
-        }
-
-        public class CatGraphType : ObjectGraphType<Cat>
-        {
-            public CatGraphType()
-            {
-                Name = "Cat";
-                Field<StringGraphType>("cat", resolve: context => "cat");
-                Field<IntGraphType>("number", resolve: context => GetNumber());
-            }
-        }
-
-        public class DogGraphType : ObjectGraphType<Dog>
-        {
-            public DogGraphType()
-            {
-                Name = "Dog";
-                Field<StringGraphType>("dog", resolve: context => "dog");
-                Field<IntGraphType>("number", resolve: context => GetNumber());
-            }
-        }
-
-        public class Cat
-        {
-
-        }
-
-        public class Dog
-        {
-
         }
 
         private class TestHelloUnion

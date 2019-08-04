@@ -1,8 +1,8 @@
 ﻿using GraphQL.Types;
+using SAHB.GraphQL.Client.TestServer;
 using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
-using SAHB.GraphQLClient.Integration.Tests.TestServer;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
