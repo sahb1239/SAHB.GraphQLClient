@@ -55,10 +55,23 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                         return $"OperationType {OperationType} was not found";
                     case ValidationType.PossibleType_Not_Found:
                         return $"Possible type at {Path} was not found";
+                    case ValidationType.Type_Is_Invalid:
+                        return $"Type at {Path} is invalid. Expected is {Expected}, actual is {Actual}.";
+                    case ValidationType.Type_Is_Not_Enum:
+                        return $"Type at {Path} is not an enum";
+                    case ValidationType.EnumValue_Not_Found:
+                        return $"Enumvalue at {Path} was not found";
+                    case ValidationType.EnumValue_Deprecated:
+                        return $"Enumvalue at {Path} is deprecated";
                     default:
                         throw new NotImplementedException($"ValidationType {ValidationType} not implemented");
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            return Message;
         }
     }
 }

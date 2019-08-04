@@ -9,6 +9,10 @@
         Field_Should_Have_SelectionSet,
         Argument_Not_Found,
         Argument_Invalid_Type,
+        EnumValue_Not_Found,
+        EnumValue_Deprecated,
+        Type_Is_Not_Enum,
+        Type_Is_Invalid,
         PossibleType_Not_Found
     }
 }
