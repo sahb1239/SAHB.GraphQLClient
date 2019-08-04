@@ -5,11 +5,11 @@ using Xunit;
 
 namespace SAHB.GraphQLClient.Introspection.Tests
 {
-    public class IntrospectionHelloQuery : IClassFixture<GraphQLWebApplicationFactory<HelloQuerySchema>>
+    public class IntrospectionHello : IClassFixture<GraphQLWebApplicationFactory<HelloQuerySchema>>
     {
         private readonly GraphQLWebApplicationFactory<HelloQuerySchema> _factory;
 
-        public IntrospectionHelloQuery(GraphQLWebApplicationFactory<HelloQuerySchema> factory)
+        public IntrospectionHello(GraphQLWebApplicationFactory<HelloQuerySchema> factory)
         {
             _factory = factory;
         }

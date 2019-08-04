@@ -20,7 +20,7 @@ namespace SAHB.GraphQL.Client.Integration.Tests
         }
 
         [Fact]
-        public async Task TestSimpleUnion()
+        public async Task TestSimpleInterface()
         {
             // Arrange
             var client = _factory.CreateClient();
@@ -40,7 +40,7 @@ namespace SAHB.GraphQL.Client.Integration.Tests
         }
 
         [Fact]
-        public async Task TestBatchUnion()
+        public async Task TestBatchInterface()
         {
             // Arrange
             var client = _factory.CreateClient();
