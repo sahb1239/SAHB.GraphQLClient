@@ -294,135 +294,40 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
 
         private static bool IsListType(GraphQLIntrospectionTypeRef graphQLIntrospectionTypeRef)
         {
+            if (graphQLIntrospectionTypeRef is null)
+            {
+                throw new ArgumentNullException(nameof(graphQLIntrospectionTypeRef));
+            }
+
             if (graphQLIntrospectionTypeRef.Kind == GraphQLTypeKind.List)
                 return true;
 
             if (HasSubtype(graphQLIntrospectionTypeRef.Kind))
             {
-                var ofType1 = graphQLIntrospectionTypeRef.OfType;
-
-                if (ofType1.Kind == GraphQLTypeKind.List)
-                    return true;
-
-                if (HasSubtype(ofType1.Kind))
-                {
-                    var ofType2 = ofType1.OfType;
-
-                    if (ofType2.Kind == GraphQLTypeKind.List)
-                        return true;
-
-                    if (HasSubtype(ofType2.Kind))
-                    {
-                        var ofType3 = ofType2.OfType;
-
-                        if (ofType3.Kind == GraphQLTypeKind.List)
-                            return true;
-
-                        if (HasSubtype(ofType3.Kind))
-                        {
-                            var ofType4 = ofType3.OfType;
-
-                            if (ofType4.Kind == GraphQLTypeKind.List)
-                                return true;
-
-                            if (HasSubtype(ofType4.Kind))
-                            {
-                                var ofType5 = ofType4.OfType;
-
-                                if (ofType5.Kind == GraphQLTypeKind.List)
-                                    return true;
-
-                                if (HasSubtype(ofType5.Kind))
-                                {
-                                    var ofType6 = ofType5.OfType;
-
-                                    if (ofType6.Kind == GraphQLTypeKind.List)
-                                        return true;
-
-                                    if (HasSubtype(ofType6.Kind))
-                                    {
-                                        var ofType7 = ofType6.OfType;
-                                        if (ofType7.Kind == GraphQLTypeKind.List)
-                                            return true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                return IsListType(graphQLIntrospectionTypeRef.OfType);
             }
+
             return false;
         }
 
         private static GraphQLIntrospectionFullType GetSubtype(GraphQLIntrospectionSchema graphQLIntrospectionSchema, GraphQLIntrospectionTypeRef graphQLIntrospectionTypeRef)
         {
-            GraphQLIntrospectionFullType graphQLType;
+            if (graphQLIntrospectionSchema is null)
+            {
+                throw new ArgumentNullException(nameof(graphQLIntrospectionSchema));
+            }
+
+            if (graphQLIntrospectionTypeRef is null)
+            {
+                throw new ArgumentNullException(nameof(graphQLIntrospectionTypeRef));
+            }
 
             if (HasSubtype(graphQLIntrospectionTypeRef.Kind))
             {
-                var ofType1 = graphQLIntrospectionTypeRef.OfType;
-                if (HasSubtype(ofType1.Kind))
-                {
-                    var ofType2 = ofType1.OfType;
-                    if (HasSubtype(ofType2.Kind))
-                    {
-                        var ofType3 = ofType2.OfType;
-                        if (HasSubtype(ofType3.Kind))
-                        {
-                            var ofType4 = ofType3.OfType;
-                            if (HasSubtype(ofType4.Kind))
-                            {
-                                var ofType5 = ofType4.OfType;
-                                if (HasSubtype(ofType5.Kind))
-                                {
-                                    var ofType6 = ofType5.OfType;
-                                    if (HasSubtype(ofType6.Kind))
-                                    {
-                                        var ofType7 = ofType6.OfType;
-                                        if (HasSubtype(ofType7.Kind))
-                                        {
-                                            throw new NotImplementedException();
-                                        }
-                                        else
-                                        {
-                                            graphQLType = GetTypeByName(graphQLIntrospectionSchema, ofType7.Name);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        graphQLType = GetTypeByName(graphQLIntrospectionSchema, ofType6.Name);
-                                    }
-                                }
-                                else
-                                {
-                                    graphQLType = GetTypeByName(graphQLIntrospectionSchema, ofType5.Name);
-                                }
-                            }
-                            else
-                            {
-                                graphQLType = GetTypeByName(graphQLIntrospectionSchema, ofType4.Name);
-                            }
-                        }
-                        else
-                        {
-                            graphQLType = GetTypeByName(graphQLIntrospectionSchema, ofType3.Name);
-                        }
-                    }
-                    else
-                    {
-                        graphQLType = GetTypeByName(graphQLIntrospectionSchema, ofType2.Name);
-                    }
-                }
-                else
-                {
-                    graphQLType = GetTypeByName(graphQLIntrospectionSchema, ofType1.Name);
-                }
+                return GetSubtype(graphQLIntrospectionSchema, graphQLIntrospectionTypeRef.OfType);
             }
-            else
-            {
-                graphQLType = GetTypeByName(graphQLIntrospectionSchema, graphQLIntrospectionTypeRef.Name);
-            }
-            return graphQLType;
+
+            return GetTypeByName(graphQLIntrospectionSchema, graphQLIntrospectionTypeRef.Name);
         }
         private static bool HasSubtype(GraphQLTypeKind kind)
         {
