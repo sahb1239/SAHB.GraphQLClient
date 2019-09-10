@@ -59,7 +59,7 @@ namespace SAHB.GraphQL.Client.Testserver.Tests.Schemas.CatOrDog
         private class Animal
         {
             private static int number = 0;
-            private object locker = new object();
+            private readonly object locker = new object();
 
             public int Number
             {

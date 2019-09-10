@@ -103,7 +103,7 @@ namespace SAHB.GraphQL.Client.Integration.Tests
         }
 
         static int Number = 0;
-        static object _locker = new object();
+        static readonly object _locker = new object();
         static int GetNumber()
         {
             lock (_locker)

@@ -32,8 +32,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
 
         public static TValue ValueOrDefault<TKey, TValue>(IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue)
         {
-            TValue value;
-            if (dictionary.TryGetValue(key, out value))
+            if (dictionary.TryGetValue(key, out TValue value))
                 return value;
             return defaultValue;
         }

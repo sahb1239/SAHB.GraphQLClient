@@ -17,7 +17,7 @@ namespace SAHB.GraphQLClient.Subscription
     public class GraphQLSubscriptionClient : IGraphQLSubscriptionClient
     {
         private long _operationCounter = 1;
-        private object _locker = new object();
+        private readonly object _locker = new object();
         private readonly Dictionary<string, GraphQLOperationSource> _operations = new Dictionary<string, GraphQLOperationSource>();
 
         private const int ReceiveChunkSize = 1024;
