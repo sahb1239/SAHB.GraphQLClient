@@ -56,21 +56,21 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// </summary>
         /// <param name="variableName">The variable name which should be set used in the <see cref="GraphQLArgumentsAttribute"/></param>
         /// <param name="argumentValue">The value which is inserted in the variables part of the GraphQL query</param>
-        public GraphQLQueryArgument(string variableName, object argumentValue, Expression<Func<T, object>> expression) : base(variableName, GetMemberName<T>(expression), argumentValue)
+        public GraphQLQueryArgument(string variableName, object argumentValue, Expression<Func<T, object>> expression) 
+            : base(variableName, GetMemberName(expression), argumentValue)
         {
         }
 
-        private static string GetMemberName<T>(Expression<Func<T, object>> expression)
+        private static string GetMemberName(Expression<Func<T, object>> expression)
         {
             return GetMemberName(expression.Body);
         }
 
         private static string GetMemberName(Expression expression)
         {
-            if (expression is MemberExpression)
+            if (expression is MemberExpression memberExpression)
             {
                 // Reference type property or field
-                var memberExpression = (MemberExpression)expression;
                 if (memberExpression.Expression is ParameterExpression)
                 {
                     return memberExpression.Member.Name;
@@ -81,24 +81,21 @@ namespace SAHB.GraphQLClient.QueryGenerator
                 }
             }
 
-            if (expression is MethodCallExpression)
+            if (expression is MethodCallExpression methodCallExpression)
             {
                 // Reference type method
-                var methodCallExpression = (MethodCallExpression)expression;
                 return methodCallExpression.Method.Name;
             }
 
-            if (expression is UnaryExpression)
+            if (expression is UnaryExpression unaryExpression)
             {
                 // Property, field of method returning value type
-                var unaryExpression = (UnaryExpression)expression;
                 return GetMemberName(unaryExpression);
             }
 
-            if (expression is LambdaExpression)
+            if (expression is LambdaExpression lambdaExpression)
             {
                 // Property, field of method returning value type
-                var lambdaExpression = (LambdaExpression)expression;
                 return GetMemberName(lambdaExpression.Body);
             }
 

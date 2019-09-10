@@ -2,14 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SAHB.GraphQLClient.Internal;
 using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.Internal;
 using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Result;
 
