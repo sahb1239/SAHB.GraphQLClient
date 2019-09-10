@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using SAHB.GraphQL.Client.Internal;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Internal;
@@ -49,36 +50,47 @@ namespace SAHB.GraphQLClient.QueryGenerator
             IDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments = new Dictionary<GraphQLFieldArguments, GraphQLQueryArgument>();
             ICollection<GraphQLFieldArguments> argumentsNotSet = new Collection<GraphQLFieldArguments>();
             List<string> duplicateVariableNames = new List<string>();
-            foreach (var fieldArgument in fieldArguments)
+
+            foreach (var field in fieldArguments)
             {
-                // Remove from variablesNotFoundInFields
-                variablesNotFoundInFields.RemoveAll(argument => argument.VariableName == fieldArgument.VariableName);
-
-                // Find matching query arguments
-                var queryArgument = queryArguments.Where(e => e.VariableName == fieldArgument.VariableName).Take(2).ToList();
-
-                // Find match for argument
-                switch (queryArgument.Count)
+                foreach (var fieldArgument in field.Value)
                 {
-                    case 0:
-                        // Set default value
-                        if (fieldArgument.DefaultValue != null)
-                        {
-                            arguments.Add(fieldArgument, new GraphQLQueryArgument(fieldArgument.VariableName, fieldArgument.DefaultValue));
+                    // Remove from variablesNotFoundInFields
+                    variablesNotFoundInFields.RemoveAll(argument =>
+                        (argument.Field == null || argument.Field == field.Key) && // Match on field name
+                        argument.VariableName == fieldArgument.VariableName);
+
+                    // Find matching query arguments
+                    var queryArgument = queryArguments
+                        .Where(argument =>
+                            (argument.Field == null || argument.Field == field.Key) &&
+                            argument.VariableName == fieldArgument.VariableName)
+                        .Take(2)
+                        .ToList();
+
+                    // Find match for argument
+                    switch (queryArgument.Count)
+                    {
+                        case 0:
+                            // Set default value
+                            if (fieldArgument.DefaultValue != null)
+                            {
+                                arguments.Add(fieldArgument, new GraphQLQueryArgument(fieldArgument.VariableName, fieldArgument.DefaultValue));
+                                break;
+                            }
+                            // If no default was set we need to check if it was required
+                            if (fieldArgument.IsRequired)
+                            {
+                                argumentsNotSet.Add(fieldArgument);
+                            }
                             break;
-                        }
-                        // If no default was set we need to check if it was required
-                        if (fieldArgument.IsRequired)
-                        {
-                            argumentsNotSet.Add(fieldArgument);
-                        }
-                        break;
-                    case 1:
-                        arguments.Add(fieldArgument, queryArgument[0]);
-                        break;
-                    default:
-                        duplicateVariableNames.Add(queryArgument[0].VariableName);
-                        break;
+                        case 1:
+                            arguments.Add(fieldArgument, queryArgument[0]);
+                            break;
+                        default:
+                            duplicateVariableNames.Add(queryArgument[0].VariableName);
+                            break;
+                    }
                 }
             }
 
@@ -98,6 +110,33 @@ namespace SAHB.GraphQLClient.QueryGenerator
             if (variablesNotFoundInFields.Any())
             {
                 throw new GraphQLArgumentVariableNotFoundException(variablesNotFoundInFields);
+            }
+
+            // Detect any variable collision
+            var variableCollisions = arguments
+                .Where(e => !ShouldInlineArgument(e)) // If argument is inlined it will not be a problem
+                .GroupBy(e => e.Key.VariableName)
+                .Where(e => e.Count() > 1)
+                .ToList();
+
+            // Replace entire list with new arguments to prevent side effects
+            if (variableCollisions.Any())
+            {
+                arguments = arguments.ToDictionary(
+                    e => e.Key,
+                    e => (GraphQLQueryArgument)new GraphQLQueryArgumentWithOverriddenVariable(e.Value));
+            }
+
+            // Update all variables
+            foreach (var argumentVariableCollision in variableCollisions)
+            {
+                foreach (var item in argumentVariableCollision.Select((value, i) => new { i, value }))
+                {
+                    var argumentWithCollision = item.value;
+                    var index = item.i;
+
+                    argumentWithCollision.Value.VariableName += "_" + index;
+                }
             }
 
             // Get readonly arguments
