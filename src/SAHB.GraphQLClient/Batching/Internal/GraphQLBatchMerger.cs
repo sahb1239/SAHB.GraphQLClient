@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SAHB.GraphQL.Client.Internal;
+using SAHB.GraphQLClient.Internal;
 using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;

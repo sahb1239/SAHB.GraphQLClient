@@ -1,7 +1,7 @@
 ﻿using SAHB.GraphQLClient.QueryGenerator;
 using Xunit;
 
-namespace SAHB.GraphQL.Client.Tests.QueryGenerator
+namespace SAHB.GraphQLClient.Tests.QueryGenerator
 {
     public class GraphQLQueryArgumentFieldTests
     {

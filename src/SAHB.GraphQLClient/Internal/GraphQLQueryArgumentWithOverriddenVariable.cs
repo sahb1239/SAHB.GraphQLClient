@@ -1,6 +1,6 @@
 ﻿using SAHB.GraphQLClient.QueryGenerator;
 
-namespace SAHB.GraphQL.Client.Internal
+namespace SAHB.GraphQLClient.Internal
 {
     internal class GraphQLQueryArgumentWithOverriddenVariable : GraphQLQueryArgument
     {

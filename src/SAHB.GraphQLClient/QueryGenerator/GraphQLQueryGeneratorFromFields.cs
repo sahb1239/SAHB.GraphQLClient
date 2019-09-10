@@ -5,10 +5,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SAHB.GraphQL.Client.Internal;
+using SAHB.GraphQLClient.Internal;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.Internal;
 
 namespace SAHB.GraphQLClient.QueryGenerator
 {

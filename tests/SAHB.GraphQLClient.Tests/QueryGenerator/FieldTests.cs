@@ -4,7 +4,7 @@ using SAHB.GraphQLClient.QueryGenerator;
 using System.Collections.Generic;
 using Xunit;
 
-namespace SAHB.GraphQL.Client.Tests.QueryGenerator
+namespace SAHB.GraphQLClient.Tests.QueryGenerator
 {
     public class FieldTests
     {
