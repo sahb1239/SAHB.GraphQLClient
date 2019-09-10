@@ -30,7 +30,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
 
         private IEnumerable<GraphQLField> GetSelectionSet(Type type) => GetSelectionSet(type, new Stack<Type>(), new Dictionary<Type, int>(), 1, false);
 
-        public static TValue ValueOrDefault<TKey, TValue>(IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue)
+        private static TValue ValueOrDefault<TKey, TValue>(IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue)
         {
             if (dictionary.TryGetValue(key, out TValue value))
                 return value;
