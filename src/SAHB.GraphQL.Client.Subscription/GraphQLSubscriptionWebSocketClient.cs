@@ -31,6 +31,17 @@ namespace SAHB.GraphQLClient.Subscription
             this.deserialization = deserialization;
         }
 
+        public GraphQLSubscriptionWebSocketClient(ClientWebSocket websocket, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization, CancellationToken cancellationToken)
+        {
+            _webSocket = websocket;
+
+            _cancellationToken = cancellationToken;
+            _webSocket.Options.AddSubProtocol("graphql-ws");
+            this.fieldBuilder = fieldBuilder;
+            this.queryGenerator = queryGenerator;
+            this.deserialization = deserialization;
+        }
+
         /// <summary>
         /// Initilizes a new instance of GraphQL subscription client which supports generating GraphQL subscriptions from a <see cref="Type"/>
         /// </summary>
@@ -38,6 +49,15 @@ namespace SAHB.GraphQLClient.Subscription
         public static IGraphQLSubscriptionWebSocketClient Default()
         {
             return new GraphQLSubscriptionWebSocketClient(new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization(), CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Initilizes a new instance of GraphQL subscription client (using the specified <see cref="ClientWebSocket"/>) which supports generating GraphQL subscriptions from a <see cref="Type"/>
+        /// </summary>
+        /// <returns>A new instance of the GraphQL subscription client</returns>
+        public static IGraphQLSubscriptionWebSocketClient Default(ClientWebSocket websocket)
+        {
+            return new GraphQLSubscriptionWebSocketClient(websocket, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization(), CancellationToken.None);
         }
 
         public async Task<GraphQLSubscriptionClient> Connect(Uri url)
