@@ -12,7 +12,7 @@ namespace SAHB.GraphQLClient.Subscription
     // Inspired by https://gist.github.com/xamlmonkey/4737291
     public class GraphQLSubscriptionWebSocketClient : IGraphQLSubscriptionWebSocketClient
     {
-        private readonly ClientWebSocket _webSocket = new ClientWebSocket();
+        private readonly ClientWebSocket _webSocket;
 
         private readonly CancellationToken _cancellationToken;
 
@@ -22,13 +22,9 @@ namespace SAHB.GraphQLClient.Subscription
 
         public bool IsConnected => _webSocket.State == WebSocketState.Open;
 
-        public GraphQLSubscriptionWebSocketClient(IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization, CancellationToken cancellationToken)
+         public GraphQLSubscriptionWebSocketClient(IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization, CancellationToken cancellationToken) :
+            this(new ClientWebSocket(), fieldBuilder, queryGenerator, deserialization, cancellationToken)
         {
-            _cancellationToken = cancellationToken;
-            _webSocket.Options.AddSubProtocol("graphql-ws");
-            this.fieldBuilder = fieldBuilder;
-            this.queryGenerator = queryGenerator;
-            this.deserialization = deserialization;
         }
 
         public GraphQLSubscriptionWebSocketClient(ClientWebSocket websocket, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization, CancellationToken cancellationToken)
