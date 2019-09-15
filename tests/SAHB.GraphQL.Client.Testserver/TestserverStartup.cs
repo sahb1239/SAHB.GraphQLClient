@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using SAHB.GraphQL.Client.Subscription.Integration.Tests.ChatSchema;
 
-namespace SAHB.GraphQLClient.Subscription.Integration.Tests.TestServer
+namespace SAHB.GraphQL.Client.TestServer
 {
     public class TestserverStartup<TSchema>
         where TSchema : Schema

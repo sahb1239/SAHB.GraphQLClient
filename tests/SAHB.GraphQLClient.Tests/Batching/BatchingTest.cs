@@ -305,10 +305,8 @@ namespace SAHB.GraphQLClient.Tests.Batching
             Assert.Equal(result2.Data.Part2Field3, "Value3");
             Assert.Equal(result2.Data.Part2Field4, "Value4");
 
-            IEnumerable<string> expectedHeaders = new List<string>();
-            IEnumerable<string> actualHeaders = new List<string>();
-            requiredHeaders.TryGetValues("TestHeader", out expectedHeaders);
-            result1.Headers.TryGetValues("TestHeader", out actualHeaders);
+            IEnumerable<string> expectedHeaders = requiredHeaders.GetValues("TestHeader");
+            IEnumerable<string> actualHeaders = result1.Headers.GetValues("TestHeader");
             Assert.Equal(actualHeaders, expectedHeaders);
 
             requiredHeaders.TryGetValues("TestHeader", out expectedHeaders);

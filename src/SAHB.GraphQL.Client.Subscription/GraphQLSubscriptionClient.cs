@@ -17,7 +17,7 @@ namespace SAHB.GraphQLClient.Subscription
     public class GraphQLSubscriptionClient : IGraphQLSubscriptionClient
     {
         private long _operationCounter = 1;
-        private object _locker = new object();
+        private readonly object _locker = new object();
         private readonly Dictionary<string, GraphQLOperationSource> _operations = new Dictionary<string, GraphQLOperationSource>();
 
         private const int ReceiveChunkSize = 1024;
@@ -64,10 +64,10 @@ namespace SAHB.GraphQLClient.Subscription
             {
                 Type = MessageType.GQL_CONNECTION_INIT,
                 Payload = new object()
-            });
+            }).ConfigureAwait(false);
 
             // Wait for ack
-            string ackMessage = await ReadMessage();
+            string ackMessage = await ReadMessage().ConfigureAwait(false);
 
             var serverAck = JsonConvert.DeserializeObject<OperationMessage>(ackMessage);
             if (serverAck.Type != MessageType.GQL_CONNECTION_ACK)
@@ -76,7 +76,7 @@ namespace SAHB.GraphQLClient.Subscription
             }
 
             // Start listening into new task
-            await Task.Factory.StartNew(() => StartListen());
+            await Task.Factory.StartNew(() => StartListen()).ConfigureAwait(false);
 
             // Set initilized
             IsInitilized = true;
@@ -131,7 +131,7 @@ namespace SAHB.GraphQLClient.Subscription
             _operations.Add(operationId.ToString(), operationSource);
 
             // Send subscribe message
-            await SendOperationMessage(message);
+            await SendOperationMessage(message).ConfigureAwait(false);
 
             // Return the subscription
             return subscription;
@@ -173,7 +173,7 @@ namespace SAHB.GraphQLClient.Subscription
         private async Task SendOperationMessage(OperationMessage operationMessage)
         {
             string message = JsonConvert.SerializeObject(operationMessage);
-            await SendMessageAsync(message);
+            await SendMessageAsync(message).ConfigureAwait(false);
         }
 
         private async Task<string> ReadMessage()
@@ -183,12 +183,12 @@ namespace SAHB.GraphQLClient.Subscription
             WebSocketReceiveResult result;
             do
             {
-                result = await WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), _cancellationToken);
+                result = await WebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), _cancellationToken).ConfigureAwait(false);
 
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
                     await
-                        WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                        WebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None).ConfigureAwait(false);
                     OnDisconnected();
                 }
                 else
@@ -208,7 +208,7 @@ namespace SAHB.GraphQLClient.Subscription
             {
                 while (WebSocket.State == WebSocketState.Open)
                 {
-                    var message = await ReadMessage();
+                    var message = await ReadMessage().ConfigureAwait(false);
 
                     OnMessageRecieved(message);
                 }
@@ -240,7 +240,7 @@ namespace SAHB.GraphQLClient.Subscription
                     count = messageBuffer.Length - offset;
                 }
 
-                await WebSocket.SendAsync(new ArraySegment<byte>(messageBuffer, offset, count), WebSocketMessageType.Text, lastMessage, _cancellationToken);
+                await WebSocket.SendAsync(new ArraySegment<byte>(messageBuffer, offset, count), WebSocketMessageType.Text, lastMessage, _cancellationToken).ConfigureAwait(false);
             }
         }
     }

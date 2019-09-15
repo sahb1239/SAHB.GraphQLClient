@@ -79,7 +79,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
         public async Task<GraphQLDataResult<T>> GetDetailedValue<T>(string identifier)
             where T : class
         {
-            var deserialized = await GetDeserializedResult<T>(identifier);
+            var deserialized = await GetDeserializedResult<T>(identifier).ConfigureAwait(false);
 
             return new GraphQLDataResult<T>
             {

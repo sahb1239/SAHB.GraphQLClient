@@ -1,8 +1,8 @@
-﻿using GraphQL.Types;
+﻿using SAHB.GraphQL.Client.Testserver.Tests.Schemas.CatOrDog;
+using SAHB.GraphQL.Client.TestServer;
 using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
-using SAHB.GraphQLClient.Integration.Tests.TestServer;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,17 +10,17 @@ using Xunit;
 
 namespace SAHB.GraphQL.Client.Integration.Tests
 {
-    public class TestInterface : IClassFixture<GraphQLWebApplicationFactory<TestInterface.TestSchema>>
+    public class TestInterface : IClassFixture<GraphQLWebApplicationFactory<CatOrDogInterfaceSchema>>
     {
-        private readonly GraphQLWebApplicationFactory<TestSchema> _factory;
+        private readonly GraphQLWebApplicationFactory<CatOrDogInterfaceSchema> _factory;
 
-        public TestInterface(GraphQLWebApplicationFactory<TestSchema> factory)
+        public TestInterface(GraphQLWebApplicationFactory<CatOrDogInterfaceSchema> factory)
         {
             _factory = factory;
         }
 
         [Fact]
-        public async Task TestSimpleUnion()
+        public async Task TestSimpleInterface()
         {
             // Arrange
             var client = _factory.CreateClient();
@@ -40,7 +40,7 @@ namespace SAHB.GraphQL.Client.Integration.Tests
         }
 
         [Fact]
-        public async Task TestBatchUnion()
+        public async Task TestBatchInterface()
         {
             // Arrange
             var client = _factory.CreateClient();
@@ -74,82 +74,6 @@ namespace SAHB.GraphQL.Client.Integration.Tests
                 result2.Dog.Number
             };
             Assert.False(allNumbers.GroupBy(e => e).Where(e => e.Count() > 1).Any());
-        }
-
-        public class TestSchema : Schema
-        {
-            public TestSchema()
-            {
-                Query = new TestSchemaQuery();
-                RegisterType<CatGraphType>();
-                RegisterType<DogGraphType>();
-            }
-        }
-
-        private class TestSchemaQuery : ObjectGraphType
-        {
-            public TestSchemaQuery()
-            {
-                Field<CatOrDogGraphType>("cat", resolve: context => new Cat());
-                Field<CatOrDogGraphType>("dog", resolve: context => new Dog());
-            }
-        }
-
-        public class CatOrDogGraphType : InterfaceGraphType<CatOrDog>
-        {
-            public CatOrDogGraphType()
-            {
-                Field<int>("number", e => e.Number);
-            }
-        }
-
-        public class CatOrDog
-        {
-            public int Number { get; } = GetNumber();
-        }
-
-
-        static int Number = 1;
-        static object _locker = new object();
-        static int GetNumber()
-        {
-            lock (_locker)
-            {
-                Number++;
-                return Number;
-            }
-        }
-
-        public class CatGraphType : ObjectGraphType<Cat>
-        {
-            public CatGraphType()
-            {
-                Name = "Cat";
-                Field<StringGraphType>("cat", resolve: context => "cat");
-                Field<int>("number", e => e.Number);
-                Interface<CatOrDogGraphType>();
-            }
-        }
-
-        public class DogGraphType : ObjectGraphType<Dog>
-        {
-            public DogGraphType()
-            {
-                Name = "Dog";
-                Field<StringGraphType>("dog", resolve: context => "dog");
-                Field<int>("number", e => e.Number);
-                Interface<CatOrDogGraphType>();
-            }
-        }
-
-        public class Cat : CatOrDog
-        {
-
-        }
-
-        public class Dog : CatOrDog
-        {
-
         }
 
         private class TestHelloUnion

@@ -62,7 +62,7 @@ namespace SAHB.GraphQLClient.Subscription
                 throw new InvalidOperationException("Connection is already open");
 
             // Connect to web socket
-            await _webSocket.ConnectAsync(url, _cancellationToken);
+            await _webSocket.ConnectAsync(url, _cancellationToken).ConfigureAwait(false);
 
             // Create client
             return new GraphQLSubscriptionClient(_webSocket, _cancellationToken, fieldBuilder, queryGenerator, deserialization);
@@ -72,7 +72,7 @@ namespace SAHB.GraphQLClient.Subscription
         {
             if (_webSocket != null)
             {
-                await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, _cancellationToken);
+                await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, _cancellationToken).ConfigureAwait(false);
             }
         }
 

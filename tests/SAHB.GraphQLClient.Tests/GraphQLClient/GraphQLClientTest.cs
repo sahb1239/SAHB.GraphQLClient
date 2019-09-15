@@ -150,11 +150,8 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
             // Assert
             Assert.Equal(result.Data.Field, "FieldValue");
 
-            IEnumerable<string> expectedHeaders = new List<string>();
-            IEnumerable<string> actualHeaders = new List<string>();
-
-            headers.TryGetValues("TestHeader", out expectedHeaders);
-            result.Headers.TryGetValues("TestHeader", out actualHeaders);
+            IEnumerable<string> expectedHeaders = headers.GetValues("TestHeader");
+            IEnumerable<string> actualHeaders = result.Headers.GetValues("TestHeader");
 
             Assert.Equal(actualHeaders, expectedHeaders);
         }

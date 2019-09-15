@@ -1,17 +1,16 @@
-using GraphQL.Types;
-using SAHB.GraphQLClient.Integration.Tests.TestServer;
-using SAHB.GraphQLClient;
 using System.Threading.Tasks;
 using Xunit;
 using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQL.Client.Testserver.Tests.Schemas.Hello;
+using SAHB.GraphQL.Client.TestServer;
 
 namespace SAHB.GraphQLClient.Integration.Tests
 {
-    public class TestQuery : IClassFixture<GraphQLWebApplicationFactory<TestQuery.TestSchema>>
+    public class TestQuery : IClassFixture<GraphQLWebApplicationFactory<HelloQuerySchema>>
     {
-        private readonly GraphQLWebApplicationFactory<TestSchema> _factory;
+        private readonly GraphQLWebApplicationFactory<HelloQuerySchema> _factory;
 
-        public TestQuery(GraphQLWebApplicationFactory<TestSchema> factory)
+        public TestQuery(GraphQLWebApplicationFactory<HelloQuerySchema> factory)
         {
             _factory = factory;
         }
@@ -48,22 +47,6 @@ namespace SAHB.GraphQLClient.Integration.Tests
             // Assert
             Assert.Equal("query", result1.Hello);
             Assert.Equal("query", result2.Hello);
-        }
-
-        public class TestSchema : Schema
-        {
-            public TestSchema()
-            {
-                Query = new TestSchemaQuery();
-            }
-        }
-
-        private class TestSchemaQuery : ObjectGraphType
-        {
-            public TestSchemaQuery()
-            {
-                Field<StringGraphType>("hello", resolve: context => "query");
-            }
         }
 
         private class TestHelloQuery

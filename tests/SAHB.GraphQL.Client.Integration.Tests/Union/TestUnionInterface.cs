@@ -1,8 +1,8 @@
 ﻿using GraphQL.Types;
+using SAHB.GraphQL.Client.TestServer;
 using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
-using SAHB.GraphQLClient.Integration.Tests.TestServer;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -103,7 +103,7 @@ namespace SAHB.GraphQL.Client.Integration.Tests
         }
 
         static int Number = 0;
-        static object _locker = new object();
+        static readonly object _locker = new object();
         static int GetNumber()
         {
             lock (_locker)
