@@ -13,7 +13,8 @@ It can be installed using the following command in the Package Manager Console.
 Install-Package SAHB.GraphQL.Client
 ```
 
-The packages supports the following frameworks:
+### The client supports the following frameworks:
+
 [SAHB.GraphQL.Client](https://www.nuget.org/packages/SAHB.GraphQL.Client/):
 - .NET Standard 1.2
 - .NET Framework 4.5.2
