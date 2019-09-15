@@ -13,6 +13,39 @@ It can be installed using the following command in the Package Manager Console.
 Install-Package SAHB.GraphQL.Client
 ```
 
+The packages supports the following frameworks:
+[SAHB.GraphQL.Client](https://www.nuget.org/packages/SAHB.GraphQL.Client/):
+- .NET Standard 1.2
+- .NET Framework 4.5.2
+
+[SAHB.GraphQL.Client.Introspection](https://www.nuget.org/packages/SAHB.GraphQL.Client.Introspection/):
+- .NET Standard 1.2
+- .NET Framework 4.5.2
+
+[SAHB.GraphQL.Client.Subscription](https://www.nuget.org/packages/SAHB.GraphQL.Client.Subscription/):
+- .NET Standard 2.0
+- .NET Framework 4.5.2
+
+## Documentation
+Documentation can be found in this readme and in [Documentation.md](Documentation.md) file.
+
+## Building
+In order to build this project some additional steps is needed to generate a Version.props file. The easiest way is to execute the following commands:
+```
+git submodule update --init --recursive
+cd Build
+.\build.ps1 -Target "Build"
+```
+
+Another way is creating the file Version.props. The file should be at the root directory of the repository and contain the following:
+```
+<Project>
+	<PropertyGroup>
+		<Version>2.1.0-unstablebuild</Version>
+	</PropertyGroup>
+</Project>
+```
+
 ## Examples
 An example for the Starwars API.
 
@@ -146,108 +179,13 @@ public class Query
 }
 ```
 
-### Merging multiple queries (batching)
-The client supports merging multiple queries into one single query and returning the result for each query separate. This could reduce the number of request needed to a single server.
-
-```csharp
-// Create batch
-var batch = client.CreateBatch("https://mpjk0plp9.lp.gql.zone/graphql");
-
-// Create two requests in the batch
-var queryId1000 = batch.Query<HumanQuery>(new GraphQLQueryArgument("humanID", "1000"));
-var queryId1001 = batch.Query<HumanQuery>(new GraphQLQueryArgument("humanID", "1001"));
-
-// Execute the batch
-var queryId1000Result = await queryId1000.Execute();
-var queryId1001Result = await queryId1001.Execute();
-
-// Get result
-Console.WriteLine(queryId1000Result.Human.Name);
-Console.WriteLine(queryId1001Result.Human.Name);
-
-// Class used
-public class HumanQuery
-{
-    [GraphQLArguments("id", "ID!", "humanID")]
-    public CharacterOrPerson Human { get; set; }
-}
-```
-
-The following methods will generate the query:
-```
-{"query":"query{batch0_Human:human(id:\"1000\"){Name:name Friends:friends{Name:name}} batch1_Human:human(id:\"1001\"){Name:name Friends:friends{Name:name}}}"}
-```
-
-Note: when Execute is called on one result the batch does not support adding more request to it and will therefore throw if you try to add more requests to it. For example:
-```csharp
-// Create a requests in a batch and execute it
-var batch = client.CreateBatch("https://mpjk0plp9.lp.gql.zone/graphql");
-var queryId1000 = batch.Query<HumanQuery>(new GraphQLQueryArgument("humanID", "1000"));
-var queryId1000Result = await queryId1000.Execute();
-
-// Get another request
-// This will throw a GraphQLBatchAlreadyExecutedException
-var queryId1001 = batch.Query<HumanQuery>(new GraphQLQueryArgument("humanID", "1001"));
-```
-
 ## Subscriptions
-The GraphQLclient also has a subscription client which can be found here: [SAHB.GraphQLClient.Subscription](https://www.nuget.org/packages/SAHB.GraphQL.Client.Subscription/).
+The GraphQLclient has a subscription client which can be found here: [SAHB.GraphQLClient.Subscription](https://www.nuget.org/packages/SAHB.GraphQL.Client.Subscription/).
+Documentation can be found in [Documentation.md](Documentation.md) file.
 
-```csharp
-using (IGraphQLSubscriptionWebSocketClient graphQLSubscriptionWebsocketClient = GraphQLSubscriptionWebSocketClient.Default())
-{
-    // Connect
-    var graphQLSubscriptionClient = await graphQLSubscriptionWebsocketClient.Connect(new Uri("ws://localhost:60340/graphql"));
+## Introspection
+The GraphQLclient has a package which contains a introspection query to inspect the GraphQL type system and a validator to validate C# queries against the introspection output. It can be found here: [SAHB.GraphQLClient.Introspection](https://www.nuget.org/packages/SAHB.GraphQL.Client.Introspection/).
+Documentation can be found in [Documentation.md](Documentation.md) file.
 
-    // Initilize
-    await graphQLSubscriptionClient.Initilize();
-
-    // It is possible to execute multiple operations over each connection
-    var operation = await graphQLSubscriptionClient.ExecuteOperation<MessageSubscription>();
-    operation.DataRecieved += (sender, e) =>
-    {
-        Console.WriteLine(e.ReceivedData.Data.MessageAdded.From.Id + ": " + e.ReceivedData.Data.MessageAdded.Content);
-    };
-    operation.ErrorRecieved += (sender, e) =>
-    {
-        // TODO: Do something with the errors
-        Console.WriteLine("Error recieved: " + e.ReceivedData.Errors);
-    };
-    operation.Completed += (sender, e) =>
-    {
-        Console.WriteLine("Subscription operation completed");
-    };
-
-    // The individual operation can be stopped (other open operations will continue to recieve data)
-    await operation.Stop();
-
-    // The client can be disconnected again
-    await graphQLSubscriptionWebsocketClient.Disconnect();
-}
-```
-
-The query classes used is the following:
-```csharp
-public class MessageSubscription
-{
-    public Message MessageAdded { get; set; }
-}
-
-public class Message
-{
-    public Author From { get; set; }
-    public string Content { get; set; }
-    public DateTime SentAt { get; set; }
-}
-
-public class Author
-{
-    public string Id { get; set; }
-    public string DisplayName { get; set; }
-}
-```
-
-Please also see example program (SAHB.GraphQL.Client.Subscription.Examples)
-
-## Example project
-An example project can be found in the path examples
+## Example projects
+Example projects can be found in the path examples
