@@ -26,6 +26,8 @@ namespace SAHB.GraphQLClient.Subscription
         private readonly CancellationToken _cancellationToken;
         private readonly byte[] buffer = new byte[ReceiveChunkSize];
 
+        public event EventHandler Disconnected;
+
         public GraphQLSubscriptionClient(WebSocket webSocket, CancellationToken cancellationToken) 
             : this(webSocket, cancellationToken, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), 
                   new GraphQLDeserilization())
@@ -167,7 +169,7 @@ namespace SAHB.GraphQLClient.Subscription
 
         private void OnDisconnected()
         {
-
+            Disconnected?.Invoke(this, new EventArgs());
         }
 
         private async Task SendOperationMessage(OperationMessage operationMessage)

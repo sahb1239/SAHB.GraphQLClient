@@ -33,5 +33,10 @@ namespace SAHB.GraphQLClient.Subscription
         /// <param name="arguments">The arguments sent to the GraphQL query</param>
         /// <returns>Returns a <see cref="IGraphQLSubscriptionOperation{T}"/></returns>
         Task<IGraphQLSubscriptionOperation<T>> ExecuteOperation<T>(params GraphQLQueryArgument[] arguments) where T : class;
+
+        /// <summary>
+        /// Fired when the subscription is disconnected
+        /// </summary>
+        event EventHandler Disconnected;
     }
 }
