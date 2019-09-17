@@ -2,13 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SAHB.GraphQLClient.Internal;
 using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.Internal;
 using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Result;
 
@@ -28,7 +27,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
         private readonly IGraphQLQueryGeneratorFromFields _queryGenerator;
         private readonly IGraphQLDeserialization _graphQLDeserialization;
         private readonly IDictionary<string, IEnumerable<GraphQLFieldWithOverridedAlias>> _fields;
-        private readonly IDictionary<string, GraphQLQueryArgument[]> _arguments;
+        private readonly IDictionary<string, GraphQLQueryArgumentWithOverriddenVariable[]> _arguments;
         private int _identifierCount = 0;
         private bool _isExecuted = false;
         private GraphQLDataResult<JObject> _result;
@@ -47,7 +46,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             _queryGenerator = queryGenerator;
             _graphQLDeserialization = graphQLDeserialization;
             _fields = new Dictionary<string, IEnumerable<GraphQLFieldWithOverridedAlias>>();
-            _arguments = new Dictionary<string, GraphQLQueryArgument[]>();
+            _arguments = new Dictionary<string, GraphQLQueryArgumentWithOverriddenVariable[]>();
         }
 
         public IGraphQLQuery<T> AddQuery<T>(params GraphQLQueryArgument[] arguments)
@@ -65,7 +64,9 @@ namespace SAHB.GraphQLClient.Batching.Internal
 
             // Add fields
             _fields.Add(identifier, fields);
-            _arguments.Add(identifier, arguments);
+            _arguments.Add(identifier, arguments
+                .Select(e => new GraphQLQueryArgumentWithOverriddenVariable(e))
+                .ToArray());
 
             return new GraphQLBatchQuery<T>(this, identifier);
         }
@@ -135,9 +136,12 @@ namespace SAHB.GraphQLClient.Batching.Internal
             // Update arguments
             foreach (var fieldsWithIdentifier in _fields)
             {
-                foreach (var argument in Helper.GetAllArgumentsFromFields(fieldsWithIdentifier.Value))
+                foreach (var fieldArguments in Helper.GetAllArgumentsFromFields(fieldsWithIdentifier.Value))
                 {
-                    argument.VariableName = fieldsWithIdentifier.Key + "_" + argument.VariableName;
+                    foreach (var argument in fieldArguments.Value)
+                    {
+                        argument.VariableName = fieldsWithIdentifier.Key + "_" + argument.VariableName;
+                    }
                 }
             }
 
