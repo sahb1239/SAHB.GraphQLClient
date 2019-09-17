@@ -99,7 +99,8 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                     }
 
                     // Validate type
-                    if (!string.Equals(introspectionArgument.Type.Name, argument.ArgumentType, StringComparison.OrdinalIgnoreCase))
+                    var typeName = GetTypeName(introspectionArgument.Type);
+                    if (!string.Equals(typeName, argument.ArgumentType, StringComparison.OrdinalIgnoreCase))
                     {
                         yield return new ValidationOutput(selectionFieldPath, ValidationType.Argument_Invalid_Type, selection, introspectionArgument.Type.Name, argument.ArgumentType);
                     }
@@ -188,6 +189,19 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                         }
                     }
                 }
+            }
+        }
+
+        private static string GetTypeName(GraphQLIntrospectionTypeRef type)
+        {
+            switch (type.Kind)
+            {
+                case GraphQLTypeKind.NonNull:
+                    return $"{GetTypeName(type.OfType)}!";
+                case GraphQLTypeKind.List:
+                    return $"[{GetTypeName(type.OfType)}]";
+                default:
+                    return type.Name;
             }
         }
 

@@ -28,6 +28,18 @@ namespace SAHB.GraphQL.Client.Testserver.Tests.Schemas.HelloArgument
                         new QueryArgument<IdGraphType>
                         {
                             Name = "argument3"
+                        },
+                        new QueryArgument<NonNullGraphType<StringGraphType>>
+                        {
+                            Name = "nonNullArgument1"
+                        },
+                        new QueryArgument<NonNullGraphType<IntGraphType>>
+                        {
+                            Name = "nonNullArgument2"
+                        },
+                        new QueryArgument<NonNullGraphType<IdGraphType>>
+                        {
+                            Name = "nonNullArgument3"
                         }
                     )
                 );

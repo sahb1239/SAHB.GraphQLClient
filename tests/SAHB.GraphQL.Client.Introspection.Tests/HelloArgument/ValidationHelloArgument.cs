@@ -37,6 +37,21 @@ namespace SAHB.GraphQL.Client.Introspection.Tests.HelloArgument
         }
 
         [Fact]
+        public async Task Validate_NonNullHello_Query_IsValid()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var graphQLClient = GraphQLHttpClient.Default(client);
+
+            // Act
+            var introspectionQuery = await graphQLClient.CreateQuery<GraphQLIntrospectionQuery>("http://localhost/graphql").Execute();
+            var validationOutput = introspectionQuery.ValidateGraphQLType<TestNonNullQuery>(GraphQLOperationType.Query);
+
+            // Assert
+            Assert.Empty(validationOutput);
+        }
+
+        [Fact]
         public async Task Validate_Hello_Query_Argument_NotFound()
         {
             // Arrange
@@ -85,6 +100,14 @@ namespace SAHB.GraphQL.Client.Introspection.Tests.HelloArgument
         private class TestWrongTypeArgument
         {
             [GraphQLArguments("argument1", "Id", "argument1")]
+            public string Hello { get; set; }
+        }
+
+        private class TestNonNullQuery
+        {
+            [GraphQLArguments("nonNullArgument1", "String!", "argument1")]
+            [GraphQLArguments("nonNullArgument2", "Int!", "argument2")]
+            [GraphQLArguments("nonNullArgument3", "Id!", "argument3")]
             public string Hello { get; set; }
         }
     }
