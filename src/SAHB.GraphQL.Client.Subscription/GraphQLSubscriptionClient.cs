@@ -1,11 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Subscription.Internal;
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -18,7 +20,8 @@ namespace SAHB.GraphQLClient.Subscription
     {
         private long _operationCounter = 1;
         private readonly object _locker = new object();
-        private readonly Dictionary<string, GraphQLOperationSource> _operations = new Dictionary<string, GraphQLOperationSource>();
+        private readonly ConcurrentDictionary<string, GraphQLOperationSource> _operations = new ConcurrentDictionary<string, GraphQLOperationSource>();
+        private readonly ConcurrentDictionary<string, OperationMessage> _operationMessages = new ConcurrentDictionary<string, OperationMessage>();
 
         private const int ReceiveChunkSize = 1024;
         private const int SendChunkSize = 1024;
@@ -126,17 +129,35 @@ namespace SAHB.GraphQLClient.Subscription
                 return SendOperationMessage(stopMessage);
             });
 
+            // Add to list
+            var result = _operations.TryAdd(operationId.ToString(), operationSource);
+            result &= _operationMessages.TryAdd(operationId.ToString(), message);
+            if (!result)
+            {
+                throw new InvalidOperationException("OperationId does already exist in operation messages. This should never happen - please report this as a bug");
+            }
+
             // Create IGraphQLSubscriptionOperation
             var subscription = new GraphQLSubscriptionOperation<T>(operationSource, selectionSet, Deserialization);
-
-            // Add to list
-            _operations.Add(operationId.ToString(), operationSource);
 
             // Send subscribe message
             await SendOperationMessage(message).ConfigureAwait(false);
 
             // Return the subscription
             return subscription;
+        }
+
+        /// <inheritdoc />
+        public async Task RestartActiveGraphQLOperations()
+        {
+            // Get copy of operationMessages
+            var operationMessagesCopy = _operationMessages.ToList().Select(e => e.Value);
+
+            // Resend each operationMessage
+            foreach (var message in operationMessagesCopy)
+            {
+                await SendOperationMessage(message).ConfigureAwait(false);
+            }
         }
 
         private void OnOperationRecieved(OperationMessage operationMessage)
@@ -155,8 +176,13 @@ namespace SAHB.GraphQLClient.Subscription
                     break;
                 case MessageType.GQL_COMPLETE:
                     source.HandleCompleted();
+
+                    _operations.TryRemove(operationMessage.Id, out _);
+                    _operationMessages.TryRemove(operationMessage.Id, out _);
+
                     break;
                 default:
+                    Logger?.LogWarning($"Message not handled:{Environment.NewLine}{operationMessage}");
                     // TODO: Handle the opration type
                     break;
             }
@@ -164,6 +190,8 @@ namespace SAHB.GraphQLClient.Subscription
 
         private void OnMessageRecieved(string message)
         {
+            Logger?.LogInformation($"Message recieved:{Environment.NewLine}{message}");
+
             OnOperationRecieved(JsonConvert.DeserializeObject<OperationMessage>(message));
         }
 
@@ -212,10 +240,21 @@ namespace SAHB.GraphQLClient.Subscription
                 {
                     var message = await ReadMessage().ConfigureAwait(false);
 
-                    OnMessageRecieved(message);
+                    try
+                    {
+                        OnMessageRecieved(message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger?.LogError(new EventId(2), ex, "Exception handling message");
+                    }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
+            {
+                Logger?.LogError(new EventId(1), ex, "Exception from websocket client");
+            }
+            finally
             {
                 OnDisconnected();
             }
@@ -227,6 +266,8 @@ namespace SAHB.GraphQLClient.Subscription
             {
                 throw new InvalidOperationException("Connection is not open.");
             }
+
+            Logger?.LogInformation($"Sending message:{Environment.NewLine}{message}");
 
             var messageBuffer = Encoding.UTF8.GetBytes(message);
             var messagesCount = (int)Math.Ceiling((double)messageBuffer.Length / SendChunkSize);
@@ -245,5 +286,32 @@ namespace SAHB.GraphQLClient.Subscription
                 await WebSocket.SendAsync(new ArraySegment<byte>(messageBuffer, offset, count), WebSocketMessageType.Text, lastMessage, _cancellationToken).ConfigureAwait(false);
             }
         }
+
+        #region Logging
+
+        private ILoggerFactory _loggerFactory;
+
+        /// <summary>
+        /// Contains a logger factory for the GraphQLHttpClient
+        /// </summary>
+        public ILoggerFactory LoggerFactory
+        {
+            internal get { return _loggerFactory; }
+            set
+            {
+                _loggerFactory = value;
+                if (_loggerFactory != null)
+                {
+                    Logger = _loggerFactory.CreateLogger<GraphQLHttpClient>();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Contains the logger for the class
+        /// </summary>
+        private ILogger<GraphQLHttpClient> Logger { get; set; }
+
+        #endregion
     }
 }
