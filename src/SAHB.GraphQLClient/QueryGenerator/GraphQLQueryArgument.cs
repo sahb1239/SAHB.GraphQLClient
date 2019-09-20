@@ -49,6 +49,10 @@ namespace SAHB.GraphQLClient.QueryGenerator
         public string Field { get; set; }
     }
 
+    // ReSharper disable once InconsistentNaming
+    /// <summary>
+    /// GraphQL argument used to contain variable value and type of a argument and a expression of which field which the argument should be applied to
+    /// </summary>
     public class GraphQLQueryArgument<T> : GraphQLQueryArgument
     {
         /// <summary>
