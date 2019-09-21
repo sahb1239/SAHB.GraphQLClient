@@ -10,9 +10,17 @@ using System.Runtime.Serialization;
 
 namespace SAHB.GraphQL.Client.Introspection.Validation
 {
-    public static class GraphQLValidation
+    /// <inheritdoc />
+    public class GraphQLValidation : IGraphQLValidation
     {
-        public static IEnumerable<ValidationOutput> ValidateGraphQLSelectionSet(this GraphQLIntrospectionSchema graphQLIntrospectionSchema, GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet)
+        /// <summary>
+        /// Validate if the GraphQL <paramref name="selectionSet"/> is valid for the specified <paramref name="graphQLIntrospectionSchema"/> and <paramref name="operationType"/>
+        /// </summary>
+        /// <param name="graphQLIntrospectionSchema">The introspectionSchema to validate against</param>
+        /// <param name="operationType">The operationType to validate against</param>
+        /// <param name="selectionSet">The selectionSet which should be validated</param>
+        /// <returns>An empty list if no errors were found or a <see cref="ValidationError"/> for each error found</returns>
+        public IEnumerable<ValidationError> ValidateGraphQLSelectionSet(GraphQLIntrospectionSchema graphQLIntrospectionSchema, GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet)
         {
             if (graphQLIntrospectionSchema is null)
             {
@@ -54,15 +62,15 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
 
             if (type == null)
             {
-                return new List<ValidationOutput> {
-                    new ValidationOutput(ValidationType.Operation_Type_Not_Found, operationType)
+                return new List<ValidationError> {
+                    new ValidationError(ValidationType.Operation_Type_Not_Found, operationType)
                 };
             }
 
             return ValidateSelectionSet(graphQLIntrospectionSchemaWithImplicitTypes, selectionSet, type, operationType, rootLevel: true);
         }
 
-        private static IEnumerable<ValidationOutput> ValidateSelectionSet(GraphQLIntrospectionSchema graphQLIntrospectionSchema, IEnumerable<GraphQLField> selectionSet, GraphQLIntrospectionFullType graphQLIntrospectionType, GraphQLOperationType operationType, string fieldPath = null, bool rootLevel = false)
+        private static IEnumerable<ValidationError> ValidateSelectionSet(GraphQLIntrospectionSchema graphQLIntrospectionSchema, IEnumerable<GraphQLField> selectionSet, GraphQLIntrospectionFullType graphQLIntrospectionType, GraphQLOperationType operationType, string fieldPath = null, bool rootLevel = false)
         {
             foreach (var selection in selectionSet)
             {
@@ -73,14 +81,14 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                 var introspectionField = graphQLIntrospectionType.Fields.SingleOrDefault(e => e.Name == selection.Field);
                 if (introspectionField == null)
                 {
-                    yield return new ValidationOutput(selectionFieldPath, ValidationType.Field_Not_Found, selection);
+                    yield return new ValidationError(selectionFieldPath, ValidationType.Field_Not_Found, selection);
                     continue;
                 }
 
                 // IsDeprecated
                 if (introspectionField.IsDeprecated)
                 {
-                    yield return new ValidationOutput(selectionFieldPath, ValidationType.Field_Deprecated, selection);
+                    yield return new ValidationError(selectionFieldPath, ValidationType.Field_Deprecated, selection);
                 }
 
                 // Validate arguments
@@ -94,7 +102,7 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
 
                     if (introspectionArgument == null)
                     {
-                        yield return new ValidationOutput(selectionFieldPath, ValidationType.Argument_Not_Found, selection);
+                        yield return new ValidationError(selectionFieldPath, ValidationType.Argument_Not_Found, selection);
                         continue;
                     }
 
@@ -102,7 +110,7 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                     var typeName = GetTypeName(introspectionArgument.Type);
                     if (!string.Equals(typeName, argument.ArgumentType, StringComparison.OrdinalIgnoreCase))
                     {
-                        yield return new ValidationOutput(selectionFieldPath, ValidationType.Argument_Invalid_Type, selection, introspectionArgument.Type.Name, argument.ArgumentType);
+                        yield return new ValidationError(selectionFieldPath, ValidationType.Argument_Invalid_Type, selection, introspectionArgument.Type.Name, argument.ArgumentType);
                     }
                 }
 
@@ -121,7 +129,7 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                         // If Scalar/Union/Enum we cannot have selectionSet
                         if (hasSelectionSet)
                         {
-                            yield return new ValidationOutput(selectionFieldPath, ValidationType.Field_Cannot_Have_SelectionSet, selection);
+                            yield return new ValidationError(selectionFieldPath, ValidationType.Field_Cannot_Have_SelectionSet, selection);
                         }
                         break;
                     case GraphQLTypeKind.Object:
@@ -129,13 +137,15 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                         // Object/Interface should have selectionSet
                         if (!hasSelectionSet)
                         {
-                            yield return new ValidationOutput(selectionFieldPath, ValidationType.Field_Should_Have_SelectionSet, selection);
+                            yield return new ValidationError(selectionFieldPath, ValidationType.Field_Should_Have_SelectionSet, selection);
                         }
                         break;
                     default:
                         // Report error
                         throw new NotImplementedException($"{nameof(GraphQLTypeKind)} {introspectionField.Type.Kind} not implemented for fields");
                 }
+
+                // TODO: Validation should also validate type is correct for instance if GraphQLString is having the type String
 
                 // Validate type
                 if (selection.BaseType != null)
@@ -161,7 +171,7 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                 if (hasSelectionSet)
                 {
                     // Validate selectionSet
-                    foreach (var result in 
+                    foreach (var result in
                         ValidateSelectionSet(graphQLIntrospectionSchema, selection.SelectionSet, graphQLType, operationType, selectionFieldPath))
                     {
                         yield return result;
@@ -177,12 +187,12 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                         var introspectionPossibleType = GetTypeByName(graphQLIntrospectionSchema, possibleType.Key);
                         if (introspectionPossibleType == null)
                         {
-                            yield return new ValidationOutput(possibleTypeFieldPath, ValidationType.PossibleType_Not_Found, selection);
+                            yield return new ValidationError(possibleTypeFieldPath, ValidationType.PossibleType_Not_Found, selection);
                             continue;
                         }
 
                         // Validate selectionSet
-                        foreach (var result in 
+                        foreach (var result in
                             ValidateSelectionSet(graphQLIntrospectionSchema, possibleType.Value.SelectionSet, introspectionPossibleType, operationType, possibleTypeFieldPath))
                         {
                             yield return result;
@@ -205,7 +215,7 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
             }
         }
 
-        private static IEnumerable<ValidationOutput> ValidateScalar(string selectionFieldPath, GraphQLField selection, bool isListType, GraphQLIntrospectionFullType graphQLType)
+        private static IEnumerable<ValidationError> ValidateScalar(string selectionFieldPath, GraphQLField selection, bool isListType, GraphQLIntrospectionFullType graphQLType)
         {
             var type = selection.BaseType;
 
@@ -219,43 +229,43 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                 case "String":
                     if (type != typeof(string))
                     {
-                        yield return new ValidationOutput(
-                            selectionFieldPath, 
-                            ValidationType.Type_Is_Invalid, 
-                            selection, 
-                            typeof(string).Name, 
+                        yield return new ValidationError(
+                            selectionFieldPath,
+                            ValidationType.Field_Invalid_Type,
+                            selection,
+                            typeof(string).Name,
                             type.Name);
                     }
                     break;
                 case "Boolean":
                     if (type != typeof(bool))
                     {
-                        yield return new ValidationOutput(
-                            selectionFieldPath, 
-                            ValidationType.Type_Is_Invalid, 
-                            selection, 
-                            typeof(bool).Name, 
+                        yield return new ValidationError(
+                            selectionFieldPath,
+                            ValidationType.Field_Invalid_Type,
+                            selection,
+                            typeof(bool).Name,
                             type.Name);
                     }
                     break;
                 case "Float":
                 case "Decimal":
-                    if (type != typeof(float) 
-                        && type != typeof(double) 
+                    if (type != typeof(float)
+                        && type != typeof(double)
                         && type != typeof(decimal))
                     {
-                        yield return new ValidationOutput(
-                            selectionFieldPath, 
-                            ValidationType.Type_Is_Invalid, 
-                            selection, 
-                            $"{typeof(float).Name} or {typeof(double).Name} or {typeof(decimal).Name}", 
+                        yield return new ValidationError(
+                            selectionFieldPath,
+                            ValidationType.Field_Invalid_Type,
+                            selection,
+                            $"{typeof(float).Name} or {typeof(double).Name} or {typeof(decimal).Name}",
                             type.Name);
                     }
                     break;
             }
         }
 
-        private static IEnumerable<ValidationOutput> ValidateEnum(string selectionFieldPath, GraphQLField selection, bool isListType, GraphQLIntrospectionFullType graphQLType)
+        private static IEnumerable<ValidationError> ValidateEnum(string selectionFieldPath, GraphQLField selection, bool isListType, GraphQLIntrospectionFullType graphQLType)
         {
             var type = selection.BaseType;
 
@@ -287,14 +297,14 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                         var enumValue = graphQLType.EnumValues.SingleOrDefault(introspectionMember => string.Equals(introspectionMember.Name, enumMemberValue, StringComparison.OrdinalIgnoreCase));
                         if (enumValue == null)
                         {
-                            yield return new ValidationOutput($"{selectionFieldPath}[{enumMemberValue}]", ValidationType.EnumValue_Not_Found, selection);
+                            yield return new ValidationError($"{selectionFieldPath}[{enumMemberValue}]", ValidationType.EnumValue_Not_Found, selection);
                             continue;
                         }
 
                         // Validate that if the enum member is deprecated
                         if (enumValue.IsDeprecated)
                         {
-                            yield return new ValidationOutput($"{selectionFieldPath}[{enumMemberValue}]", ValidationType.EnumValue_Deprecated, selection);
+                            yield return new ValidationError($"{selectionFieldPath}[{enumMemberValue}]", ValidationType.EnumValue_Deprecated, selection);
                             continue;
                         }
                     }
@@ -302,7 +312,7 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
             }
             else
             {
-                yield return new ValidationOutput(selectionFieldPath, ValidationType.Type_Is_Not_Enum, selection);
+                yield return new ValidationError(selectionFieldPath, ValidationType.Field_Type_Not_Enum, selection);
             }
         }
 

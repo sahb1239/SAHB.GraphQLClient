@@ -296,7 +296,7 @@ public class Author
 Please also see example program (SAHB.GraphQL.Client.Subscription.Examples)
 
 # SAHB.GraphQL.Client.Introspection
-The GraphQLclient has a package which contains a introspection query to inspect the GraphQL type system and a validator to validate C# queries against the introspection output. It can be found here: [SAHB.GraphQLClient.Introspection](https://www.nuget.org/packages/SAHB.GraphQL.Client.Introspection/).
+The GraphQLClient has a package which contains a introspection query to inspect the GraphQL type system and a validator to validate C# queries against the introspection output. It can be found here: [SAHB.GraphQLClient.Introspection](https://www.nuget.org/packages/SAHB.GraphQL.Client.Introspection/).
 
 The introspection query can be executed in the following way:
 ```csharp
@@ -318,3 +318,14 @@ var validationOutput = introspectionResult.ValidateGraphQLType<TestInvalidHelloQ
 ```
 
 The validationOuput returns a list of ValidationOutput. If the query is valid the validator will return a empty list.
+
+## Include deprecated types
+In order to include deprecated types the following arguments should be used when querying the GraphQL server.
+
+```csharp
+var introspectionResult = await graphQLClient.CreateQuery<TestHelloQuery>("http://localhost/graphql", arguments: new[] 
+{ 
+	new GraphQLQueryArgument("fieldsIncludeDeprecated", true), 
+	new GraphQLQueryArgument("enumValuesIncludeDeprecated", true)
+}).Execute();
+```

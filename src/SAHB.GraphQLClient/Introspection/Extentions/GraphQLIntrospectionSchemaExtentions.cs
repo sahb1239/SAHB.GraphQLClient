@@ -15,6 +15,12 @@ namespace SAHB.GraphQL.Client.Introspection.Extentions
         private const string Implicit_Type_Argument_Name = "name";
         private const string Implicit_Type_Argument_Type = "String";
 
+        /// <summary>
+        /// Returns the GraphQLIntrospectionSchema with the implicit fields __schema, __type and __typename which is defined in the GraphQL specification
+        /// <see cref="https://graphql.github.io/graphql-spec/June2018/#sec-Schema-Introspection"/>
+        /// </summary>
+        /// <param name="schema">The schema without the implicit fields</param>
+        /// <returns>Returns the GraphQLIntrospectionSchema with the implicit fields __schema, __type and __typename which is defined in the GraphQL specification</returns>
         public static GraphQLIntrospectionSchema WithImplicitFields(this GraphQLIntrospectionSchema schema)
         {
             return new GraphQLIntrospectionSchema
