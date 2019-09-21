@@ -34,9 +34,27 @@ namespace SAHB.GraphQLClient.QueryGenerator
         }
 
         /// <summary>
+        /// Initializes a GraphQL argument used to contain variable value and type of a argument which is added to a query
+        /// </summary>
+        /// <param name="variableName">The variable name which should be set used in the <see cref="GraphQLArgumentsAttribute"/></param>
+        /// <param name="directiveName">The directiveName which should have applied the argument</param>
+        /// <param name="field">The GraphQL field which should have applied the argument/param>
+        /// <param name="argumentValue">The value which is inserted in the variables part of the GraphQL query</param>
+        public GraphQLQueryArgument(string variableName, string directiveName, string field, object argumentValue)
+            : this(variableName, field, argumentValue)
+        {
+            DirectiveName = directiveName;
+        }
+
+        /// <summary>
         /// The variable name which should be set used in the <see cref="GraphQLArgumentsAttribute"/>
         /// </summary>
         public string VariableName { get; set; }
+
+        /// <summary>
+        /// The directive name which the argument should be applied to
+        /// </summary>
+        public string DirectiveName { get; set; }
 
         /// <summary>
         /// The value which is inserted in the variables part of the GraphQL query
@@ -62,6 +80,17 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// <param name="argumentValue">The value which is inserted in the variables part of the GraphQL query</param>
         public GraphQLQueryArgument(string variableName, object argumentValue, Expression<Func<T, object>> expression) 
             : base(variableName, GetMemberName(expression), argumentValue)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a GraphQL argument used to contain variable value and type of a argument which is added to a query
+        /// </summary>
+        /// <param name="variableName">The variable name which should be set used in the <see cref="GraphQLArgumentsAttribute"/></param>
+        /// <param name="directiveName">The directiveName which should have applied the argument</param>
+        /// <param name="argumentValue">The value which is inserted in the variables part of the GraphQL query</param>
+        public GraphQLQueryArgument(string variableName, string directiveName, object argumentValue, Expression<Func<T, object>> expression)
+            : base(variableName, directiveName, GetMemberName(expression), argumentValue)
         {
         }
 
