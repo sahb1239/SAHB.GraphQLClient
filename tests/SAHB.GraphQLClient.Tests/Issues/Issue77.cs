@@ -41,30 +41,10 @@ namespace SAHB.GraphQL.Client.Tests.Issues
             public string record { get; set; }
         }
 
-        [JsonConverter(typeof(CustomEnumConverter))]
         private enum RdSrc
         {
             SB,
             XB
-        }
-
-        private class CustomEnumConverter : JsonConverter
-        {
-            public override bool CanConvert(Type objectType)
-            {
-                return true;
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                var name = Enum.GetName(value.GetType(), value);
-                writer.WriteRawValue(name);
-            }
         }
     }
 }

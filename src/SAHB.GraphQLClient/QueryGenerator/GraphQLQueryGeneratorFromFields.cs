@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using SAHB.GraphQLClient.Internal;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
+using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace SAHB.GraphQLClient.QueryGenerator
 {
@@ -243,7 +245,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
                     fieldArguments.Select(
                         argument => argument.Key.ArgumentName + ":" +
                                     (ShouldInlineArgument(argument)
-                                        ? JsonConvert.SerializeObject(argument.Value.ArgumentValue)
+                                        ? GetArgumentValue(argument.Value.ArgumentValue)
                                         : "$" + argument.Key.VariableName))));
 
                 builder.Append(")");
@@ -282,6 +284,24 @@ namespace SAHB.GraphQLClient.QueryGenerator
             }
 
             return builder.ToString();
+        }
+
+        private string GetArgumentValue(object argumentValue)
+        {
+            // Enums should according to GraphQL spec be serilized without quotes
+            // https://graphql.github.io/graphql-spec/June2018/#sec-Enum-Value
+            // See issue 77
+            var type = argumentValue.GetType();
+            var typeInfo = type.GetTypeInfo();
+            if (typeInfo.IsEnum)
+            {
+                // Detect EnumMember attribute
+                var enumName = Enum.GetName(type, argumentValue);
+                var enumMemberAttribute = typeInfo.GetDeclaredField(enumName).GetCustomAttribute<EnumMemberAttribute>(true);
+                return enumMemberAttribute?.Value ?? enumName;
+            }
+
+            return JsonConvert.SerializeObject(argumentValue);
         }
 
         private string GetGraphQLQuery(string queryType, string argumentVariableDeclaration, string fields)
