@@ -28,9 +28,23 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <inheritdoc />
         public IEnumerable<GraphQLField> GetFields(Type type) => GenerateSelectionSet(type);
 
-        /// <inheritdoc />
-        private IEnumerable<GraphQLField> GetSelectionSet(Type type)
+        private IEnumerable<GraphQLField> GetSelectionSet(Type type) => GetSelectionSet(type, new Stack<Type>(), new Dictionary<Type, int>(), 1, false);
+
+        private static TValue ValueOrDefault<TKey, TValue>(IDictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue)
         {
+            if (dictionary.TryGetValue(key, out TValue value))
+                return value;
+            return defaultValue;
+        }
+
+        /// <inheritdoc />
+        private IEnumerable<GraphQLField> GetSelectionSet(Type type, Stack<Type> parents, Dictionary<Type, int> timesVisited, int maxDepth, bool maxDepthSet)
+        {
+            // Add parent and times visited
+            parents.Push(type);
+            var numberOfTimesVisited = ValueOrDefault(timesVisited, type, 0) + 1;
+            timesVisited[type] = numberOfTimesVisited;
+
             // Initialize list with fields and arguments
             var fields = new List<GraphQLField>();
 
@@ -41,11 +55,31 @@ namespace SAHB.GraphQLClient.FieldBuilder
             foreach (var property in properties)
             {
                 // Check if property or property class is ignored
-                if (TypeIgnoredMemberInfo(property))
+                if (TypeIgnored(property))
                     continue;
 
+                // Get new max depth
+                var maxDepthOutput = MaxDept(property);
+                var maxDepthSetOutput = maxDepthOutput.HasValue;
+                var newMaxDepth = maxDepthOutput ?? maxDepth;
+
+                // Validate max depth
+                var concreteType = GetConcreateType(property);
+                if (ValueOrDefault(timesVisited, concreteType, 0) >= newMaxDepth)
+                {
+                    if (maxDepthSet)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        // Found circular reference
+                        throw new GraphQLCircularReferenceException(parents);
+                    }
+                }
+
                 // Add field
-                fields.Add(GetGraphQLField(property));
+                fields.Add(GetGraphQLField(property, parents, timesVisited, newMaxDepth, maxDepthSetOutput));
             }
 
             // Logging
@@ -54,35 +88,77 @@ namespace SAHB.GraphQLClient.FieldBuilder
                 Logger.LogDebug($"Generated the following fields from the type {type.FullName}{Environment.NewLine}{String.Join(Environment.NewLine, fields)}");
             }
 
+            // Remove parent and decrement times visited
+            parents.Pop();
+            timesVisited[type]--;
+
             return fields;
         }
 
         #region TypeIgnored
         private bool TypeIgnored(PropertyInfo propertyInfo)
         {
-            // Check if property is ignored
-            if (TypeIgnoredMemberInfo(propertyInfo))
-                return true;
+            return GetCustomAttribute<GraphQLFieldIgnoreAttribute>(propertyInfo) != null;
+        }
 
-            // Check if the GraphQLClass is ignored
+        #endregion
+
+        #region MaxDept
+
+        private int? MaxDept(PropertyInfo propertyInfo)
+        {
+            return GetCustomAttribute<GraphQLMaxDepthAttribute>(propertyInfo)?.MaxDepth;
+        }
+
+        #endregion
+
+
+        #region GetCustomAttribute
+        private TAttribute GetCustomAttribute<TAttribute>(PropertyInfo propertyInfo)
+            where TAttribute : Attribute
+        {
+            TAttribute attribute = GetCustomAttributeMemberInfo<TAttribute>(propertyInfo);
+            if (attribute != null)
+                return attribute;
+
+            // Get attributes on class
             if (IsSelectionSetIEnumerable(propertyInfo))
             {
-                return TypeIgnoredMemberInfo(GetIEnumerableType(propertyInfo.PropertyType).GetTypeInfo());
+                return GetCustomAttributeMemberInfo<TAttribute>(GetIEnumerableType(propertyInfo.PropertyType).GetTypeInfo());
             }
             else
             {
-                return TypeIgnoredMemberInfo(propertyInfo);
+                return GetCustomAttributeMemberInfo<TAttribute>(propertyInfo);
             }
         }
 
-        private bool TypeIgnoredMemberInfo(MemberInfo memberInfo)
+        private TAttribute GetCustomAttributeMemberInfo<TAttribute>(MemberInfo memberInfo)
+            where TAttribute : Attribute
         {
-            return memberInfo.GetCustomAttribute<GraphQLFieldIgnoreAttribute>() != null;
+            return memberInfo.GetCustomAttribute<TAttribute>();
         }
+
+        private Type GetConcreateType(PropertyInfo propertyInfo)
+        {
+            if (IsSelectionSetIEnumerable(propertyInfo))
+            {
+                return GetIEnumerableType(propertyInfo.PropertyType);
+            }
+            else
+            {
+                return propertyInfo.PropertyType;
+            }
+        }
+
         #endregion
 
-        private GraphQLField GetGraphQLField(PropertyInfo property)
+        private GraphQLField GetGraphQLField(PropertyInfo property, Stack<Type> parents, Dictionary<Type, int> timesVisited, int maxDept, bool maxDepthSet)
         {
+            IEnumerable<GraphQLField> SelectionSet(Type type)
+            {
+                return GetSelectionSet(type, parents, timesVisited, maxDept, maxDepthSet);
+            }
+
             // Get alias and fieldName
             var alias = GetPropertyAlias(property);
             var fieldName = GetPropertyField(property);
@@ -93,7 +169,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
             // Get types
             // TODO: Possible problems if types is IEnumerable types
             var types = GetTypes(property)
-                .Select(e => new { typeName = e.Key, field = new GraphQLTargetType(e.Value, GetSelectionSet(e.Value)) })
+                .Select(e => new { typeName = e.Key, field = new GraphQLTargetType(e.Value, SelectionSet(e.Value)) })
                 .ToDictionary(e => e.typeName, e => e.field);
 
             // Get selectionSet
@@ -102,11 +178,11 @@ namespace SAHB.GraphQLClient.FieldBuilder
             {
                 if (IsSelectionSetIEnumerable(property))
                 {
-                    selectionSet = GetSelectionSet(GetIEnumerableType(property.PropertyType));
+                    selectionSet = SelectionSet(GetIEnumerableType(property.PropertyType));
                 }
                 else
                 {
-                    selectionSet = GetSelectionSet(property.PropertyType);
+                    selectionSet = SelectionSet(property.PropertyType);
                 }
             }
 

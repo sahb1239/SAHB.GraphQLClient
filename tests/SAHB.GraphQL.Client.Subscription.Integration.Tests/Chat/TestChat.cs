@@ -1,4 +1,3 @@
-using SAHB.GraphQLClient.Subscription.Integration.Tests.TestServer;
 using System.Threading.Tasks;
 using Xunit;
 using SAHB.GraphQLClient.FieldBuilder;
@@ -10,6 +9,8 @@ using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 using System.Collections.Generic;
 using SAHB.GraphQLClient.Result;
+using SAHB.GraphQL.Client.TestServer;
+using Newtonsoft.Json;
 
 namespace SAHB.GraphQLClient.Subscription.Integration.Tests
 {
@@ -60,9 +61,9 @@ namespace SAHB.GraphQLClient.Subscription.Integration.Tests
             // Send message
             await graphQLClient.CreateMutation<SendMessageMutation>("http://localhost/graphql", arguments: new GraphQLQueryArgument("message", new MessageInputType
             {
-                content = "Message 1",
-                fromId = "SAHB",
-                sentAt = DateTime.Now.AddDays(-1)
+                Content = "Message 1",
+                FromId = "SAHB",
+                SentAt = DateTime.Now.AddDays(-1)
             })).Execute();
 
             await Task.Delay(TimeSpan.FromSeconds(2));
@@ -109,15 +110,15 @@ namespace SAHB.GraphQLClient.Subscription.Integration.Tests
             // Send 2 messages
             await graphQLClient.CreateMutation<SendMessageMutation>("http://localhost/graphql", arguments: new GraphQLQueryArgument("message", new MessageInputType
             {
-                content = "Message 1",
-                fromId = "SAHB",
-                sentAt = DateTime.Now.AddDays(-1)
+                Content = "Message 1",
+                FromId = "SAHB",
+                SentAt = DateTime.Now.AddDays(-1)
             })).Execute();
             await graphQLClient.CreateMutation<SendMessageMutation>("http://localhost/graphql", arguments: new GraphQLQueryArgument("message", new MessageInputType
             {
-                content = "Message 1",
-                fromId = "SAHB",
-                sentAt = DateTime.Now.AddDays(-1)
+                Content = "Message 1",
+                FromId = "SAHB",
+                SentAt = DateTime.Now.AddDays(-1)
             })).Execute();
 
             await Task.Delay(TimeSpan.FromSeconds(2));
@@ -164,16 +165,16 @@ namespace SAHB.GraphQLClient.Subscription.Integration.Tests
             // Send 2 message from 2 users only one should be retrieved in subscription
             await graphQLClient.CreateMutation<SendMessageMutation>("http://localhost/graphql", arguments: new GraphQLQueryArgument("message", new MessageInputType
             {
-                content = "Message 1",
-                fromId = "SAHB",
-                sentAt = DateTime.Now.AddDays(-1)
+                Content = "Message 1",
+                FromId = "SAHB",
+                SentAt = DateTime.Now.AddDays(-1)
             })).Execute();
 
             await graphQLClient.CreateMutation<SendMessageMutation>("http://localhost/graphql", arguments: new GraphQLQueryArgument("message", new MessageInputType
             {
-                content = "Message 1",
-                fromId = "OtherUser",
-                sentAt = DateTime.Now.AddDays(-1)
+                Content = "Message 1",
+                FromId = "OtherUser",
+                SentAt = DateTime.Now.AddDays(-1)
             })).Execute();
 
             await Task.Delay(TimeSpan.FromSeconds(2));
@@ -228,9 +229,9 @@ namespace SAHB.GraphQLClient.Subscription.Integration.Tests
             // Send 2 message from 2 users only one should be retrieved in subscription
             await graphQLClient.CreateMutation<SendMessageMutation>("http://localhost/graphql", arguments: new GraphQLQueryArgument("message", new MessageInputType
             {
-                content = "Message 1",
-                fromId = "SAHB",
-                sentAt = DateTime.Now.AddDays(-1)
+                Content = "Message 1",
+                FromId = "SAHB",
+                SentAt = DateTime.Now.AddDays(-1)
             })).Execute();
 
             await Task.Delay(TimeSpan.FromSeconds(1));
@@ -289,7 +290,8 @@ namespace SAHB.GraphQLClient.Subscription.Integration.Tests
         public class MessageAddedByUserSubscription
         {
             [GraphQLArguments("id", "String", "fromId", IsRequired = true)]
-            public Message messageAddedByUser { get; set; }
+            [GraphQLFieldName("messageAddedByUser")]
+            public Message MessageAddedByUser { get; set; }
         }
 
         public class Message
@@ -318,9 +320,12 @@ namespace SAHB.GraphQLClient.Subscription.Integration.Tests
 
         public class MessageInputType
         {
-            public string fromId { get; set; }
-            public string content { get; set; }
-            public DateTime? sentAt { get; set; }
+            [JsonProperty("fromId")]
+            public string FromId { get; set; }
+            [JsonProperty("content")]
+            public string Content { get; set; }
+            [JsonProperty("sentAt")]
+            public DateTime? SentAt { get; set; }
         }
     }
 }

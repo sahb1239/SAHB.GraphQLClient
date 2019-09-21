@@ -1,17 +1,16 @@
-using GraphQL.Types;
-using SAHB.GraphQLClient.Integration.Tests.TestServer;
-using SAHB.GraphQLClient;
 using System.Threading.Tasks;
 using Xunit;
 using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQL.Client.Testserver.Tests.Schemas.Hello;
+using SAHB.GraphQL.Client.TestServer;
 
 namespace SAHB.GraphQLClient.Integration.Tests
 {
-    public class TestMutation : IClassFixture<GraphQLWebApplicationFactory<TestMutation.TestSchema>>
+    public class TestMutation : IClassFixture<GraphQLWebApplicationFactory<HelloMutationSchema>>
     {
-        private readonly GraphQLWebApplicationFactory<TestSchema> _factory;
+        private readonly GraphQLWebApplicationFactory<HelloMutationSchema> _factory;
 
-        public TestMutation(GraphQLWebApplicationFactory<TestSchema> factory)
+        public TestMutation(GraphQLWebApplicationFactory<HelloMutationSchema> factory)
         {
             _factory = factory;
         }
@@ -48,22 +47,6 @@ namespace SAHB.GraphQLClient.Integration.Tests
             // Assert
             Assert.Equal("mutation", result1.Hello);
             Assert.Equal("mutation", result2.Hello);
-        }
-
-        public class TestSchema : Schema
-        {
-            public TestSchema()
-            {
-                Mutation = new TestSchemaMutation();
-            }
-        }
-
-        private class TestSchemaMutation : ObjectGraphType
-        {
-            public TestSchemaMutation()
-            {
-                Field<StringGraphType>("hello", resolve: context => "mutation");
-            }
         }
 
         private class TestHelloMutation
