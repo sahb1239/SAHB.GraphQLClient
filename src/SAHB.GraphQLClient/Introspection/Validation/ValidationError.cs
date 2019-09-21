@@ -69,9 +69,9 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                         return $"OperationType {OperationType} was not found";
                     case ValidationType.PossibleType_Not_Found:
                         return $"Possible type at {Path} was not found";
-                    case ValidationType.Type_Is_Invalid:
+                    case ValidationType.Field_Invalid_Type:
                         return $"Type at {Path} is invalid. Expected is {Expected}, actual is {Actual}.";
-                    case ValidationType.Type_Is_Not_Enum:
+                    case ValidationType.Field_Type_Not_Enum:
                         return $"Type at {Path} is not an enum";
                     case ValidationType.EnumValue_Not_Found:
                         return $"Enumvalue at {Path} was not found";

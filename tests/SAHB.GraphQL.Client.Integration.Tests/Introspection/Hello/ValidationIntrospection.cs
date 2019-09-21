@@ -35,7 +35,7 @@ namespace SAHB.GraphQL.Client.Introspection.Tests.Hello
             // This is fixed in https://github.com/graphql-dotnet/graphql-dotnet/commit/abf351892dda7bc8cf3dd83aba1ce63ae1ce11fd#diff-d9710dc6d5945261ad8c70084443f0c2
             Assert.Single(validationOutput);
             Assert.Equal("__schema.types.enumValues.isDeprecated", validationOutput.FirstOrDefault().Path);
-            Assert.Equal(ValidationType.Type_Is_Invalid, validationOutput.FirstOrDefault().ValidationType);
+            Assert.Equal(ValidationType.Field_Invalid_Type, validationOutput.FirstOrDefault().ValidationType);
         }
     }
 }

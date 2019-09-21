@@ -145,6 +145,8 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                         throw new NotImplementedException($"{nameof(GraphQLTypeKind)} {introspectionField.Type.Kind} not implemented for fields");
                 }
 
+                // TODO: Validation should also validate type is correct for instance if GraphQLString is having the type String
+
                 // Validate type
                 if (selection.BaseType != null)
                 {
@@ -229,7 +231,7 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                     {
                         yield return new ValidationError(
                             selectionFieldPath,
-                            ValidationType.Type_Is_Invalid,
+                            ValidationType.Field_Invalid_Type,
                             selection,
                             typeof(string).Name,
                             type.Name);
@@ -240,7 +242,7 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                     {
                         yield return new ValidationError(
                             selectionFieldPath,
-                            ValidationType.Type_Is_Invalid,
+                            ValidationType.Field_Invalid_Type,
                             selection,
                             typeof(bool).Name,
                             type.Name);
@@ -254,7 +256,7 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                     {
                         yield return new ValidationError(
                             selectionFieldPath,
-                            ValidationType.Type_Is_Invalid,
+                            ValidationType.Field_Invalid_Type,
                             selection,
                             $"{typeof(float).Name} or {typeof(double).Name} or {typeof(decimal).Name}",
                             type.Name);
@@ -310,7 +312,7 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
             }
             else
             {
-                yield return new ValidationError(selectionFieldPath, ValidationType.Type_Is_Not_Enum, selection);
+                yield return new ValidationError(selectionFieldPath, ValidationType.Field_Type_Not_Enum, selection);
             }
         }
 
