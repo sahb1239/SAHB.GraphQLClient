@@ -38,5 +38,12 @@ namespace SAHB.GraphQLClient.Subscription
         /// Fired when the subscription is disconnected
         /// </summary>
         event EventHandler Disconnected;
+
+        /// <summary>
+        /// Restart GraphQL operations which has not been completed. 
+        /// This should for example be used when reconnecting the websocket after a connection failure.
+        /// </summary>
+        /// <returns></returns>
+        Task RestartActiveGraphQLOperations();
     }
 }
