@@ -5,6 +5,10 @@ using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Extentions;
 using Xunit;
 using SAHB.GraphQLClient.Deserialization;
+using SAHB.GraphQLClient.Executor;
+using FakeItEasy;
+using System.Net.Http;
+using System.Collections.Generic;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
 {
@@ -25,8 +29,20 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
         public async Task TestGraphQLClient()
         {
             var responseContent = "{\"data\":{\"Me\":{\"Firstname\":\"Søren\", Age:\"24\", \"lastname\": \"Bjergmark\"}}}";
-            var httpClient = new HttpClientMock.GraphQLHttpExecutorMock(responseContent, "{\"query\":\"query{me{firstname age lastname}}\"}");
-            var client = new GraphQLHttpClient(httpClient, _fieldBuilder, _queryGenerator, _deserilization);
+
+            var httpClientMock = A.Fake<IGraphQLHttpExecutor>(x => x.Strict());
+            A.CallTo(() => httpClientMock.ExecuteQuery("{\"query\":\"query{me{firstname age lastname}}\"}",
+                A<string>.Ignored,
+                A<HttpMethod>.Ignored,
+                A<string>.Ignored,
+                A<string>.Ignored,
+                A<IDictionary<string, string>>.Ignored))
+                .Returns(new GraphQLExecutorResponse
+                {
+                    Response = responseContent
+                });
+
+            var client = new GraphQLHttpClient(httpClientMock, _fieldBuilder, _queryGenerator, _deserilization);
 
             // Act
             var response = await client.Query<QueryToTest>("");

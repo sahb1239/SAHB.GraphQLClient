@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using FakeItEasy;
 using SAHB.GraphQLClient.Extentions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
-using SAHB.GraphQLClient.Tests.Mocks;
 using Xunit;
 
 namespace SAHB.GraphQLClient.Tests.QueryGenerator
@@ -20,14 +17,16 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         [Fact]
         public void TestCaseInsensitiveAliasField()
         {
-            var fields = new[]
-            {
-                new GraphQLField("Field", "field", null, null),
-            };
-            var fieldBuilder = new FieldBuilderMock(fields);
+            var fieldBuilderMock = A.Fake<IGraphQLFieldBuilder>(x => x.Strict());
+            A.CallTo(() => fieldBuilderMock.GenerateSelectionSet(typeof(string)))
+                .Returns(new GraphQLField[]
+                {
+                    new GraphQLField("Field", "field", null, null),
+                });
+
             var expected = "{\"query\":\"query{field}\"}";
 
-            var actual = _queryGenerator.GetQuery<string>(fieldBuilder); // Type parameter is ignored since it just returns the fields
+            var actual = _queryGenerator.GetQuery<string>(fieldBuilderMock);
 
             Assert.Equal(expected, actual);
         }
