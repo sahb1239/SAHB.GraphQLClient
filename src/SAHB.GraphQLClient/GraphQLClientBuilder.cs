@@ -4,6 +4,9 @@ using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
+#if DOTNET_HTTP
+using System.Net.Http;
+#endif
 
 namespace SAHB.GraphQLClient
 {
@@ -28,11 +31,21 @@ namespace SAHB.GraphQLClient
                 new GraphQLQueryGeneratorFromFields() { LoggerFactory = provider.GetService<ILoggerFactory>() });
             services.AddSingleton<IGraphQLDeserialization, GraphQLDeserilization>();
 
+#if DOTNET_HTTP
+            services.AddHttpClient();
+            services.AddSingleton<IGraphQLHttpExecutor>(provider =>
+               new GraphQLHttpExecutor(provider.GetRequiredService<IHttpClientFactory>().CreateClient())
+               {
+                   LoggerFactory = provider.GetService<ILoggerFactory>()
+               });
+#else
             services.AddSingleton<IGraphQLHttpExecutor>(provider =>
                new GraphQLHttpExecutor()
                {
                    LoggerFactory = provider.GetService<ILoggerFactory>()
                });
+#endif
+
             services.AddSingleton<IGraphQLHttpClient>(provider =>
                 new GraphQLHttpClient(provider.GetRequiredService<IGraphQLHttpExecutor>(),
                     provider.GetRequiredService<IGraphQLFieldBuilder>(),
