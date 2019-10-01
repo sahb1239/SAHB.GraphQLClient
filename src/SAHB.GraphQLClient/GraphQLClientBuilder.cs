@@ -33,20 +33,20 @@ namespace SAHB.GraphQLClient
 
 #if DOTNET_HTTP
             services.AddHttpClient();
-            services.AddSingleton<IGraphQLHttpExecutor>(provider =>
+            services.AddScoped<IGraphQLHttpExecutor>(provider =>
                new GraphQLHttpExecutor(provider.GetRequiredService<IHttpClientFactory>().CreateClient())
                {
                    LoggerFactory = provider.GetService<ILoggerFactory>()
                });
 #else
-            services.AddSingleton<IGraphQLHttpExecutor>(provider =>
+            services.AddScoped<IGraphQLHttpExecutor>(provider =>
                new GraphQLHttpExecutor()
                {
                    LoggerFactory = provider.GetService<ILoggerFactory>()
                });
 #endif
 
-            services.AddSingleton<IGraphQLHttpClient>(provider =>
+            services.AddScoped<IGraphQLHttpClient>(provider =>
                 new GraphQLHttpClient(provider.GetRequiredService<IGraphQLHttpExecutor>(),
                     provider.GetRequiredService<IGraphQLFieldBuilder>(),
                     provider.GetRequiredService<IGraphQLQueryGeneratorFromFields>(),
