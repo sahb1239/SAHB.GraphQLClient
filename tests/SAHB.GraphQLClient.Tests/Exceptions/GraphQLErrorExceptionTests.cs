@@ -7,7 +7,7 @@ using Xunit;
 
 namespace SAHB.GraphQLClient.Tests.Exceptions
 {
-    
+
     public class GraphQLErrorExceptionTests
     {
         [Fact]

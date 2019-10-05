@@ -18,8 +18,8 @@ namespace SAHB.GraphQLClient.Internal
             foreach (var field in fields)
             {
                 var currentPathPart = field.Alias ?? field.Field;
-                var fieldPath = path == null ? 
-                    currentPathPart : 
+                var fieldPath = path == null ?
+                    currentPathPart :
                     string.Join(".", path, currentPathPart);
 
                 // Get arguments

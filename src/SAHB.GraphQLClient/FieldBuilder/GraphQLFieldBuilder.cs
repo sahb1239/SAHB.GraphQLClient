@@ -276,7 +276,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                 .GetCustomAttributes<GraphQLUnionOrInterfaceAttribute>()
                 .Union(
                     property.PropertyType.GetTypeInfo().GetCustomAttributes<GraphQLUnionOrInterfaceAttribute>());
-            
+
             // Check if dictionary contains duplicates
             var duplicates = attributes.Select(e => e.TypeName).GroupBy(e => e, e => e).Where(e => e.Count() > 1)
                 .Select(e => e.Key).ToArray();

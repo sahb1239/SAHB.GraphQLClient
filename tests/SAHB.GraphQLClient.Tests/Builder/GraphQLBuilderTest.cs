@@ -232,7 +232,7 @@ namespace SAHB.GraphQLClient.Tests.Builder
             var query = client.CreateQuery(builder =>
                 builder.Field("doSomeAction", field =>
                 {
-                    field.Argument("argumentName", "argumentType", "variableName", isRequired:true, inlineArgument:false);
+                    field.Argument("argumentName", "argumentType", "variableName", isRequired: true, inlineArgument: false);
                 }), "randomurl", arguments: new GraphQLQueryArgument("variableName", 1));
             var result = await query.Execute();
 
@@ -266,7 +266,7 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 builder.Field("doSomeAction", field =>
                 {
                     field.Argument("argumentName", "argumentType", "variableName", isRequired: true, inlineArgument: false);
-                }), "randomurl", arguments: new GraphQLQueryArgument("variableName", new {a = "a", b = "b"}));
+                }), "randomurl", arguments: new GraphQLQueryArgument("variableName", new { a = "a", b = "b" }));
             var result = await query.Execute();
 
             // Assert

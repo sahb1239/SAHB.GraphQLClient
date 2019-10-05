@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace SAHB.GraphQLClient.FieldBuilder.Attributes
-{  
+{
     // ReSharper disable once InconsistentNaming
     /// <summary>
     /// Attribute which defines a argument to taking a specified first number of results. This is typically used with GraphQL connections

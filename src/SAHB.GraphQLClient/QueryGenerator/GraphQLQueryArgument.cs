@@ -27,7 +27,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// <param name="variableName">The variable name which should be set used in the <see cref="GraphQLArgumentsAttribute"/></param>
         /// <param name="field">The GraphQL field which should have applied the argument/param>
         /// <param name="argumentValue">The value which is inserted in the variables part of the GraphQL query</param>
-        public GraphQLQueryArgument(string variableName, string field, object argumentValue) 
+        public GraphQLQueryArgument(string variableName, string field, object argumentValue)
             : this(variableName, argumentValue)
         {
             Field = field;
@@ -78,7 +78,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// </summary>
         /// <param name="variableName">The variable name which should be set used in the <see cref="GraphQLArgumentsAttribute"/></param>
         /// <param name="argumentValue">The value which is inserted in the variables part of the GraphQL query</param>
-        public GraphQLQueryArgument(string variableName, object argumentValue, Expression<Func<T, object>> expression) 
+        public GraphQLQueryArgument(string variableName, object argumentValue, Expression<Func<T, object>> expression)
             : base(variableName, GetMemberName(expression), argumentValue)
         {
         }

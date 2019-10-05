@@ -30,7 +30,7 @@ namespace SAHB.GraphQL.Client.Introspection.Tests.Hello
             // Act
             var introspectionQuery = await graphQLClient.CreateQuery<GraphQLIntrospectionQuery>(
                 "http://localhost/graphql",
-                arguments: new[] 
+                arguments: new[]
                 {
                     new GraphQLQueryArgument("fieldsIncludeDeprecated", true),
                     new GraphQLQueryArgument("enumValuesIncludeDeprecated", true)

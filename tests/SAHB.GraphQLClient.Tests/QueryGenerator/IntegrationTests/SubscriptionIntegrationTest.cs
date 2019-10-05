@@ -17,7 +17,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator.IntegrationTests
             _fieldBuilder = new GraphQLFieldBuilder();
             _queryGenerator = new GraphQLQueryGeneratorFromFields();
         }
-        
+
         public class MessageSubscription
         {
             public Message newMessage { get; set; }

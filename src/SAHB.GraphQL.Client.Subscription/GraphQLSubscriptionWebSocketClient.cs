@@ -22,8 +22,8 @@ namespace SAHB.GraphQLClient.Subscription
 
         public bool IsConnected => _webSocket.State == WebSocketState.Open;
 
-         public GraphQLSubscriptionWebSocketClient(IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization, CancellationToken cancellationToken) :
-            this(new ClientWebSocket(), fieldBuilder, queryGenerator, deserialization, cancellationToken)
+        public GraphQLSubscriptionWebSocketClient(IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization, CancellationToken cancellationToken) :
+           this(new ClientWebSocket(), fieldBuilder, queryGenerator, deserialization, cancellationToken)
         {
         }
 

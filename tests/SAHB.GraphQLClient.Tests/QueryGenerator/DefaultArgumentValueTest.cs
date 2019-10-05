@@ -19,7 +19,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         [Fact]
         public void Test_QueryGenerator_Argument_Default_Value()
         {
-            var field = new GraphQLField(alias: null, field: "field1", fields: null, arguments: new List<GraphQLFieldArguments>() {new GraphQLFieldArguments("argumentName", "argumentType", "variableName", true, true, "DefaultValue")});
+            var field = new GraphQLField(alias: null, field: "field1", fields: null, arguments: new List<GraphQLFieldArguments>() { new GraphQLFieldArguments("argumentName", "argumentType", "variableName", true, true, "DefaultValue") });
 
             var expected = "{\"query\":\"query{field1(argumentName:\\\"DefaultValue\\\")}\"}";
 
