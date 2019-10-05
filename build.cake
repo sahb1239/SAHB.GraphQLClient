@@ -5,7 +5,7 @@
 //////////////////////////////////////////////////////////////////////
 
 var versionPropsTemplate = "./Version.props.template";
-var versionProps = "./../Version.props";
+var versionProps = "./Version.props";
 var sln = "SAHB.GraphQL.Client.sln";
 
 //////////////////////////////////////////////////////////////////////
@@ -22,10 +22,10 @@ var configuration = Argument("configuration", "Release");
 Task("Clean")
     .Does(() =>
 {
-    CleanDirectories("./../src/**/bin");
-	CleanDirectories("./../src/**/obj");
-	CleanDirectories("./../tests/**/bin");
-	CleanDirectories("./../tests/**/obj");
+    CleanDirectories("./src/**/bin");
+	CleanDirectories("./src/**/obj");
+	CleanDirectories("./tests/**/bin");
+	CleanDirectories("./tests/**/obj");
 });
 
 GitVersion versionInfo = null;
