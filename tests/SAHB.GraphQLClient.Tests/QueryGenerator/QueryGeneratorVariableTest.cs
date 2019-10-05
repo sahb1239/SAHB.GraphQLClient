@@ -20,7 +20,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         {
             // Arrange
             var expected = "{\"query\":\"query{alias:field(argumentName:\\\"value\\\")}\"}";
-            var fields = new []
+            var fields = new[]
             {
                 new GraphQLField(alias: "alias", field: "field", fields: null,
                     arguments: new List<GraphQLFieldArguments>
@@ -42,7 +42,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             // Arrange
             var expected =
                 "{\"query\":\"query{alias:field(argumentName1:\\\"value1\\\" argumentName2:\\\"value2\\\")}\"}";
-            var fields = new []
+            var fields = new[]
             {
                 new GraphQLField(alias: "alias", field: "field", fields: null,
                     arguments: new List<GraphQLFieldArguments>
@@ -65,7 +65,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         {
             // Arrange
             var expected = "{\"query\":\"query{alias:field(argumentName:\\\"{\\\\\\\"arg1\\\\\\\":\\\\\\\"value1\\\\\\\",\\\\\\\"arg2\\\\\\\":\\\\\\\"value2\\\\\\\"}\\\")}\"}";
-            var fields = new []
+            var fields = new[]
             {
                 new GraphQLField(alias: "alias", field: "field", fields: null,
                     arguments: new List<GraphQLFieldArguments>
@@ -75,7 +75,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", JsonConvert.SerializeObject(new {arg1 = "value1", arg2 = "value2"})));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", JsonConvert.SerializeObject(new { arg1 = "value1", arg2 = "value2" })));
 
             // Assert
             Assert.Equal(expected, actual);
@@ -86,7 +86,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         {
             // Arrange
             var expected = "{\"query\":\"query($variableName:argumentType){field(argumentName:$variableName)}\",\"variables\":{\"variableName\":{\"field1\":\"value1\",\"field2\":\"value2\"}}}";
-            var fields = new []
+            var fields = new[]
             {
                 new GraphQLField(alias: null, field: "field", fields: null,
                     arguments: new List<GraphQLFieldArguments>
@@ -108,7 +108,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         {
             // Arrange
             var expected = "{\"query\":\"query($variableName:argumentType){field(argumentName:$variableName)}\",\"variables\":{\"variableName\":{\"Field1\":\"value1\",\"Field2\":\"value2\"}}}";
-            var fields = new []
+            var fields = new[]
             {
                 new GraphQLField(alias: null, field: "field", fields: null,
                     arguments: new List<GraphQLFieldArguments>
@@ -303,7 +303,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", new {arg1 = "val1", arg2 = 2}));
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, new GraphQLQueryArgument("variableName", new { arg1 = "val1", arg2 = 2 }));
 
             // Assert
             Assert.Equal(expected, actual);

@@ -31,8 +31,8 @@ namespace SAHB.GraphQLClient.Subscription
 
         public event EventHandler Disconnected;
 
-        public GraphQLSubscriptionClient(WebSocket webSocket, CancellationToken cancellationToken) 
-            : this(webSocket, cancellationToken, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), 
+        public GraphQLSubscriptionClient(WebSocket webSocket, CancellationToken cancellationToken)
+            : this(webSocket, cancellationToken, new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(),
                   new GraphQLDeserilization())
         {
 

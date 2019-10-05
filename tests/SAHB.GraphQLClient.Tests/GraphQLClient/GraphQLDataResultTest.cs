@@ -44,7 +44,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
                     new GraphQLDataError()
                 }
             };
-            
+
             // Act / Assert
             Assert.True(result.ContainsErrors);
             Assert.False(result.ContainsData);

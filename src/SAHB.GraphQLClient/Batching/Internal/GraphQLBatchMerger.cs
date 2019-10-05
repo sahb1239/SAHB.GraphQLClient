@@ -71,7 +71,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             return new GraphQLBatchQuery<T>(this, identifier);
         }
 
-        public Task<T> GetValue<T>(string identifier) 
+        public Task<T> GetValue<T>(string identifier)
             where T : class
         {
             return GetDeserializedResult<T>(identifier);
@@ -150,7 +150,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             {
                 foreach (var argument in argumentsWithIdentitfier.Value)
                 {
-                    argument.VariableName = argumentsWithIdentitfier.Key + "_" +  argument.VariableName;
+                    argument.VariableName = argumentsWithIdentitfier.Key + "_" + argument.VariableName;
                 }
             }
         }

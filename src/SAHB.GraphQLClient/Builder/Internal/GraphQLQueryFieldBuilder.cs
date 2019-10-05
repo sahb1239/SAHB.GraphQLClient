@@ -18,7 +18,7 @@ namespace SAHB.GraphQLClient.Builder.Internal
         /// <inheritdoc />
         public IGraphQLQueryFieldBuilder Alias(string alias)
         {
-            _alias = alias;   
+            _alias = alias;
             return this;
         }
 

@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace SAHB.GraphQLClient.Exceptions
-{ 
+{
     // ReSharper disable once InconsistentNaming
     /// <summary>
     /// Exception thrown when duplicate variable names has been detected in the query arguments. Please double check that you don't supply multiple arguments with the same variableName

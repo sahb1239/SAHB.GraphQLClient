@@ -108,7 +108,7 @@ namespace SAHB.GraphQLClient
         {
             // Generate query
             var requestQuery = QueryGenerator.GenerateQuery(operationType, selectionSet, arguments.ToArray());
-            
+
             // Get response
             GraphQLExecutorResponse response = await HttpExecutor.ExecuteQuery(requestQuery, url, httpMethod, headers: headers, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod).ConfigureAwait(false);
 

@@ -20,7 +20,7 @@ namespace SAHB.GraphQLClient.Executor
 
         /// <inheritdoc />
         public HttpMethod DefaultMethod { get; set; }
-        
+
         /// <summary>
         /// Initializes a new instance of a GraphQL executor which executes a query against a http GraphQL server
         /// </summary>
@@ -103,7 +103,7 @@ namespace SAHB.GraphQLClient.Executor
 
             // Get response
             string stringResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            
+
             // Logging
             if (Logger != null && Logger.IsEnabled(LogLevel.Information))
             {

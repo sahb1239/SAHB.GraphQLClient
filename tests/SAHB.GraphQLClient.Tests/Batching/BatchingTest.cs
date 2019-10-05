@@ -213,7 +213,7 @@ namespace SAHB.GraphQLClient.Tests.Batching
             // Arrange
             var expected =
                 @"{""query"":""query{batch0_Part1Field1:part1_field1(argumentName:\""1\"") batch0_Part1Field2:part1Field2}""}";
-            
+
             var httpClientMock = A.Fake<IGraphQLHttpExecutor>(x => x.Strict());
             A.CallTo(() => httpClientMock.ExecuteQuery(expected,
                 A<string>.Ignored,

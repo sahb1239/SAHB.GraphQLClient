@@ -21,7 +21,7 @@ namespace SAHB.GraphQLClient.Tests.Issues
             // Arrange
             var fieldGenerator = new GraphQLFieldBuilder();
             var queryGenerator = new GraphQLQueryGeneratorFromFields();
-            
+
             // Act / Assert
             var exception = Assert.Throws<GraphQLArgumentVariableNotFoundException>(() =>
             {

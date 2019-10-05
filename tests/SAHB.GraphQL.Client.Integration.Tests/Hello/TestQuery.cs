@@ -59,8 +59,8 @@ namespace SAHB.GraphQLClient.Integration.Tests
             var graphQLClient = GraphQLHttpClient.Default(client);
 
             // Act
-            var result = await graphQLClient.Execute<TestHelloQueryDirective>(GraphQLOperationType.Query, 
-                "http://localhost/graphql", 
+            var result = await graphQLClient.Execute<TestHelloQueryDirective>(GraphQLOperationType.Query,
+                "http://localhost/graphql",
                 arguments: new GraphQLQueryDirectiveArgument("variableif", "include", true));
 
             // Assert

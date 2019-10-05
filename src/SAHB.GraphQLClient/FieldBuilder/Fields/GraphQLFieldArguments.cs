@@ -13,7 +13,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// Initializes a GraphQL argument used to contain metadata which can be used for generating a GraphQL query
         /// </summary>
         /// <param name="argument">The argument to initialize from</param>
-        internal GraphQLFieldArguments(GraphQLArgumentsAttribute argument) 
+        internal GraphQLFieldArguments(GraphQLArgumentsAttribute argument)
             : this(argument.ArgumentName, argument.ArgumentType, argument.VariableName, argument.IsRequired, argument.InlineArgument, argument.DefaultValue)
         {
         }
@@ -33,7 +33,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// <param name="argumentName">GraphQL argument name</param>
         /// <param name="argumentType">GraphQL argument type of the variable</param>
         /// <param name="variableName">GraphQL variable name</param>
-        public GraphQLFieldArguments(string argumentName, string argumentType, string variableName) 
+        public GraphQLFieldArguments(string argumentName, string argumentType, string variableName)
             : this(argumentName: argumentName, argumentType: argumentType, variableName: variableName, isRequired: false)
         {
         }
@@ -109,7 +109,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// Should the argument be inlined
         /// </summary>
         public bool? InlineArgument { get; set; }
-        
+
         /// <summary>
         /// Default value for the argument
         /// </summary>

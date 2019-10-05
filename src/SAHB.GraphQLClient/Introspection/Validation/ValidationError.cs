@@ -48,7 +48,8 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
         /// <summary>
         /// The validation error message
         /// </summary>
-        public string Message {
+        public string Message
+        {
             get
             {
                 switch (ValidationType)

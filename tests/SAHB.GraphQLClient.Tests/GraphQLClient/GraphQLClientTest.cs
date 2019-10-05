@@ -133,7 +133,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
                         }
                     })
                 });
-            
+
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
                 new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
 
@@ -178,7 +178,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
             // Act
             var query = client.CreateQuery<Query>("url");
             var result = await query.ExecuteDetailed();
-            
+
             // Assert
             Assert.Equal(result.Data.Field, "FieldValue");
 

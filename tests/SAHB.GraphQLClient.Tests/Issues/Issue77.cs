@@ -21,8 +21,8 @@ namespace SAHB.GraphQL.Client.Tests.Issues
             // Act
             var selectionSet = fieldBuilder.GenerateSelectionSet(typeof(MessageSubscription));
             var actualQuery = queryGenerator.GenerateQuery(
-                GraphQLOperationType.Subscription, 
-                selectionSet, 
+                GraphQLOperationType.Subscription,
+                selectionSet,
                 new GraphQLQueryArgument("fromSrc", RdSrc.SB));
 
             // Assert
