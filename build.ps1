@@ -1,3 +1,6 @@
+# Ensure build error would be reported
+$ErrorActionPreference = "Stop";
+
 # Restore tools
 dotnet tool restore
 
