@@ -227,7 +227,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
             AppendSelectionSet(builder, fields, arguments);
             return "{" + builder.ToString() + "}";
         }
-        
+
         private void AppendSelectionSet(StringBuilder builder, IEnumerable<GraphQLField> selectionSet, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
         {
             if (selectionSet.Any())
@@ -282,7 +282,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
         }
 
         private void AppendArguments(StringBuilder builder, GraphQLField field, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
-        { 
+        {
             // Append arguments
             // Format: (argumentName:$VariableName argumentName:$VariableName)
             var fieldArguments = field.Arguments?.ToDictionary(argument => argument,
