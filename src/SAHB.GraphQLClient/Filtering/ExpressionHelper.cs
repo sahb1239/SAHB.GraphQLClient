@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace SAHB.GraphQLClient.Filtering
 {
-    public class ExpressionHelper
+    internal class ExpressionHelper
     {
         internal static IEnumerable<string> GetMemberNamesFromExpression(Expression expression)
         {
