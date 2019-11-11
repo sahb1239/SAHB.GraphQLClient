@@ -61,6 +61,22 @@ namespace SAHB.GraphQLClient.FieldBuilder
 
             BaseType = type;
             TargetTypes = (targetTypes ?? new Dictionary<string, GraphQLTargetType>());
+
+            UpdateParentFieldForSelectionSet();
+        }
+
+        private void UpdateParentFieldForSelectionSet()
+        {
+            // Set parent for fields
+            foreach (var selectionField in SelectionSet)
+            {
+                if (selectionField.ParentPath != null && selectionField.ParentPath != this.Path)
+                {
+                    throw new ArgumentException($"Field {selectionField.Field} with alias {selectionField.Alias} already has a parent set");
+                }
+
+                selectionField.ParentPath = this.Path;
+            }
         }
 
         /// <summary>
@@ -77,6 +93,19 @@ namespace SAHB.GraphQLClient.FieldBuilder
         /// The selection set for the field
         /// </summary>
         public ICollection<GraphQLField> SelectionSet { get; }
+
+        /// <summary>
+        /// Parent field
+        /// </summary>
+        public string ParentPath { get; private set; }
+
+        /// <summary>
+        /// Get the path of the field
+        /// </summary>
+        public string Path =>
+            ParentPath == null ?
+                Alias :
+                $"{ParentPath}.{Alias}";
 
         /// <summary>
         /// Arguments for the current field
