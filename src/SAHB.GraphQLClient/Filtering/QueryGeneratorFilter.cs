@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using SAHB.GraphQLClient.FieldBuilder;
-using SAHB.GraphQLClient.Filtering;
+using SAHB.GraphQLClient.Internal;
 
-namespace SAHB.GraphQL.Client.Filtering
+namespace SAHB.GraphQLClient.Filtering
 {
     public class QueryGeneratorFilter
     {

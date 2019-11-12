@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace SAHB.GraphQLClient.Filtering
+namespace SAHB.GraphQLClient.Internal
 {
     internal class ExpressionHelper
     {

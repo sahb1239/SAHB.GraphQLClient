@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
-using SAHB.GraphQLClient.Filtering;
+using SAHB.GraphQLClient.Internal;
 using Xunit;
 
 namespace SAHB.GraphQLClient.Tests.Filtering

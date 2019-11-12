@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using SAHB.GraphQLClient.FieldBuilder;
 
-namespace SAHB.GraphQL.Client.Filtering
+namespace SAHB.GraphQLClient.Filtering
 {
     public interface IQueryGeneratorFilter
     {

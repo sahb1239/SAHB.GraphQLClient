@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using SAHB.GraphQL.Client.Filtering;
+using SAHB.GraphQLClient.Filtering;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 using Xunit;
