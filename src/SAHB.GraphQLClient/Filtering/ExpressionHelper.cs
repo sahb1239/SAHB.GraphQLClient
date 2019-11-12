@@ -31,7 +31,7 @@ namespace SAHB.GraphQLClient.Filtering
             }
         }
 
-        internal static IEnumerable<string> GetMemberNamesFromNewExpression(NewExpression newExpression)
+        private static IEnumerable<string> GetMemberNamesFromNewExpression(NewExpression newExpression)
         {
             for (int i = 0; i < newExpression.Arguments.Count; i++)
             {
