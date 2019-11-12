@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -44,7 +45,7 @@ namespace SAHB.GraphQLClient.Executor
         }
 
         /// <inheritdoc />
-        public async Task<GraphQLExecutorResponse> ExecuteQuery(string query, string url = null, HttpMethod method = null, string authorizationToken = null, string authorizationMethod = "Bearer", IDictionary<string, string> headers = null)
+        public async Task<GraphQLExecutorResponse> ExecuteQuery(string query, string url = null, HttpMethod method = null, string authorizationToken = null, string authorizationMethod = "Bearer", IDictionary<string, string> headers = null, CancellationToken cancellationToken = default)
         {
             // Check parameters for null
             if (query == null) throw new ArgumentNullException(nameof(query));
@@ -81,7 +82,7 @@ namespace SAHB.GraphQLClient.Executor
             }
 
             // Send request
-            HttpResponseMessage response = await Client.SendAsync(requestMessage).ConfigureAwait(false);
+            HttpResponseMessage response = await Client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
 
             // Detect if response was not successfully
             if (!response.IsSuccessStatusCode)

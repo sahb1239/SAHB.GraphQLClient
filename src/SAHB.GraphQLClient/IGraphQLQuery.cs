@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient
@@ -12,12 +13,16 @@ namespace SAHB.GraphQLClient
         /// <summary>
         /// Execute the query
         /// </summary>
-        Task<dynamic> Execute();
+        /// <param name="cancellationToken">A token that signals that the caller requested cancellation of this method invocation</param>
+        /// <returns>The result of the query</returns>
+        Task<dynamic> Execute(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Execute query and return the result with response headers
         /// </summary>
-        Task<GraphQLDataResult<dynamic>> ExecuteDetailed();
+        /// <param name="cancellationToken">A token that signals that the caller requested cancellation of this method invocation</param>
+        /// <returns>Object containing query result and response headers</returns>
+        Task<GraphQLDataResult<dynamic>> ExecuteDetailed(CancellationToken cancellationToken = default);
     }
 
     // ReSharper disable once InconsistentNaming
@@ -31,13 +36,15 @@ namespace SAHB.GraphQLClient
         /// <summary>
         /// Execute the query and return the result
         /// </summary>
+        /// <param name="cancellationToken">A token that signals that the caller requested cancellation of this method invocation</param>
         /// <returns>The result of the query</returns>
-        Task<T> Execute();
+        Task<T> Execute(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Execute query and return the result with response headers
         /// </summary>
+        /// <param name="cancellationToken">A token that signals that the caller requested cancellation of this method invocation</param>
         /// <returns>Object containing query result and response headers</returns>
-        Task<GraphQLDataResult<T>> ExecuteDetailed();
+        Task<GraphQLDataResult<T>> ExecuteDetailed(CancellationToken cancellationToken = default);
     }
 }

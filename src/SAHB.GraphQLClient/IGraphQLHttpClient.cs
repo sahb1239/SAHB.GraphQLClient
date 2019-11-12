@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.Batching;
@@ -27,9 +28,10 @@ namespace SAHB.GraphQLClient
         /// <param name="headers">Headers to add to the request</param>
         /// <param name="authorizationToken">Authorization token inserted in the Authorization header</param>
         /// <param name="authorizationMethod">The authorization method inserted in the Authorization header. This is only used when authorizationToken is not null</param>
+        /// <param name="cancellationToken">A token that signals that the caller requested cancellation of this method invocation</param>
         /// <param name="arguments">The arguments used in the query which is inserted in the variables</param>
         /// <returns>The result of the query</returns>
-        Task<T> Execute<T>(GraphQLOperationType operationType, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class;
+        Task<T> Execute<T>(GraphQLOperationType operationType, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer", CancellationToken cancellationToken = default, params GraphQLQueryArgument[] arguments) where T : class;
 
         /// <summary>
         /// Executes a query on a GraphQL server using the specified <paramref name="builder"/>
@@ -41,9 +43,10 @@ namespace SAHB.GraphQLClient
         /// <param name="headers">Headers to add to the request</param>
         /// <param name="authorizationToken">Authorization token inserted in the Authorization header</param>
         /// <param name="authorizationMethod">The authorization method inserted in the Authorization header. This is only used when authorizationToken is not null</param>
+        /// <param name="cancellationToken">A token that signals that the caller requested cancellation of this method invocation</param>
         /// <param name="arguments">The arguments used in the query which is inserted in the variables</param>
         /// <returns>The result of the query</returns>
-        Task<dynamic> Execute(GraphQLOperationType operationType, Action<IGraphQLBuilder> builder, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments);
+        Task<dynamic> Execute(GraphQLOperationType operationType, Action<IGraphQLBuilder> builder, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer", CancellationToken cancellationToken = default, params GraphQLQueryArgument[] arguments);
 
         /// <summary>
         /// Generates a GraphQL batch

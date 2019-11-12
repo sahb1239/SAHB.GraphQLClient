@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using Newtonsoft.Json;
@@ -24,7 +25,8 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -60,7 +62,8 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -90,7 +93,8 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -123,7 +127,8 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -156,7 +161,8 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -189,7 +195,8 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -217,7 +224,8 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -250,7 +258,8 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -285,7 +294,8 @@ namespace SAHB.GraphQLClient.Tests.Builder
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new

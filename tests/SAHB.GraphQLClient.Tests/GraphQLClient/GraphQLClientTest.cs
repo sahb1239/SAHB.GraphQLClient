@@ -10,6 +10,7 @@ using Xunit;
 using System.Net.Http;
 using SAHB.GraphQLClient.Executor;
 using FakeItEasy;
+using System.Threading;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient
 {
@@ -27,7 +28,8 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -102,7 +104,8 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -159,7 +162,8 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new

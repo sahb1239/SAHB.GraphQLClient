@@ -9,6 +9,7 @@ using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Result;
+using System.Threading;
 
 namespace SAHB.GraphQLClient.Internal
 {
@@ -45,15 +46,15 @@ namespace SAHB.GraphQLClient.Internal
         private IEnumerable<GraphQLField> SelectionSet { get; }
 
         /// <inheritdoc />
-        public async Task<T> Execute()
+        public async Task<T> Execute(CancellationToken cancellationToken = default)
         {
-            var result = await GetDataResult().ConfigureAwait(false);
+            var result = await GetDataResult(cancellationToken).ConfigureAwait(false);
             return result?.Data;
         }
 
-        public async Task<GraphQLDataResult<T>> ExecuteDetailed()
+        public async Task<GraphQLDataResult<T>> ExecuteDetailed(CancellationToken cancellationToken = default)
         {
-            var result = await GetDataResult().ConfigureAwait(false);
+            var result = await GetDataResult(cancellationToken).ConfigureAwait(false);
             return new GraphQLDataResult<T>
             {
                 Data = result.Data,
@@ -61,7 +62,7 @@ namespace SAHB.GraphQLClient.Internal
             };
         }
 
-        private async Task<GraphQLDataResult<T>> GetDataResult()
+        private async Task<GraphQLDataResult<T>> GetDataResult(CancellationToken cancellationToken)
         {
             // Generate query
             var query = _queryGenerator.GenerateQuery(OperationType, SelectionSet, _arguments);
@@ -73,6 +74,7 @@ namespace SAHB.GraphQLClient.Internal
                 method: _httpMethod,
                 authorizationToken: _authorizationToken,
                 authorizationMethod: _authorizationMethod,
+                cancellationToken: cancellationToken,
                 headers: _headers).ConfigureAwait(false);
 
             // Deserilize
