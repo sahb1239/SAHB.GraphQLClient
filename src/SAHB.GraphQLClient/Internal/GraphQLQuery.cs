@@ -68,11 +68,11 @@ namespace SAHB.GraphQLClient.Internal
 
             // Get result
             var result = await _executor.ExecuteQuery(
-                query: query, 
-                url: _url, 
-                method: _httpMethod, 
-                authorizationToken: _authorizationToken, 
-                authorizationMethod: _authorizationMethod, 
+                query: query,
+                url: _url,
+                method: _httpMethod,
+                authorizationToken: _authorizationToken,
+                authorizationMethod: _authorizationMethod,
                 headers: _headers).ConfigureAwait(false);
 
             // Deserilize

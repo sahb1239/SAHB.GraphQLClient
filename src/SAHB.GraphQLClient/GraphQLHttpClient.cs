@@ -204,7 +204,7 @@ namespace SAHB.GraphQLClient
         }
 
         // ReSharper disable once InconsistentNaming
-        private IGraphQLQuery<T> GetGraphQLQuery<T>(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, 
+        private IGraphQLQuery<T> GetGraphQLQuery<T>(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod,
             IDictionary<string, string> headers,
             string authorizationToken = null,
             string authorizationMethod = "Bearer") where T : class
