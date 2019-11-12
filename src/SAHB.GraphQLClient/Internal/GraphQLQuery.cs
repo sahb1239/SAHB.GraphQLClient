@@ -24,19 +24,21 @@ namespace SAHB.GraphQLClient.Internal
         private readonly HttpMethod _httpMethod;
         private readonly string _url;
         private readonly GraphQLQueryArgument[] _arguments;
+        private readonly IDictionary<string, string> _headers;
 
-        public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization)
+        public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IDictionary<string, string> headers, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization)
         {
-            _url = url ?? throw new ArgumentNullException(nameof(url));
-            _httpMethod = httpMethod ?? throw new ArgumentNullException(nameof(httpMethod));
-            _executor = executor ?? throw new ArgumentNullException(nameof(executor));
+            this._url = url ?? throw new ArgumentNullException(nameof(url));
+            this._httpMethod = httpMethod;
+            this._executor = executor ?? throw new ArgumentNullException(nameof(executor));
             this._deserilization = deserilization;
-            _authorizationMethod = authorizationMethod;
+            this._authorizationMethod = authorizationMethod;
             this._queryGenerator = queryGenerator;
-            _authorizationToken = authorizationToken;
-            OperationType = operationType;
-            SelectionSet = selectionSet;
-            _arguments = arguments;
+            this._authorizationToken = authorizationToken;
+            this.OperationType = operationType;
+            this.SelectionSet = selectionSet;
+            this._arguments = arguments;
+            this._headers = headers;
         }
 
         private GraphQLOperationType OperationType { get; }
@@ -65,7 +67,13 @@ namespace SAHB.GraphQLClient.Internal
             var query = _queryGenerator.GenerateQuery(OperationType, SelectionSet, _arguments);
 
             // Get result
-            var result = await _executor.ExecuteQuery(query, _url, _httpMethod, _authorizationToken, _authorizationMethod).ConfigureAwait(false);
+            var result = await _executor.ExecuteQuery(
+                query: query, 
+                url: _url, 
+                method: _httpMethod, 
+                authorizationToken: _authorizationToken, 
+                authorizationMethod: _authorizationMethod, 
+                headers: _headers).ConfigureAwait(false);
 
             // Deserilize
             var deserilizationResult = _deserilization.DeserializeResult<T>(result.Response, SelectionSet);
@@ -82,7 +90,7 @@ namespace SAHB.GraphQLClient.Internal
 
     internal class GraphQLQuery : GraphQLQuery<dynamic>, IGraphQLQuery
     {
-        public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization) : base(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, queryGenerator, executor, deserilization)
+        public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IDictionary<string, string> headers, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization) : base(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, headers, queryGenerator, executor, deserilization)
         {
         }
     }
