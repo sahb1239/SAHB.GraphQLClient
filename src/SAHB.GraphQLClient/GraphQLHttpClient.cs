@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -9,7 +8,6 @@ using SAHB.GraphQLClient.Batching;
 using SAHB.GraphQLClient.Batching.Internal;
 using SAHB.GraphQLClient.Builder;
 using SAHB.GraphQLClient.Builder.Internal;
-using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Internal;
@@ -95,32 +93,19 @@ namespace SAHB.GraphQLClient
         /// <inheritdoc />
         public IGraphQLBatch CreateBatch(GraphQLOperationType operationType, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer")
         {
-            return new GraphQLBatch(operationType, url, httpMethod, headers, authorizationToken, authorizationMethod, HttpExecutor, FieldBuilder, QueryGenerator, Deserialization);
+            return new GraphQLBatch(operationType, url, httpMethod, headers, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, HttpExecutor, FieldBuilder, QueryGenerator, Deserialization);
         }
 
         private async Task<T> Execute<T>(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationMethod, string authorizationToken) where T : class
         {
-            var result = await ExecuteQuery<T>(operationType, selectionSet, arguments, url, httpMethod, headers, authorizationMethod, authorizationToken).ConfigureAwait(false);
+            var result = await ExecuteQuery<T>(operationType, selectionSet, arguments, url, httpMethod, headers, authorizationMethod: authorizationMethod, authorizationToken: authorizationToken).ConfigureAwait(false);
             return result.Data;
         }
 
-        private async Task<GraphQLDataResult<T>> ExecuteQuery<T>(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationMethod, string authorizationToken) where T : class
+        private Task<GraphQLDataResult<T>> ExecuteQuery<T>(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationMethod, string authorizationToken) where T : class
         {
-            // Generate query
-            var requestQuery = QueryGenerator.GenerateQuery(operationType, selectionSet, arguments.ToArray());
-
-            // Get response
-            GraphQLExecutorResponse response = await HttpExecutor.ExecuteQuery(requestQuery, url, httpMethod, headers: headers, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod).ConfigureAwait(false);
-
-            // Deserilize
-            var result = Deserialization.DeserializeResult<T>(response.Response, selectionSet);
-            if (result?.Errors?.Any() ?? false)
-                throw new GraphQLErrorException(query: requestQuery, errors: result.Errors);
-
-            // Set headers
-            result.Headers = response.Headers;
-
-            return result;
+            var query = GetGraphQLQuery<T>(operationType, selectionSet, arguments, url, httpMethod, headers, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod);
+            return query.ExecuteDetailed();
         }
 
         /// <inheritdoc />
@@ -162,7 +147,7 @@ namespace SAHB.GraphQLClient
             var selectionSet = build.GetFields();
 
             // Get query
-            return GetGraphQLQuery(GraphQLOperationType.Mutation, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod);
+            return GetGraphQLQuery(GraphQLOperationType.Mutation, selectionSet, arguments, url, httpMethod, null, authorizationToken, authorizationMethod);
         }
 
         /// <inheritdoc />
@@ -170,7 +155,7 @@ namespace SAHB.GraphQLClient
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             var selectionSet = FieldBuilder.GenerateSelectionSet(typeof(T));
-            return GetGraphQLQuery<T>(GraphQLOperationType.Mutation, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod);
+            return GetGraphQLQuery<T>(GraphQLOperationType.Mutation, selectionSet, arguments, url, httpMethod, null, authorizationToken, authorizationMethod);
         }
 
         /// <inheritdoc />
@@ -184,7 +169,7 @@ namespace SAHB.GraphQLClient
             var selectionSet = build.GetFields();
 
             // Get query
-            return GetGraphQLQuery(GraphQLOperationType.Query, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod);
+            return GetGraphQLQuery(GraphQLOperationType.Query, selectionSet, arguments, url, httpMethod, null, authorizationToken, authorizationMethod);
         }
 
         /// <inheritdoc />
@@ -192,7 +177,7 @@ namespace SAHB.GraphQLClient
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             var selectionSet = FieldBuilder.GenerateSelectionSet(typeof(T));
-            return GetGraphQLQuery<T>(GraphQLOperationType.Query, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod);
+            return GetGraphQLQuery<T>(GraphQLOperationType.Query, selectionSet, arguments, url, httpMethod, null, authorizationToken, authorizationMethod);
         }
 
         #region Old methods
@@ -211,18 +196,20 @@ namespace SAHB.GraphQLClient
 
         // ReSharper disable once InconsistentNaming
         private IGraphQLQuery GetGraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod,
+            IDictionary<string, string> headers,
             string authorizationToken = null,
             string authorizationMethod = "Bearer")
         {
-            return new GraphQLQuery(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, QueryGenerator, HttpExecutor, Deserialization);
+            return new GraphQLQuery(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, headers, QueryGenerator, HttpExecutor, Deserialization);
         }
 
         // ReSharper disable once InconsistentNaming
         private IGraphQLQuery<T> GetGraphQLQuery<T>(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod,
+            IDictionary<string, string> headers,
             string authorizationToken = null,
             string authorizationMethod = "Bearer") where T : class
         {
-            return new GraphQLQuery<T>(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, QueryGenerator, HttpExecutor, Deserialization);
+            return new GraphQLQuery<T>(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, headers, QueryGenerator, HttpExecutor, Deserialization);
         }
 
         #endregion
