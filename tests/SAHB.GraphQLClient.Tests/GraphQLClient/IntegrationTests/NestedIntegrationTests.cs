@@ -9,6 +9,7 @@ using SAHB.GraphQLClient.Executor;
 using FakeItEasy;
 using System.Net.Http;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
 {
@@ -36,7 +37,8 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = responseContent

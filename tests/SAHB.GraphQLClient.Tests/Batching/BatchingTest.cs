@@ -11,6 +11,7 @@ using System.Net.Http;
 using SAHB.GraphQLClient.Executor;
 using FakeItEasy;
 using System.Linq;
+using System.Threading;
 
 namespace SAHB.GraphQLClient.Tests.Batching
 {
@@ -29,7 +30,8 @@ namespace SAHB.GraphQLClient.Tests.Batching
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -91,7 +93,8 @@ namespace SAHB.GraphQLClient.Tests.Batching
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -155,7 +158,8 @@ namespace SAHB.GraphQLClient.Tests.Batching
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -220,7 +224,8 @@ namespace SAHB.GraphQLClient.Tests.Batching
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -258,7 +263,8 @@ namespace SAHB.GraphQLClient.Tests.Batching
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -302,7 +308,8 @@ namespace SAHB.GraphQLClient.Tests.Batching
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
@@ -347,7 +354,8 @@ namespace SAHB.GraphQLClient.Tests.Batching
                 A<HttpMethod>.Ignored,
                 A<string>.Ignored,
                 A<string>.Ignored,
-                A<IDictionary<string, string>>.Ignored))
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
                 .Returns(new GraphQLExecutorResponse
                 {
                     Response = JsonConvert.SerializeObject(new
