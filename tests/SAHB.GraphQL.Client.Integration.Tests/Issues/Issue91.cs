@@ -4,6 +4,7 @@ using SAHB.GraphQL.Client.TestServer;
 using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Introspection;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -57,8 +58,8 @@ namespace SAHB.GraphQL.Client.Introspection.Tests.Issues
                 var validationOutput = introspectionQuery.ValidateGraphQLType<Issue91Query>(GraphQLOperationType.Query);
 
                 // Assert
-                Assert.Single(validationOutput);
-                Assert.False(true);
+                Assert.Equal(2, validationOutput.Count());
+                Assert.All(validationOutput, e => Assert.Equal(ValidationType.Field_Invalid_Type, e.ValidationType));
             }
         }
         public class Issue91Query
