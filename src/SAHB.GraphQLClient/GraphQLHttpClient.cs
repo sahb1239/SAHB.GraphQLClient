@@ -139,7 +139,7 @@ namespace SAHB.GraphQLClient
 
         /// <inheritdoc />
         public IGraphQLQuery<T> CreateQuery<T>(string url, Expression<Func<T, T>> filter, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
-        { 
+        {
             return CreateQuery<T>(url, HttpMethod.Post, filter, authorizationToken, authorizationMethod, arguments);
         }
 

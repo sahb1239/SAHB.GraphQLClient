@@ -30,17 +30,17 @@ namespace SAHB.GraphQLClient.Internal
 
         [Obsolete]
         public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IDictionary<string, string> headers, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization)
-            : this(operationType: operationType, 
-                  selectionSet: selectionSet, 
-                  arguments: arguments, 
-                  url: url, 
-                  httpMethod: httpMethod, 
-                  filter: null, 
-                  authorizationToken: authorizationToken, 
-                  authorizationMethod: authorizationMethod, 
-                  headers: headers, 
-                  queryGenerator: queryGenerator, 
-                  executor: executor, 
+            : this(operationType: operationType,
+                  selectionSet: selectionSet,
+                  arguments: arguments,
+                  url: url,
+                  httpMethod: httpMethod,
+                  filter: null,
+                  authorizationToken: authorizationToken,
+                  authorizationMethod: authorizationMethod,
+                  headers: headers,
+                  queryGenerator: queryGenerator,
+                  executor: executor,
                   deserilization: deserilization)
         {
         }
