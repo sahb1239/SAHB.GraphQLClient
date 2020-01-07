@@ -40,12 +40,12 @@ namespace SAHB.GraphQLClient
         /// <summary>
         /// The <see cref="IGraphQLDeserialization"/> used
         /// </summary>
-        private IGraphQLDeserialization Deserialization { get; }
+        public IGraphQLDeserialization Deserialization { get; }
 
         /// <summary>
         /// The <see cref="IQueryGeneratorFilter"/>
         /// </summary>
-        private IQueryGeneratorFilter FilterGenerator { get; }
+        public IQueryGeneratorFilter FilterGenerator { get; }
 
         [Obsolete]
         public GraphQLHttpClient(IGraphQLHttpExecutor httpExecutor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization)
