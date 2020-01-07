@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
@@ -25,7 +26,7 @@ namespace SAHB.GraphQLClient.Extentions
         /// <returns>The data returned from the query</returns>
         /// <exception cref="GraphQLErrorException">Thrown when validation or GraphQL endpoint returns an error</exception>
         public static Task<T> Query<T>(this IGraphQLHttpClient client, string url = null, string authorizationToken = null,
-            string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
+            string authorizationMethod = "Bearer", CancellationToken cancellationToken = default, params GraphQLQueryArgument[] arguments) where T : class
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             return client.Execute<T>(GraphQLOperationType.Query, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
@@ -43,7 +44,7 @@ namespace SAHB.GraphQLClient.Extentions
         /// <returns>The data returned from the query</returns>
         /// <exception cref="GraphQLErrorException">Thrown when validation or GraphQL endpoint returns an error</exception>
         public static Task<T> Mutate<T>(this IGraphQLHttpClient client, string url = null, string authorizationToken = null,
-            string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
+            string authorizationMethod = "Bearer", CancellationToken cancellationToken = default, params GraphQLQueryArgument[] arguments) where T : class
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             return client.Execute<T>(GraphQLOperationType.Mutation, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
@@ -62,7 +63,7 @@ namespace SAHB.GraphQLClient.Extentions
         /// <returns>The data returned from the query</returns>
         /// <exception cref="GraphQLErrorException">Thrown when validation or GraphQL endpoint returns an error</exception>
         public static Task<T> Query<T>(this IGraphQLHttpClient client, string url, HttpMethod httpMethod, string authorizationToken = null,
-            string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
+            string authorizationMethod = "Bearer", CancellationToken cancellationToken = default, params GraphQLQueryArgument[] arguments) where T : class
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             return client.Execute<T>(GraphQLOperationType.Query, httpMethod: httpMethod, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
@@ -82,6 +83,7 @@ namespace SAHB.GraphQLClient.Extentions
         /// <exception cref="GraphQLErrorException">Thrown when validation or GraphQL endpoint returns an error</exception>
         public static Task<T> Mutate<T>(this IGraphQLHttpClient client, string url, HttpMethod httpMethod,
             string authorizationToken = null, string authorizationMethod = "Bearer",
+            CancellationToken cancellationToken = default,
             params GraphQLQueryArgument[] arguments) where T : class
         {
             if (client == null) throw new ArgumentNullException(nameof(client));

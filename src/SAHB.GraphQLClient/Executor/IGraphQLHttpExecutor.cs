@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using SAHB.GraphQLClient.Result;
 
@@ -30,7 +31,8 @@ namespace SAHB.GraphQLClient.Executor
         /// <param name="method">HttpMethod which should be used for the GraphQL endpoint</param>
         /// <param name="authorizationToken">The authorization token which should be used</param>
         /// <param name="authorizationMethod">Authorization method used for the authorization token</param>
+        /// <param name="cancellationToken">A token that signals that the caller requested cancellation of this method invocation</param>
         /// <returns></returns>
-        Task<GraphQLExecutorResponse> ExecuteQuery(string query, string url = null, HttpMethod method = null, string authorizationToken = null, string authorizationMethod = "Bearer", IDictionary<string, string> headers = null);
+        Task<GraphQLExecutorResponse> ExecuteQuery(string query, string url = null, HttpMethod method = null, string authorizationToken = null, string authorizationMethod = "Bearer", IDictionary<string, string> headers = null, CancellationToken cancellationToken = default);
     }
 }
