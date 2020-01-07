@@ -137,7 +137,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             // Update arguments
             foreach (var fieldsWithIdentifier in _fields)
             {
-                foreach (var fieldArguments in Helper.GetAllArgumentsFromFields(fieldsWithIdentifier.Value))
+                foreach (var fieldArguments in Helper.GetAllArgumentsFromFields(fieldsWithIdentifier.Value, null))
                 {
                     foreach (var argument in fieldArguments.Value)
                     {

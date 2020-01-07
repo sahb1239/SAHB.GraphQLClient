@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQLClient.Filtering;
 using SAHB.GraphQLClient.QueryGenerator;
 #if DOTNET_HTTP
 using System.Net.Http;
@@ -30,6 +31,7 @@ namespace SAHB.GraphQLClient
             services.AddSingleton<IGraphQLQueryGeneratorFromFields>(provider =>
                 new GraphQLQueryGeneratorFromFields() { LoggerFactory = provider.GetService<ILoggerFactory>() });
             services.AddSingleton<IGraphQLDeserialization, GraphQLDeserilization>();
+            services.AddSingleton<IQueryGeneratorFilter, QueryGeneratorFilter>();
 
 #if DOTNET_HTTP
             services.AddHttpClient();
@@ -50,7 +52,8 @@ namespace SAHB.GraphQLClient
                 new GraphQLHttpClient(provider.GetRequiredService<IGraphQLHttpExecutor>(),
                     provider.GetRequiredService<IGraphQLFieldBuilder>(),
                     provider.GetRequiredService<IGraphQLQueryGeneratorFromFields>(),
-                    provider.GetRequiredService<IGraphQLDeserialization>())
+                    provider.GetRequiredService<IGraphQLDeserialization>(),
+                    provider.GetRequiredService<IQueryGeneratorFilter>())
                 {
                     LoggerFactory = provider.GetService<ILoggerFactory>()
                 });

@@ -11,6 +11,7 @@ using System.Net.Http;
 using SAHB.GraphQLClient.Executor;
 using FakeItEasy;
 using System.Threading;
+using SAHB.GraphQLClient.Filtering;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient
 {
@@ -74,7 +75,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
                 });
 
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization(), new QueryGeneratorFilter());
 
             // Act
             var query = client.CreateQuery<Query>("url");
@@ -138,7 +139,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
                 });
 
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization(), new QueryGeneratorFilter());
 
             // Act
             var query = client.CreateQuery<Query>("url");
@@ -177,7 +178,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
                 });
 
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization(), new QueryGeneratorFilter());
 
             // Act
             var query = client.CreateQuery<Query>("url");

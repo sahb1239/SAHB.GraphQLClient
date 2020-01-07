@@ -26,8 +26,26 @@ namespace SAHB.GraphQLClient.Internal
         private readonly string _url;
         private readonly GraphQLQueryArgument[] _arguments;
         private readonly IDictionary<string, string> _headers;
+        private readonly Func<GraphQLField, bool> _filter = null;
 
+        [Obsolete]
         public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IDictionary<string, string> headers, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization)
+            : this(operationType: operationType,
+                  selectionSet: selectionSet,
+                  arguments: arguments,
+                  url: url,
+                  httpMethod: httpMethod,
+                  filter: null,
+                  authorizationToken: authorizationToken,
+                  authorizationMethod: authorizationMethod,
+                  headers: headers,
+                  queryGenerator: queryGenerator,
+                  executor: executor,
+                  deserilization: deserilization)
+        {
+        }
+
+        public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, Func<GraphQLField, bool> filter, string authorizationToken, string authorizationMethod, IDictionary<string, string> headers, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization)
         {
             this._url = url ?? throw new ArgumentNullException(nameof(url));
             this._httpMethod = httpMethod;
@@ -40,6 +58,7 @@ namespace SAHB.GraphQLClient.Internal
             this.SelectionSet = selectionSet;
             this._arguments = arguments;
             this._headers = headers;
+            this._filter = filter;
         }
 
         private GraphQLOperationType OperationType { get; }
@@ -65,7 +84,7 @@ namespace SAHB.GraphQLClient.Internal
         private async Task<GraphQLDataResult<T>> GetDataResult(CancellationToken cancellationToken)
         {
             // Generate query
-            var query = _queryGenerator.GenerateQuery(OperationType, SelectionSet, _arguments);
+            var query = _queryGenerator.GenerateQuery(OperationType, SelectionSet, _filter, _arguments);
 
             // Get result
             var result = await _executor.ExecuteQuery(
@@ -92,7 +111,12 @@ namespace SAHB.GraphQLClient.Internal
 
     internal class GraphQLQuery : GraphQLQuery<dynamic>, IGraphQLQuery
     {
+        [Obsolete]
         public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, string authorizationToken, string authorizationMethod, IDictionary<string, string> headers, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization) : base(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, headers, queryGenerator, executor, deserilization)
+        {
+        }
+
+        public GraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, Func<GraphQLField, bool> filter, string authorizationToken, string authorizationMethod, IDictionary<string, string> headers, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLHttpExecutor executor, IGraphQLDeserialization deserilization) : base(operationType, selectionSet, arguments, url, httpMethod, filter, authorizationToken, authorizationMethod, headers, queryGenerator, executor, deserilization)
         {
         }
     }

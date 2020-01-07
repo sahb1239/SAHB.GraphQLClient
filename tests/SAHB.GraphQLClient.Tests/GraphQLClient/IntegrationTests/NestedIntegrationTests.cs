@@ -10,6 +10,7 @@ using FakeItEasy;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading;
+using SAHB.GraphQLClient.Filtering;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
 {
@@ -44,7 +45,7 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient.IntegrationTests
                     Response = responseContent
                 });
 
-            var client = new GraphQLHttpClient(httpClientMock, _fieldBuilder, _queryGenerator, _deserilization);
+            var client = new GraphQLHttpClient(httpClientMock, _fieldBuilder, _queryGenerator, _deserilization, new QueryGeneratorFilter());
 
             // Act
             var response = await client.Query<QueryToTest>("");

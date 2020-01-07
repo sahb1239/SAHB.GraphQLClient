@@ -20,12 +20,18 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// <inheritdoc />
         public string GenerateQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, params GraphQLQueryArgument[] arguments)
         {
+            return GenerateQuery(operationType, selectionSet, null, arguments);
+        }
+
+        /// <inheritdoc />
+        public string GenerateQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, Func<GraphQLField, bool> filter, params GraphQLQueryArgument[] arguments)
+        {
             switch (operationType)
             {
                 case GraphQLOperationType.Query:
                 case GraphQLOperationType.Mutation:
                 case GraphQLOperationType.Subscription:
-                    return GetQuery(operationType, selectionSet.ToList(), arguments);
+                    return GetQuery(operationType, selectionSet.ToList(), filter, arguments);
             }
 
             throw new NotImplementedException($"Operation {operationType} not implemented");
@@ -39,16 +45,16 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// <inheritdoc />
         public string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments) => GenerateQuery(GraphQLOperationType.Mutation, fields, arguments);
 
-        private string GetQuery(GraphQLOperationType operationType, ICollection<GraphQLField> fields, params GraphQLQueryArgument[] queryArguments)
+        private string GetQuery(GraphQLOperationType operationType, ICollection<GraphQLField> selectionSet, Func<GraphQLField, bool> filter, params GraphQLQueryArgument[] queryArguments)
         {
             // Get arguments
-            var readonlyArguments = GetArguments(fields, queryArguments);
+            var readonlyArguments = GetArguments(selectionSet, filter, queryArguments);
 
             // Get query
             if (operationType == GraphQLOperationType.Subscription)
             {
-                // Only support for one field
-                if (fields.Count > 1)
+                // Only support for one field for subscriptions
+                if (selectionSet.Count > 1)
                 {
                     throw new NotSupportedException("Subscriptions does not support more than one selection");
                 }
@@ -65,28 +71,32 @@ namespace SAHB.GraphQLClient.QueryGenerator
                     queryType = "mutation";
                     break;
                 case GraphQLOperationType.Subscription:
-                    queryType = "subscription " + (string.IsNullOrWhiteSpace(fields.First().Alias) ? fields.First().Field : fields.First().Alias);
+                    queryType = "subscription " + (string.IsNullOrWhiteSpace(selectionSet.First().Alias) ? selectionSet.First().Field : selectionSet.First().Alias);
                     break;
                 default:
                     throw new NotImplementedException($"Querytype {operationType} not implemented");
             }
 
-            var query = GetGraphQLQuery(queryType, GetArguments(readonlyArguments), GenerateQueryForFields(fields, readonlyArguments));
-            var request = GetQueryRequest(query, readonlyArguments);
+            var queryBuilder = new StringBuilder();
+            AppendRootQueryType(queryBuilder, queryType);
+            AppendRootArguments(queryBuilder, readonlyArguments);
+            AppendRootSelectionSet(queryBuilder, selectionSet, filter, readonlyArguments);
+
+            var request = GetQueryRequest(queryBuilder.ToString(), readonlyArguments);
 
             // Logging
             if (Logger != null && Logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug($"Generated the GraphQL query {request} from the fields:{Environment.NewLine + string.Join(Environment.NewLine, fields)}");
+                Logger.LogDebug($"Generated the GraphQL query {request} from the fields:{Environment.NewLine + string.Join(Environment.NewLine, selectionSet)}");
             }
 
             return request;
         }
 
-        private IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> GetArguments(ICollection<GraphQLField> fields, params GraphQLQueryArgument[] queryArguments)
+        private IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> GetArguments(ICollection<GraphQLField> selectionSet, Func<GraphQLField, bool> filter, params GraphQLQueryArgument[] queryArguments)
         {
             // Get all the arguments from the fields
-            var fieldArguments = Helper.GetAllArgumentsFromFields(fields).ToList();
+            var fieldArguments = Helper.GetAllArgumentsFromFields(selectionSet, filter).ToList();
 
             // Create list of argument variables which was not found
             var variablesNotFoundInFields = queryArguments.ToList();
@@ -189,6 +199,37 @@ namespace SAHB.GraphQLClient.QueryGenerator
             return readonlyArguments;
         }
 
+        private void AppendRootQueryType(StringBuilder builder, string queryType)
+        {
+            // Append rootQueryType
+            // Format: query
+            builder.Append(queryType);
+        }
+
+        private void AppendRootArguments(StringBuilder builder, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        {
+            // Append rootArguments
+            // Format: (variableName:graphQLType variableName:graphQLType)
+            var rootArguments = arguments
+                .Where(argument => !ShouldInlineArgument(argument))
+                .Select(e => $"${e.Key.VariableName}:{e.Key.ArgumentType}")
+                .ToArray();
+
+            if (rootArguments.Any())
+            {
+                builder.Append("(");
+                builder.Append(string.Join(" ", rootArguments));
+                builder.Append(")");
+            }
+        }
+
+        private void AppendRootSelectionSet(StringBuilder builder, IEnumerable<GraphQLField> selectionSet, Func<GraphQLField, bool> filter, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        {
+            builder.Append("{");
+            FilterAndAppendSelectionSet(builder, selectionSet, filter, arguments);
+            builder.Append("}");
+        }
+
         private bool ShouldInlineArgument(KeyValuePair<GraphQLFieldArguments, GraphQLQueryArgument> keyValuePair) =>
             ShouldInlineArgument(keyValuePair.Key, keyValuePair.Value);
 
@@ -216,39 +257,58 @@ namespace SAHB.GraphQLClient.QueryGenerator
             return false;
         }
 
-        private string GetArguments(IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        private void FilterAndAppendSelectionSet(StringBuilder builder, IEnumerable<GraphQLField> selectionSet, Func<GraphQLField, bool> filter, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
         {
-            return string.Join(" ", arguments.Where(argument => !ShouldInlineArgument(argument)).Select(e => $"${e.Key.VariableName}:{e.Key.ArgumentType}"));
+            var filteredSelectionSet = GetFilteredSelectionSet(selectionSet, filter).ToList();
+            AppendSelectionSet(builder, filteredSelectionSet, filter, arguments);
         }
 
-        private string GenerateQueryForFields(IEnumerable<GraphQLField> fields, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        private IEnumerable<GraphQLField> GetFilteredSelectionSet(IEnumerable<GraphQLField> selectionSet, Func<GraphQLField, bool> filter)
         {
-            var builder = new StringBuilder();
-            AppendSelectionSet(builder, fields, arguments);
-            return "{" + builder.ToString() + "}";
-        }
+            // Get filtered SelectionSet
+            var filteredSelectionSet = Helper.GetFilteredSelectionSet(selectionSet, filter).ToList();
 
-        private void AppendSelectionSet(StringBuilder builder, IEnumerable<GraphQLField> selectionSet, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
-        {
-            if (selectionSet.Any())
+            if (filteredSelectionSet.Any())
             {
-                bool firstField = true;
-                foreach (var field in selectionSet)
+                return filteredSelectionSet;
+            }
+            else
+            {
+                var scalarSelectionSet = GetScalarsSelectionSet(selectionSet).ToList();
+                if (scalarSelectionSet.Any())
                 {
-                    if (!firstField)
-                    {
-                        builder.Append(" ");
-                    }
-
-                    // SelectionSet
-                    AppendField(builder, field, arguments);
-
-                    firstField = false;
+                    return scalarSelectionSet;
+                }
+                else
+                {
+                    return selectionSet;
                 }
             }
         }
 
-        private void AppendField(StringBuilder builder, GraphQLField field, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        private IEnumerable<GraphQLField> GetScalarsSelectionSet(IEnumerable<GraphQLField> selectionSet)
+        {
+            return selectionSet.Where(e => !e.SelectionSet.Any());
+        }
+
+        private void AppendSelectionSet(StringBuilder builder, IEnumerable<GraphQLField> selectionSet, Func<GraphQLField, bool> filter, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        {
+            bool firstField = true;
+            foreach (var field in selectionSet)
+            {
+                if (!firstField)
+                {
+                    builder.Append(" ");
+                }
+
+                // SelectionSet
+                AppendField(builder, field, filter, arguments);
+
+                firstField = false;
+            }
+        }
+
+        private void AppendField(StringBuilder builder, GraphQLField field, Func<GraphQLField, bool> filter, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
         {
             // Append alias and field
             // Format: alias:field or field
@@ -264,7 +324,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
 
             // Append selectionSet
             // Format: {field field}
-            AppendSelectionSet(builder, field, arguments);
+            AppendSelectionSet(builder, field, filter, arguments);
         }
 
         private void AppendFieldName(StringBuilder builder, GraphQLField field)
@@ -330,7 +390,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
             }
         }
 
-        private void AppendSelectionSet(StringBuilder builder, GraphQLField field, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
+        private void AppendSelectionSet(StringBuilder builder, GraphQLField field, Func<GraphQLField, bool> filter, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)
         {
             // Append selectionSet
             if ((field.SelectionSet?.Any() ?? false) || (field.TargetTypes?.Any() ?? false))
@@ -339,7 +399,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
                 {
                     builder.Append("{");
                     // SelectionSet
-                    AppendSelectionSet(builder, field.SelectionSet, arguments);
+                    FilterAndAppendSelectionSet(builder, field.SelectionSet, filter, arguments);
                 }
 
                 // Get other possible subTypes
@@ -349,7 +409,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
                     {
                         builder.Append($" ... on {possibleType.Key}");
                         builder.Append("{");
-                        AppendSelectionSet(builder, possibleType.Value.SelectionSet, arguments);
+                        FilterAndAppendSelectionSet(builder, possibleType.Value.SelectionSet, filter, arguments);
                         builder.Append("}");
                     }
                 }
@@ -377,18 +437,6 @@ namespace SAHB.GraphQLClient.QueryGenerator
             }
 
             return JsonConvert.SerializeObject(argumentValue);
-        }
-
-        private string GetGraphQLQuery(string queryType, string argumentVariableDeclaration, string fields)
-        {
-            // Get argument string
-            if (!string.IsNullOrEmpty(argumentVariableDeclaration))
-            {
-                argumentVariableDeclaration = $"({argumentVariableDeclaration})";
-            }
-
-            // Return query
-            return queryType + argumentVariableDeclaration + fields;
         }
 
         private string GetQueryRequest(string query, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)

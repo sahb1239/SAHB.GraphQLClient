@@ -75,6 +75,9 @@ dotnet_naming_symbols.constant_fields.required_modifiers          = const
 # C# Code Style Rules         #
 ###############################
 
+# IDE0060: Remove unused parameter
+dotnet_code_quality_unused_parameters = all:warning
+
 [*.cs]
 # var preferences
 csharp_style_var_for_built_in_types = true:silent
@@ -147,6 +150,18 @@ csharp_preserve_single_line_blocks = true
 ##################################
 # Visual Basic Code Style Rules  #
 ##################################
+
+# CA1032: Implement standard exception constructors
+dotnet_diagnostic.CA1032.severity = none
+
+# CA1034: Nested types should not be visible
+dotnet_diagnostic.CA1034.severity = none
+
+# CA1813: Avoid unsealed attributes
+dotnet_diagnostic.CA1813.severity = silent
+
+# CA1012: Abstract types should not have constructors
+dotnet_diagnostic.CA1012.severity = none
 
 [*.vb]
 # Modifier preferences

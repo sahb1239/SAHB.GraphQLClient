@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SAHB.GraphQLClient.FieldBuilder;
 
@@ -6,16 +7,25 @@ namespace SAHB.GraphQLClient.Internal
 {
     internal class Helper
     {
-        internal static IDictionary<string, IEnumerable<GraphQLFieldArguments>> GetAllArgumentsFromFields(IEnumerable<GraphQLField> fields)
+        internal static IEnumerable<GraphQLField> GetFilteredSelectionSet(IEnumerable<GraphQLField> selectionSet, Func<GraphQLField, bool> filter)
+        {
+            if (filter == null)
+                return selectionSet;
+
+            var filteredSelectionSet = selectionSet.Where(filter);
+            return filteredSelectionSet;
+        }
+
+        internal static IDictionary<string, IEnumerable<GraphQLFieldArguments>> GetAllArgumentsFromFields(IEnumerable<GraphQLField> selectionSet, Func<GraphQLField, bool> filter)
         {
             var dictionary = new Dictionary<string, IEnumerable<GraphQLFieldArguments>>();
-            GetAllArgumentsFromFields(fields, dictionary, null);
+            GetAllArgumentsFromFields(selectionSet, filter, dictionary, null);
             return dictionary;
         }
 
-        private static void GetAllArgumentsFromFields(IEnumerable<GraphQLField> fields, Dictionary<string, IEnumerable<GraphQLFieldArguments>> dictionary, string path)
+        private static void GetAllArgumentsFromFields(IEnumerable<GraphQLField> selectionSet, Func<GraphQLField, bool> filter, Dictionary<string, IEnumerable<GraphQLFieldArguments>> dictionary, string path)
         {
-            foreach (var field in fields)
+            foreach (var field in GetFilteredSelectionSet(selectionSet, filter))
             {
                 var currentPathPart = field.Alias ?? field.Field;
                 var fieldPath = path == null ?
@@ -49,7 +59,7 @@ namespace SAHB.GraphQLClient.Internal
                 }
 
                 // Add all arguments from selectionSet (added by providing same dictionary)
-                GetAllArgumentsFromFields(field.SelectionSet, dictionary, fieldPath);
+                GetAllArgumentsFromFields(field.SelectionSet, null, dictionary, fieldPath);
             }
         }
     }
