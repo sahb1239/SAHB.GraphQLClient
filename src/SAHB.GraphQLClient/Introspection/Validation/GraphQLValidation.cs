@@ -150,16 +150,24 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                 // Validate type
                 if (selection.BaseType != null)
                 {
+                    if (graphQLType.Kind == GraphQLTypeKind.Enum || graphQLType.Kind == GraphQLTypeKind.Scalar)
+                    {
+                        foreach (var error in ValidateNonNullScalar(selectionFieldPath, selection, IsListType(introspectionField.Type), IsNonNull(introspectionField.Type), graphQLType))
+                        {
+                            yield return error;
+                        }
+                    }
+
                     switch (graphQLType.Kind)
                     {
                         case GraphQLTypeKind.Enum:
-                            foreach (var error in ValidateEnum(selectionFieldPath, selection, IsListType(introspectionField.Type), graphQLType))
+                            foreach (var error in ValidateEnum(selectionFieldPath, selection, IsListType(introspectionField.Type), IsNonNull(introspectionField.Type), graphQLType))
                             {
                                 yield return error;
                             }
                             break;
                         case GraphQLTypeKind.Scalar:
-                            foreach (var error in ValidateScalar(selectionFieldPath, selection, IsListType(introspectionField.Type), graphQLType))
+                            foreach (var error in ValidateScalar(selectionFieldPath, selection, IsListType(introspectionField.Type), IsNonNull(introspectionField.Type), graphQLType))
                             {
                                 yield return error;
                             }
@@ -215,7 +223,7 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
             }
         }
 
-        private static IEnumerable<ValidationError> ValidateScalar(string selectionFieldPath, GraphQLField selection, bool isListType, GraphQLIntrospectionFullType graphQLType)
+        private static Type GetSpecificType(GraphQLField selection, bool isListType)
         {
             var type = selection.BaseType;
 
@@ -224,10 +232,23 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                 type = GetIEnumerableType(type);
             }
 
+            var isNullable = IsNullableType(type);
+            if (isNullable)
+            {
+                type = type.GenericTypeArguments.First();
+            }
+
+            return type;
+        }
+
+        private static IEnumerable<ValidationError> ValidateScalar(string selectionFieldPath, GraphQLField selection, bool isListType, bool isNonNull, GraphQLIntrospectionFullType graphQLType)
+        {
+            var type = GetSpecificType(selection, isListType);
+
             switch (graphQLType.Name)
             {
                 case "String":
-                    if (type != typeof(string))
+                    if (!IsValidStringType(type))
                     {
                         yield return new ValidationError(
                             selectionFieldPath,
@@ -238,7 +259,7 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                     }
                     break;
                 case "Boolean":
-                    if (type != typeof(bool))
+                    if (!IsValidBooleanType(type, isNonNull))
                     {
                         yield return new ValidationError(
                             selectionFieldPath,
@@ -250,9 +271,7 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                     break;
                 case "Float":
                 case "Decimal":
-                    if (type != typeof(float)
-                        && type != typeof(double)
-                        && type != typeof(decimal))
+                    if (!IsValidFloatOrDecimalType(type, isNonNull))
                     {
                         yield return new ValidationError(
                             selectionFieldPath,
@@ -265,14 +284,30 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
             }
         }
 
-        private static IEnumerable<ValidationError> ValidateEnum(string selectionFieldPath, GraphQLField selection, bool isListType, GraphQLIntrospectionFullType graphQLType)
+        private static bool IsValidStringType(Type type)
         {
-            var type = selection.BaseType;
+            return type == typeof(string);
+        }
 
-            if (isListType)
-            {
-                type = GetIEnumerableType(type);
-            }
+        private static bool IsValidBooleanType(Type type, bool isNonNull)
+        {
+            return type == typeof(bool)
+                || (!isNonNull && type == typeof(bool?));
+        }
+
+        private static bool IsValidFloatOrDecimalType(Type type, bool isNonNull)
+        {
+            return type == typeof(float)
+                || type == typeof(double)
+                || type == typeof(decimal)
+                || (!isNonNull && type == typeof(float?))
+                || (!isNonNull && type == typeof(double?))
+                || (!isNonNull && type == typeof(decimal?));
+        }
+
+        private static IEnumerable<ValidationError> ValidateEnum(string selectionFieldPath, GraphQLField selection, bool isListType, bool isNonNull, GraphQLIntrospectionFullType graphQLType)
+        {
+            var type = GetSpecificType(selection, isListType);
 
             if (type.GetTypeInfo().IsEnum)
             {
@@ -316,22 +351,82 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
             }
         }
 
-        private static bool IsListType(GraphQLIntrospectionTypeRef graphQLIntrospectionTypeRef)
+        private static IEnumerable<ValidationError> ValidateNonNullScalar(string selectionFieldPath, GraphQLField selection, bool isListType, bool isNonNull, GraphQLIntrospectionFullType graphQLType)
         {
-            if (graphQLIntrospectionTypeRef is null)
+            var type = selection.BaseType;
+
+            if (isListType)
             {
-                throw new ArgumentNullException(nameof(graphQLIntrospectionTypeRef));
+                type = GetIEnumerableType(type);
             }
 
-            if (graphQLIntrospectionTypeRef.Kind == GraphQLTypeKind.List)
+            // If type is class it is always nullable
+            if (type.GetTypeInfo().IsClass)
+                yield break;
+
+            var isNullable = IsNullableType(type);
+
+            // Validate nullable
+            if (!isNullable != isNonNull)
+            {
+                if (isNonNull)
+                {
+                    yield return new ValidationError(selectionFieldPath, ValidationType.Field_Should_Be_NonNull, selection);
+                }
+                else
+                {
+                    yield return new ValidationError(selectionFieldPath, ValidationType.Field_Should_Be_Nullable, selection);
+                }
+            }
+        }
+
+        private static bool IsNullableType(Type type)
+        {
+            var typeinfo = type.GetTypeInfo();
+            if (typeinfo.GenericTypeArguments.Length == 1)
+            {
+                var genericType = typeinfo.GetGenericTypeDefinition();
+                if (genericType == typeof(Nullable<>))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool IsListType(GraphQLIntrospectionTypeRef type)
+        {
+            if (type is null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            if (type.Kind == GraphQLTypeKind.List)
                 return true;
 
-            if (HasSubtype(graphQLIntrospectionTypeRef.Kind))
+            if (HasSubtype(type.Kind))
             {
-                return IsListType(graphQLIntrospectionTypeRef.OfType);
+                return IsListType(type.OfType);
             }
 
             return false;
+        }
+
+        private static bool IsNonNull(GraphQLIntrospectionTypeRef type)
+        {
+            if (type is null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            if (IsListType(type))
+            {
+                return IsNonNull(type.OfType);
+            }
+            else
+            {
+                return type.Kind == GraphQLTypeKind.NonNull;
+            }
         }
 
         private static GraphQLIntrospectionFullType GetSubtype(GraphQLIntrospectionSchema graphQLIntrospectionSchema, GraphQLIntrospectionTypeRef graphQLIntrospectionTypeRef)
