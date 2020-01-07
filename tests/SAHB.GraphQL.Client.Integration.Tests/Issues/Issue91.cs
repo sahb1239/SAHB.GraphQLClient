@@ -59,7 +59,7 @@ namespace SAHB.GraphQL.Client.Introspection.Tests.Issues
 
                 // Assert
                 Assert.Equal(2, validationOutput.Count());
-                Assert.All(validationOutput, e => Assert.Equal(ValidationType.Field_Invalid_Type, e.ValidationType));
+                Assert.All(validationOutput, e => Assert.Equal(ValidationType.Field_Should_Be_NonNull, e.ValidationType));
             }
         }
 
