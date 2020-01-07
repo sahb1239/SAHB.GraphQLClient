@@ -65,6 +65,10 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                         return $"Field at {Path} was not found";
                     case ValidationType.Field_Should_Have_SelectionSet:
                         return $"Field at {Path} should have a selectionSet";
+                    case ValidationType.Field_Should_Be_NonNull:
+                        return $"Field at {Path} should be non nullable";
+                    case ValidationType.Field_Should_Be_Nullable:
+                        return $"Field at {Path} should be nullable";
                     case ValidationType.Operation_Type_Not_Found:
                         return $"OperationType {OperationType} was not found";
                     case ValidationType.PossibleType_Not_Found:
