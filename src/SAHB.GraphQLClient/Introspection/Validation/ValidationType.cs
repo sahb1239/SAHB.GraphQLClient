@@ -46,6 +46,16 @@
         Field_Invalid_Type,
 
         /// <summary>
+        /// This validationType is used if the specified type should be nullable
+        /// </summary>
+        Field_Should_Be_Nullable,
+
+        /// <summary>
+        /// This validationType is used if the specified type should be not nullable
+        /// </summary>
+        Field_Should_Be_NonNull,
+
+        /// <summary>
         /// This validationType is used if the specified type of the field is not an enum and therefore not valid
         /// </summary>
         Field_Type_Not_Enum,
