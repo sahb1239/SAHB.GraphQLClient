@@ -23,7 +23,7 @@ namespace SAHB.GraphQLClient.Tests.Filtering
         public void Single_Member_Name()
         {
             // Arrange
-            Expression<Func<GraphQLQuery, object>> expression = e => new GraphQLQuery
+            Expression<Func<GraphQLQuery, GraphQLQuery>> expression = e => new GraphQLQuery
             {
                 Field2 = e.Field2
             };
@@ -41,7 +41,7 @@ namespace SAHB.GraphQLClient.Tests.Filtering
         public void Nested_Member_Name()
         {
             // Arrange
-            Expression<Func<GraphQLQuery, object>> expression = e => new GraphQLQuery
+            Expression<Func<GraphQLQuery, GraphQLQuery>> expression = e => new GraphQLQuery
             {
                 Field = new GraphQLQuery
                 {

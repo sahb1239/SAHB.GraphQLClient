@@ -7,9 +7,9 @@ using SAHB.GraphQLClient.Internal;
 
 namespace SAHB.GraphQLClient.Filtering
 {
-    public class QueryGeneratorFilter
+    public class QueryGeneratorFilter : IQueryGeneratorFilter
     {
-        public Func<GraphQLField, bool> GetFilter<T>(Expression<Func<T, object>> expression)
+        public Func<GraphQLField, bool> GetFilter<T>(Expression<Func<T, T>> expression)
         {
             var memberNames = ExpressionHelper.GetMemberNamesFromExpression(expression);
             var queryGeneratorField = new QueryGeneratorField(memberNames);

@@ -6,6 +6,6 @@ namespace SAHB.GraphQLClient.Filtering
 {
     public interface IQueryGeneratorFilter
     {
-        Func<GraphQLField, bool> GetFilter<T>(Expression<Func<T, object>> expression);
+        Func<GraphQLField, bool> GetFilter<T>(Expression<Func<T, T>> expression);
     }
 }
