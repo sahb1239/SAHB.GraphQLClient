@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using SAHB.GraphQLClient.Exceptions;
+using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
 
 namespace SAHB.GraphQLClient.Extentions
@@ -27,7 +28,7 @@ namespace SAHB.GraphQLClient.Extentions
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            return client.Execute<T>(FieldBuilder.GraphQLOperationType.Query, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
+            return client.Execute<T>(GraphQLOperationType.Query, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
         }
 
         /// <summary>
@@ -45,7 +46,7 @@ namespace SAHB.GraphQLClient.Extentions
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            return client.Execute<T>(FieldBuilder.GraphQLOperationType.Mutation, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
+            return client.Execute<T>(GraphQLOperationType.Mutation, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
         }
 
         /// <summary>
@@ -64,7 +65,7 @@ namespace SAHB.GraphQLClient.Extentions
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            return client.Execute<T>(FieldBuilder.GraphQLOperationType.Query, httpMethod: httpMethod, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
+            return client.Execute<T>(GraphQLOperationType.Query, httpMethod: httpMethod, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
         }
 
         /// <summary>
@@ -84,7 +85,7 @@ namespace SAHB.GraphQLClient.Extentions
             params GraphQLQueryArgument[] arguments) where T : class
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            return client.Execute<T>(FieldBuilder.GraphQLOperationType.Mutation, httpMethod: httpMethod, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
+            return client.Execute<T>(GraphQLOperationType.Mutation, httpMethod: httpMethod, url: url, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, arguments: arguments);
         }
     }
 }
