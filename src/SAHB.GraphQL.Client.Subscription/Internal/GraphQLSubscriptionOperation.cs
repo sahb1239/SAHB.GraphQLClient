@@ -50,8 +50,15 @@ namespace SAHB.GraphQLClient.Subscription.Internal
             // Deserilize data
             if (result.Data != null)
             {
-                var data = deserialization.DeserializeResult<T>(result.Data, selectionSet);
-                finalResult.Data = data;
+                try
+                {
+                    var data = deserialization.DeserializeResult<T>(result.Data, selectionSet);
+                    finalResult.Data = data;
+                }
+                catch
+                {
+                    // Ignored
+                }
             }
 
             // Send event
