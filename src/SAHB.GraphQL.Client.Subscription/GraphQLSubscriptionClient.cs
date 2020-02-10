@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.FieldBuilder;
@@ -127,7 +128,10 @@ namespace SAHB.GraphQLClient.Subscription
             });
 
             // Create IGraphQLSubscriptionOperation
-            var subscription = new GraphQLSubscriptionOperation<T>(operationSource, selectionSet, Deserialization);
+            var subscription = new GraphQLSubscriptionOperation<T>(operationSource, selectionSet, Deserialization)
+            {
+                LoggerFactory = _loggerFactory
+            };
 
             // Add to list
             _operations.Add(operationId.ToString(), operationSource);
@@ -245,5 +249,32 @@ namespace SAHB.GraphQLClient.Subscription
                 await WebSocket.SendAsync(new ArraySegment<byte>(messageBuffer, offset, count), WebSocketMessageType.Text, lastMessage, _cancellationToken).ConfigureAwait(false);
             }
         }
+
+        #region Logging
+
+        private ILoggerFactory _loggerFactory;
+
+        /// <summary>
+        /// Contains a logger factory for the GraphQLHttpClient
+        /// </summary>
+        public ILoggerFactory LoggerFactory
+        {
+            internal get { return _loggerFactory; }
+            set
+            {
+                _loggerFactory = value;
+                if (_loggerFactory != null)
+                {
+                    Logger = _loggerFactory.CreateLogger<GraphQLSubscriptionClient>();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Contains the logger for the class
+        /// </summary>
+        private ILogger<GraphQLSubscriptionClient> Logger { get; set; }
+
+        #endregion
     }
 }
