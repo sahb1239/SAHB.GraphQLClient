@@ -138,7 +138,10 @@ namespace SAHB.GraphQLClient.Subscription
             }
 
             // Create IGraphQLSubscriptionOperation
-            var subscription = new GraphQLSubscriptionOperation<T>(operationSource, selectionSet, Deserialization);
+            var subscription = new GraphQLSubscriptionOperation<T>(operationSource, selectionSet, Deserialization)
+            {
+                LoggerFactory = _loggerFactory
+            };
 
             // Send subscribe message
             await SendOperationMessage(message).ConfigureAwait(false);
@@ -302,7 +305,7 @@ namespace SAHB.GraphQLClient.Subscription
                 _loggerFactory = value;
                 if (_loggerFactory != null)
                 {
-                    Logger = _loggerFactory.CreateLogger<GraphQLHttpClient>();
+                    Logger = _loggerFactory.CreateLogger<GraphQLSubscriptionClient>();
                 }
             }
         }
@@ -310,7 +313,7 @@ namespace SAHB.GraphQLClient.Subscription
         /// <summary>
         /// Contains the logger for the class
         /// </summary>
-        private ILogger<GraphQLHttpClient> Logger { get; set; }
+        private ILogger<GraphQLSubscriptionClient> Logger { get; set; }
 
         #endregion
     }
