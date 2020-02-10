@@ -82,6 +82,8 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                         return $"Enumvalue at {Path} was not found";
                     case ValidationType.EnumValue_Deprecated:
                         return $"Enumvalue at {Path} is deprecated";
+                    case ValidationType.EnumValue_Not_Found_OnType:
+                        return $"Enumvalue at {Path} was not found on enumType";
                     default:
                         throw new NotImplementedException($"ValidationType {ValidationType} not implemented");
                 }

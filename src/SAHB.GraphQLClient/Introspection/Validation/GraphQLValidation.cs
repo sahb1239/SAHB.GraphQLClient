@@ -314,6 +314,9 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                 // Get all enum names
                 var memberNames = Enum.GetNames(type);
 
+                // Not found enumValues
+                var notFoundEnumValues = new List<GraphQLIntrospectionEnumValue>(graphQLType.EnumValues);
+
                 // Get enum values
                 foreach (var member in type.GetTypeInfo().DeclaredMembers)
                 {
@@ -336,6 +339,9 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                             continue;
                         }
 
+                        // Remove from not found
+                        notFoundEnumValues.Remove(enumValue);
+
                         // Validate that if the enum member is deprecated
                         if (enumValue.IsDeprecated)
                         {
@@ -343,6 +349,12 @@ namespace SAHB.GraphQL.Client.Introspection.Validation
                             continue;
                         }
                     }
+                }
+
+                // Add error for each not found enum value
+                foreach (var enumValue in notFoundEnumValues)
+                {
+                    yield return new ValidationError($"{selectionFieldPath}[{enumValue.Name}]", ValidationType.EnumValue_Not_Found_OnType, selection);
                 }
             }
             else

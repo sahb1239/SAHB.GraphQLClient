@@ -24,6 +24,24 @@ namespace SAHB.GraphQLClient.Introspection
         [EnumMember(Value = "FRAGMENT_SPREAD")]
         FragmentSpread,
         [EnumMember(Value = "INLINE_FRAGMENT")]
-        InlineFragment
+        InlineFragment,
+        [EnumMember(Value = "OBJECT")]
+        Object,
+        [EnumMember(Value = "INTERFACE")]
+        Interface,
+        [EnumMember(Value = "SUBSCRIPTION")]
+        Subscription,
+        [EnumMember(Value = "SCHEMA")]
+        Schema,
+        [EnumMember(Value = "SCALAR")]
+        Scalar,
+        [EnumMember(Value = "ARGUMENT_DEFINITION")]
+        ArgumentDefinition,
+        [EnumMember(Value = "UNION")]
+        Union,
+        [EnumMember(Value = "INPUT_OBJECT")]
+        InputObject,
+        [EnumMember(Value = "INPUT_FIELD_DEFINITION")]
+        InputFieldDefinition,
     }
 }
