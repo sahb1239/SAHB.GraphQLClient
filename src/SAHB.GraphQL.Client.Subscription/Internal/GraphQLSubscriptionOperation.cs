@@ -5,6 +5,7 @@ using SAHB.GraphQLClient.Result;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace SAHB.GraphQLClient.Subscription.Internal
 {
@@ -50,8 +51,18 @@ namespace SAHB.GraphQLClient.Subscription.Internal
             // Deserilize data
             if (result.Data != null)
             {
-                var data = deserialization.DeserializeResult<T>(result.Data, selectionSet);
-                finalResult.Data = data;
+                try
+                {
+                    var data = deserialization.DeserializeResult<T>(result.Data, selectionSet);
+                    finalResult.Data = data;
+                }
+                catch (Exception ex)
+                {
+                    Logger?.LogError(new EventId(2), ex, "Exception deserilizing message");
+
+                    LogMessage(result);
+                    // Ignored
+                }
             }
 
             // Send event
@@ -65,11 +76,50 @@ namespace SAHB.GraphQLClient.Subscription.Internal
             }
         }
 
+        private void LogMessage(GraphQLDataResult<JObject> result)
+        {
+            try
+            {
+                Logger?.LogError(result.Data.ToString());
+            }
+            catch
+            {
+                // Ignored
+            }
+        }
+
         private bool _isStopped = false;
         public Task Stop()
         {
             _isStopped = true;
             return this.operationSource.Stop();
         }
+
+        #region Logging
+
+        private ILoggerFactory _loggerFactory;
+
+        /// <summary>
+        /// Contains a logger factory for the GraphQLHttpClient
+        /// </summary>
+        public ILoggerFactory LoggerFactory
+        {
+            internal get { return _loggerFactory; }
+            set
+            {
+                _loggerFactory = value;
+                if (_loggerFactory != null)
+                {
+                    Logger = _loggerFactory.CreateLogger<GraphQLSubscriptionOperation<T>>();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Contains the logger for the class
+        /// </summary>
+        private ILogger<GraphQLSubscriptionOperation<T>> Logger { get; set; }
+
+        #endregion
     }
 }

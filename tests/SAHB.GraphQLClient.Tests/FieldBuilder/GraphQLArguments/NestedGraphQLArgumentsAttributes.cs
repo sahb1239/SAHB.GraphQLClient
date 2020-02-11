@@ -83,10 +83,10 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
 
             // Check if the argument is found
             Assert.Contains(fields,
-                field => field.Alias == nameof(SkipTakeQueryToTest1.SkipTakeField1) && 
+                field => field.Alias == nameof(SkipTakeQueryToTest1.SkipTakeField1) &&
                         field.Arguments.Any(argument =>
                              argument.ArgumentName == "skip" && argument.ArgumentType == "Int" &&
-                             argument.VariableName == "variableskip") && 
+                             argument.VariableName == "variableskip") &&
                         field.Arguments.Any(argument =>
                              argument.ArgumentName == "take" && argument.ArgumentType == "Int" &&
                              argument.VariableName == "variabletake"));

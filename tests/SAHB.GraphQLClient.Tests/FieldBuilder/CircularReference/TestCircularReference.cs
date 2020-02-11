@@ -20,7 +20,7 @@ namespace SAHB.GraphQL.Client.Tests.FieldBuilder.CircularReference
         public void Should_Throw_Exception_When_Circular_Reference_IsFound()
         {
             // Arrange / Act / Assert
-            Assert.Throws<GraphQLCircularReferenceException>(() => 
+            Assert.Throws<GraphQLCircularReferenceException>(() =>
                 _fieldBuilder.GenerateSelectionSet(typeof(Hello)));
         }
 

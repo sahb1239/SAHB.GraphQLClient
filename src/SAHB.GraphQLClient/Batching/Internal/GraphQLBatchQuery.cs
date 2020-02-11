@@ -1,5 +1,6 @@
 ﻿using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Result;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SAHB.GraphQLClient.Batching.Internal
@@ -19,14 +20,14 @@ namespace SAHB.GraphQLClient.Batching.Internal
         }
 
         /// <inheritdoc />
-        public Task<T> Execute()
+        public Task<T> Execute(CancellationToken cancellationToken = default)
         {
-            return _batch.GetValue<T>(_identitifer);
+            return _batch.GetValue<T>(_identitifer, cancellationToken);
         }
 
-        public Task<GraphQLDataResult<T>> ExecuteDetailed()
+        public Task<GraphQLDataResult<T>> ExecuteDetailed(CancellationToken cancellationToken = default)
         {
-            return _batch.GetDetailedValue<T>(_identitifer);
+            return _batch.GetDetailedValue<T>(_identitifer, cancellationToken);
         }
     }
 }

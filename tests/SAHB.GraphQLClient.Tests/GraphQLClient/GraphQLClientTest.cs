@@ -6,9 +6,12 @@ using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
-using SAHB.GraphQLClient.Tests.GraphQLClient.HttpClientMock;
 using Xunit;
 using System.Net.Http;
+using SAHB.GraphQLClient.Executor;
+using FakeItEasy;
+using System.Threading;
+using SAHB.GraphQLClient.Filtering;
 
 namespace SAHB.GraphQLClient.Tests.GraphQLClient
 {
@@ -20,48 +23,59 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
             // Arrange
             var expected =
                 "{\"query\":\"query{field}\"}";
-            var httpClientMock = new GraphQLHttpExecutorMock(
-                JsonConvert.SerializeObject(new
+            var httpClientMock = A.Fake<IGraphQLHttpExecutor>(x => x.Strict());
+            A.CallTo(() => httpClientMock.ExecuteQuery(expected,
+                A<string>.Ignored,
+                A<HttpMethod>.Ignored,
+                A<string>.Ignored,
+                A<string>.Ignored,
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
+                .Returns(new GraphQLExecutorResponse
                 {
-                    Data = new
+                    Response = JsonConvert.SerializeObject(new
                     {
-                        Field = "FieldValue"
-                    },
-                    Errors = new[]
-                    {
-                        new
+                        Data = new
                         {
-                            message = "This is not a valid query!",
-                            locations = new []
-                            {
-                                new
-                                {
-                                    line = 1,
-                                    column = 0
-                                },
-                                new
-                                {
-                                    line = 1,
-                                    column = 1
-                                }
-                            }
+                            Field = "FieldValue"
                         },
-                        new
+                        Errors = new[]
                         {
-                            message = "And this is a second error message",
-                            locations = new []
+                            new
                             {
-                                new
+                                message = "This is not a valid query!",
+                                locations = new []
                                 {
-                                    line = 1,
-                                    column = 10
+                                    new
+                                    {
+                                        line = 1,
+                                        column = 0
+                                    },
+                                    new
+                                    {
+                                        line = 1,
+                                        column = 1
+                                    }
+                                }
+                            },
+                            new
+                            {
+                                message = "And this is a second error message",
+                                locations = new []
+                                {
+                                    new
+                                    {
+                                        line = 1,
+                                        column = 10
+                                    }
                                 }
                             }
                         }
-                    }
-                }), expected);
+                    })
+                });
+
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization(), new QueryGeneratorFilter());
 
             // Act
             var query = client.CreateQuery<Query>("url");
@@ -85,36 +99,47 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
             // Arrange
             var expected =
                 "{\"query\":\"query{field}\"}";
-            var httpClientMock = new GraphQLHttpExecutorMock(
-                JsonConvert.SerializeObject(new
+            var httpClientMock = A.Fake<IGraphQLHttpExecutor>(x => x.Strict());
+            A.CallTo(() => httpClientMock.ExecuteQuery(expected,
+                A<string>.Ignored,
+                A<HttpMethod>.Ignored,
+                A<string>.Ignored,
+                A<string>.Ignored,
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
+                .Returns(new GraphQLExecutorResponse
                 {
-                    Data = new
+                    Response = JsonConvert.SerializeObject(new
                     {
-                        Field = "FieldValue"
-                    },
-                    Errors = new []
-                    {
-                        new
+                        Data = new
                         {
-                            message = "This is not a valid query!",
-                            locations = new []
+                            Field = "FieldValue"
+                        },
+                        Errors = new[]
+                        {
+                            new
                             {
-                                new
+                                message = "This is not a valid query!",
+                                locations = new []
                                 {
-                                    line = 1,
-                                    column = 0
-                                },
-                                new
-                                {
-                                    line = 1,
-                                    column = 1
+                                    new
+                                    {
+                                        line = 1,
+                                        column = 0
+                                    },
+                                    new
+                                    {
+                                        line = 1,
+                                        column = 1
+                                    }
                                 }
                             }
                         }
-                    }
-                }), expected);
+                    })
+                });
+
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization(), new QueryGeneratorFilter());
 
             // Act
             var query = client.CreateQuery<Query>("url");
@@ -127,30 +152,42 @@ namespace SAHB.GraphQLClient.Tests.GraphQLClient
         public async Task Test_ExecuteDetailed_Returns_Expected_Headers_And_Data()
         {
             // Arrange
-            var expected =
+            var expectedQuery =
                 "{\"query\":\"query{field}\"}";
-            var headers = new HttpResponseMessage().Headers;
-            headers.Add("TestHeader", "TestValue");
+            var responseHeaders = new HttpResponseMessage().Headers;
+            responseHeaders.Add("TestHeader", "TestValue");
 
-            var httpClientMock = new GraphQLHttpExecutorMock(
-                JsonConvert.SerializeObject(new
+            var httpClientMock = A.Fake<IGraphQLHttpExecutor>(x => x.Strict());
+            A.CallTo(() => httpClientMock.ExecuteQuery(expectedQuery,
+                A<string>.Ignored,
+                A<HttpMethod>.Ignored,
+                A<string>.Ignored,
+                A<string>.Ignored,
+                A<IDictionary<string, string>>.Ignored,
+                A<CancellationToken>.Ignored))
+                .Returns(new GraphQLExecutorResponse
                 {
-                    Data = new
+                    Response = JsonConvert.SerializeObject(new
                     {
-                        Field = "FieldValue"
-                    }
-                }), expected, headers);
+                        Data = new
+                        {
+                            Field = "FieldValue"
+                        }
+                    }),
+                    Headers = responseHeaders
+                });
+
             var client = new GraphQLHttpClient(httpClientMock, new GraphQLFieldBuilder(),
-                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
+                new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization(), new QueryGeneratorFilter());
 
             // Act
             var query = client.CreateQuery<Query>("url");
             var result = await query.ExecuteDetailed();
-            
+
             // Assert
             Assert.Equal(result.Data.Field, "FieldValue");
 
-            IEnumerable<string> expectedHeaders = headers.GetValues("TestHeader");
+            IEnumerable<string> expectedHeaders = responseHeaders.GetValues("TestHeader");
             IEnumerable<string> actualHeaders = result.Headers.GetValues("TestHeader");
 
             Assert.Equal(actualHeaders, expectedHeaders);

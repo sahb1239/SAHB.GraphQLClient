@@ -73,8 +73,8 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
             };
 
             // Act
-            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields, 
-                new GraphQLQueryArgument("variableName", "alias", "test"), 
+            var actual = _queryGenerator.GenerateQuery(GraphQLOperationType.Query, fields,
+                new GraphQLQueryArgument("variableName", "alias", "test"),
                 new GraphQLQueryArgument("variableName", "alias2", "test2"));
 
             // Assert

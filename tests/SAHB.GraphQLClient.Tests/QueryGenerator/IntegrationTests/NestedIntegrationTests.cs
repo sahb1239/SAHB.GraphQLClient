@@ -38,7 +38,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator.IntegrationTests
         public class Query2
         {
             public Person Me { get; set; }
-            
+
             [GraphQLFieldName("other")]
             public IEnumerable<Person> Others { get; set; }
         }

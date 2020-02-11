@@ -112,7 +112,6 @@ namespace SAHB.GraphQLClient.FieldBuilder
 
         #endregion
 
-
         #region GetCustomAttribute
         private TAttribute GetCustomAttribute<TAttribute>(PropertyInfo propertyInfo)
             where TAttribute : Attribute
@@ -166,6 +165,9 @@ namespace SAHB.GraphQLClient.FieldBuilder
             // Get arguments
             var arguments = GetPropertyArguments(property);
 
+            // Get directives
+            var directives = GetPropertyDirectives(property);
+
             // Get types
             // TODO: Possible problems if types is IEnumerable types
             var types = GetTypes(property)
@@ -203,7 +205,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
             }
 
             // Return GraphQLField
-            return new GraphQLField(alias, fieldName, selectionSet, arguments, property.PropertyType, types);
+            return new GraphQLField(alias, fieldName, selectionSet, arguments, directives, property.PropertyType, types);
         }
 
         private bool ShouldIncludeSelectionSet(PropertyInfo property)
@@ -274,7 +276,7 @@ namespace SAHB.GraphQLClient.FieldBuilder
                 .GetCustomAttributes<GraphQLUnionOrInterfaceAttribute>()
                 .Union(
                     property.PropertyType.GetTypeInfo().GetCustomAttributes<GraphQLUnionOrInterfaceAttribute>());
-            
+
             // Check if dictionary contains duplicates
             var duplicates = attributes.Select(e => e.TypeName).GroupBy(e => e, e => e).Where(e => e.Count() > 1)
                 .Select(e => e.Key).ToArray();
@@ -325,30 +327,48 @@ namespace SAHB.GraphQLClient.FieldBuilder
 
         protected virtual IEnumerable<GraphQLFieldArguments> GetPropertyArguments(PropertyInfo property)
         {
+            return GetAttributeOnClassAndProperty<GraphQLArgumentsAttribute>(property)?.Select(attribute =>
+                new GraphQLFieldArguments(attribute));
+        }
+
+        protected virtual IEnumerable<GraphQLFieldDirective> GetPropertyDirectives(PropertyInfo property)
+        {
+            // Get directive
+            var directives = GetAttributeOnClassAndProperty<GraphQLDirectiveAttribute>(property) ?? Enumerable.Empty<GraphQLDirectiveAttribute>();
+            var directiveArguments = GetAttributeOnClassAndProperty<GraphQLDirectiveArgumentAttribute>(property) ?? Enumerable.Empty<GraphQLDirectiveArgumentAttribute>();
+
+            // Get all directives
+            var allDirectives = directives.Select(e => e.DirectiveName).Concat(directiveArguments.Select(e => e.DirectiveName)).Distinct();
+
+            return allDirectives.Select(directive => new GraphQLFieldDirective(directive, directiveArguments.Where(argument => argument.DirectiveName == directive)));
+        }
+
+        private IEnumerable<TAttribute> GetAttributeOnClassAndProperty<TAttribute>(PropertyInfo property)
+            where TAttribute : Attribute
+        {
             // Get GraphQLArgumentsAttribute on class
             var propertyType = property.PropertyType;
-            var classAttributes = propertyType.GetTypeInfo().GetCustomAttributes<GraphQLArgumentsAttribute>().ToList();
+            var classAttributes = propertyType.GetTypeInfo().GetCustomAttributes<TAttribute>().ToList();
 
             // Check if the property type is IEnumerable type
             if (IsIEnumerableType(propertyType))
             {
                 // Get attributes for type
                 var attributes = GetIEnumerableType(propertyType).GetTypeInfo()
-                    .GetCustomAttributes<GraphQLArgumentsAttribute>().ToList();
+                    .GetCustomAttributes<TAttribute>().ToList();
 
                 // Add attributes
                 classAttributes = classAttributes.Concat(attributes).ToList();
             }
 
             // Get GraphQLArgumentsAttribute on field
-            var fieldAttribute = property.GetCustomAttributes<GraphQLArgumentsAttribute>().ToList();
+            var fieldAttribute = property.GetCustomAttributes<TAttribute>().ToList();
 
             // If no attributes was found
             if (!classAttributes.Any() && !fieldAttribute.Any())
                 return null;
 
-            return classAttributes.Concat(fieldAttribute).Select(attribute =>
-                new GraphQLFieldArguments(attribute));
+            return classAttributes.Concat(fieldAttribute);
         }
 
         #region Helpers

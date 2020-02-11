@@ -20,7 +20,7 @@ namespace SAHB.GraphQLClient.Tests.Issues
             var fields =
                 fieldBuilder.GenerateSelectionSet(typeof(Query));
             var actual = queryBuilder.GenerateQuery(GraphQLOperationType.Query, fields,
-                new GraphQLQueryArgument("variableName", new {field1 = "value1", field2 = "value2"}));
+                new GraphQLQueryArgument("variableName", new { field1 = "value1", field2 = "value2" }));
 
             // Assert
             Assert.Equal(expected, actual);

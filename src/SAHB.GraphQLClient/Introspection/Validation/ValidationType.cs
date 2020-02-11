@@ -73,6 +73,11 @@
         /// <summary>
         /// The enum value is deprecated
         /// </summary>
-        EnumValue_Deprecated
+        EnumValue_Deprecated,
+
+        /// <summary>
+        /// The enum value was not found on the enum type
+        /// </summary>
+        EnumValue_Not_Found_OnType
     }
 }

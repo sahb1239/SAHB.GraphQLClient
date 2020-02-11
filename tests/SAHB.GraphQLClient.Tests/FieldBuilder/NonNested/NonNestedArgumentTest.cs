@@ -34,8 +34,8 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.NonNested
 
             // Check if fields is found
             Assert.Contains(fields,
-                field => 
-                field.Alias == nameof(QueryToTest.Field2) && 
+                field =>
+                field.Alias == nameof(QueryToTest.Field2) &&
                 field.Arguments.Any(argument => argument.ArgumentName == "min2" && argument.VariableName == "var2") &&
                 field.Arguments.Any(argument => argument.ArgumentName == "max2" && argument.VariableName == "var3"));
         }

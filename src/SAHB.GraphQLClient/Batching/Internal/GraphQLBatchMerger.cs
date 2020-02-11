@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,6 +10,7 @@ using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Result;
+using System.Threading;
 
 namespace SAHB.GraphQLClient.Batching.Internal
 {
@@ -71,16 +72,16 @@ namespace SAHB.GraphQLClient.Batching.Internal
             return new GraphQLBatchQuery<T>(this, identifier);
         }
 
-        public Task<T> GetValue<T>(string identifier) 
+        public Task<T> GetValue<T>(string identifier, CancellationToken cancellationToken)
             where T : class
         {
-            return GetDeserializedResult<T>(identifier);
+            return GetDeserializedResult<T>(identifier, cancellationToken);
         }
 
-        public async Task<GraphQLDataResult<T>> GetDetailedValue<T>(string identifier)
+        public async Task<GraphQLDataResult<T>> GetDetailedValue<T>(string identifier, CancellationToken cancellationToken)
             where T : class
         {
-            var deserialized = await GetDeserializedResult<T>(identifier).ConfigureAwait(false);
+            var deserialized = await GetDeserializedResult<T>(identifier, cancellationToken).ConfigureAwait(false);
 
             return new GraphQLDataResult<T>
             {
@@ -89,7 +90,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             };
         }
 
-        public async Task Execute()
+        public async Task Execute(CancellationToken cancellationToken)
         {
             if (_isExecuted)
                 throw new GraphQLBatchAlreadyExecutedException();
@@ -110,7 +111,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
                 _arguments.SelectMany(e => e.Value).ToArray());
 
             // Execute query
-            var serverResult = await _executor.ExecuteQuery(query: _executedQuery, url: _url, method: _httpMethod, authorizationToken: _authorizationToken, authorizationMethod: _authorizationMethod, headers: _headers).ConfigureAwait(false);
+            var serverResult = await _executor.ExecuteQuery(query: _executedQuery, url: _url, method: _httpMethod, authorizationToken: _authorizationToken, authorizationMethod: _authorizationMethod, headers: _headers, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             // Deserilize result
             _result = _graphQLDeserialization.DeserializeResult<JObject>(serverResult.Response, fields);
@@ -136,7 +137,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
             // Update arguments
             foreach (var fieldsWithIdentifier in _fields)
             {
-                foreach (var fieldArguments in Helper.GetAllArgumentsFromFields(fieldsWithIdentifier.Value))
+                foreach (var fieldArguments in Helper.GetAllArgumentsFromFields(fieldsWithIdentifier.Value, null))
                 {
                     foreach (var argument in fieldArguments.Value)
                     {
@@ -150,16 +151,16 @@ namespace SAHB.GraphQLClient.Batching.Internal
             {
                 foreach (var argument in argumentsWithIdentitfier.Value)
                 {
-                    argument.VariableName = argumentsWithIdentitfier.Key + "_" +  argument.VariableName;
+                    argument.VariableName = argumentsWithIdentitfier.Key + "_" + argument.VariableName;
                 }
             }
         }
 
-        private async Task<T> GetDeserializedResult<T>(string identifier)
+        private async Task<T> GetDeserializedResult<T>(string identifier, CancellationToken cancellationToken)
             where T : class
         {
             if (!_isExecuted)
-                await Execute().ConfigureAwait(false);
+                await Execute(cancellationToken).ConfigureAwait(false);
 
             if (_result.ContainsErrors)
             {

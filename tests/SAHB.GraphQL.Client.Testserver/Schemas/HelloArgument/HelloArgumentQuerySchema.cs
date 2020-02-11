@@ -14,8 +14,8 @@ namespace SAHB.GraphQL.Client.Testserver.Tests.Schemas.HelloArgument
             public GraphQLQuery()
             {
                 Field<StringGraphType>(
-                    "hello", 
-                    resolve: context => "query", 
+                    "hello",
+                    resolve: context => "query",
                     arguments: new QueryArguments(
                         new QueryArgument<StringGraphType>
                         {

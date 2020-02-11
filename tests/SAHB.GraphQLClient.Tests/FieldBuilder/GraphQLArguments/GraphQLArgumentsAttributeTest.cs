@@ -85,7 +85,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
         [GraphQLArguments("argument3", "String", "variable3")]
         public class SubQueryToTest3
         {
-            
+
         }
 
         [Fact]
@@ -174,7 +174,7 @@ namespace SAHB.GraphQLClient.Tests.FieldBuilder.GraphQLArguments
             Assert.Contains(fields,
                 field => field.Alias == nameof(DefaultValueQuery.Field1) && field.Arguments.Any(argument =>
                              argument.ArgumentName == "argument1" && argument.VariableName == "variable1" &&
-                             (string) argument.DefaultValue == "SomeDefaultValue"));
+                             (string)argument.DefaultValue == "SomeDefaultValue"));
         }
 
         public class DefaultValueQuery

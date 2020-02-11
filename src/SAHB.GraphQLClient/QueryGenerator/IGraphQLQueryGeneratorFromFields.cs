@@ -32,9 +32,18 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// <summary>
         /// Builds a GraphQL query from the specified <see cref="IGraphQLOperation"/>s and the <see cref="GraphQLQueryArgument"/>s
         /// </summary>
-        /// <param name="operation">The GraphQL operation to generate the query from</param>
+        /// <param name="operationType">The GraphQL operation to generate the query from</param>
         /// <param name="arguments">The argument values which is inserted using a variable on specified arguments with the <see cref="GraphQLArgumentsAttribute"/></param>
         /// <returns>The generated query</returns>
         string GenerateQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, params GraphQLQueryArgument[] arguments);
+
+        /// <summary>
+        /// Builds a GraphQL query from the specified <see cref="IGraphQLOperation"/>s and the <see cref="GraphQLQueryArgument"/>s and the specified filter used to select the required fields
+        /// </summary>
+        /// <param name="operationType">The GraphQL operation to generate the query from</param>
+        /// <param name="arguments">The argument values which is inserted using a variable on specified arguments with the <see cref="GraphQLArgumentsAttribute"/></param>
+        /// <param name="filter">The filter for the fields. If a field is included which has subfields, but no subfields are included all subfields are included</param>
+        /// <returns>The generated query</returns>
+        string GenerateQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, Func<GraphQLField, bool> filter, params GraphQLQueryArgument[] arguments);
     }
 }

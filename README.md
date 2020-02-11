@@ -19,10 +19,6 @@ Install-Package SAHB.GraphQL.Client
 - .NET Standard 1.2
 - .NET Framework 4.5.2
 
-[SAHB.GraphQL.Client.Introspection](https://www.nuget.org/packages/SAHB.GraphQL.Client.Introspection/):
-- .NET Standard 1.2
-- .NET Framework 4.5.2
-
 [SAHB.GraphQL.Client.Subscription](https://www.nuget.org/packages/SAHB.GraphQL.Client.Subscription/):
 - .NET Standard 2.0
 - .NET Framework 4.5.2

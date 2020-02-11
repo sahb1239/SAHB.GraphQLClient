@@ -3,6 +3,8 @@ using Xunit;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQL.Client.Testserver.Tests.Schemas.Hello;
 using SAHB.GraphQL.Client.TestServer;
+using SAHB.GraphQLClient.FieldBuilder.Attributes;
+using SAHB.GraphQLClient.QueryGenerator;
 
 namespace SAHB.GraphQLClient.Integration.Tests
 {
@@ -49,8 +51,47 @@ namespace SAHB.GraphQLClient.Integration.Tests
             Assert.Equal("query", result2.Hello);
         }
 
+        [Fact]
+        public async Task TestHelloQueryDirectiveInclude()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var graphQLClient = GraphQLHttpClient.Default(client);
+
+            // Act
+            var result = await graphQLClient.Execute<TestHelloQueryDirective>(GraphQLOperationType.Query,
+                "http://localhost/graphql",
+                arguments: new GraphQLQueryDirectiveArgument("variableif", "include", true));
+
+            // Assert
+            Assert.Equal("query", result.Hello);
+        }
+
+        [Fact]
+        public async Task TestHelloQueryDirectiveNotInclude()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            var graphQLClient = GraphQLHttpClient.Default(client);
+
+            // Act
+            var result = await graphQLClient.Execute<TestHelloQueryDirective>(GraphQLOperationType.Query,
+                "http://localhost/graphql",
+                arguments: new GraphQLQueryDirectiveArgument("variableif", "include", false));
+
+            // Assert
+            Assert.Null(result.Hello);
+        }
+
         private class TestHelloQuery
         {
+            public string Hello { get; set; }
+        }
+
+        private class TestHelloQueryDirective
+        {
+            [GraphQLDirective("include")]
+            [GraphQLDirectiveArgument("include", "if", "Boolean", "variableif", isRequired: true)]
             public string Hello { get; set; }
         }
     }

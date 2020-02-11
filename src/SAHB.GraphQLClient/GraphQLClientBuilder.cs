@@ -3,7 +3,11 @@ using Microsoft.Extensions.Logging;
 using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQLClient.Filtering;
 using SAHB.GraphQLClient.QueryGenerator;
+#if DOTNET_HTTP
+using System.Net.Http;
+#endif
 
 namespace SAHB.GraphQLClient
 {
@@ -23,21 +27,33 @@ namespace SAHB.GraphQLClient
         {
             // GraphQL
             services.AddSingleton<IGraphQLFieldBuilder>(provider =>
-                new GraphQLFieldBuilder() {LoggerFactory = provider.GetService<ILoggerFactory>()});
+                new GraphQLFieldBuilder() { LoggerFactory = provider.GetService<ILoggerFactory>() });
             services.AddSingleton<IGraphQLQueryGeneratorFromFields>(provider =>
                 new GraphQLQueryGeneratorFromFields() { LoggerFactory = provider.GetService<ILoggerFactory>() });
             services.AddSingleton<IGraphQLDeserialization, GraphQLDeserilization>();
+            services.AddSingleton<IQueryGeneratorFilter, QueryGeneratorFilter>();
 
-            services.AddSingleton<IGraphQLHttpExecutor>(provider =>
+#if DOTNET_HTTP
+            services.AddHttpClient();
+            services.AddScoped<IGraphQLHttpExecutor>(provider =>
+               new GraphQLHttpExecutor(provider.GetRequiredService<IHttpClientFactory>().CreateClient())
+               {
+                   LoggerFactory = provider.GetService<ILoggerFactory>()
+               });
+#else
+            services.AddScoped<IGraphQLHttpExecutor>(provider =>
                new GraphQLHttpExecutor()
                {
                    LoggerFactory = provider.GetService<ILoggerFactory>()
                });
-            services.AddSingleton<IGraphQLHttpClient>(provider =>
+#endif
+
+            services.AddScoped<IGraphQLHttpClient>(provider =>
                 new GraphQLHttpClient(provider.GetRequiredService<IGraphQLHttpExecutor>(),
                     provider.GetRequiredService<IGraphQLFieldBuilder>(),
                     provider.GetRequiredService<IGraphQLQueryGeneratorFromFields>(),
-                    provider.GetRequiredService<IGraphQLDeserialization>())
+                    provider.GetRequiredService<IGraphQLDeserialization>(),
+                    provider.GetRequiredService<IQueryGeneratorFilter>())
                 {
                     LoggerFactory = provider.GetService<ILoggerFactory>()
                 });

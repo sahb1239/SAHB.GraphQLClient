@@ -9,7 +9,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
         public void Gets_Correct_Field_With_One_Level()
         {
             // Arrange / Act
-            var argument = new GraphQLQueryArgument<QueryClass>("variableName", "argumentValue", 
+            var argument = new GraphQLQueryArgument<QueryClass>("variableName", "argumentValue",
                 expr => expr.Field);
 
             // Assert

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -9,12 +8,14 @@ using SAHB.GraphQLClient.Batching;
 using SAHB.GraphQLClient.Batching.Internal;
 using SAHB.GraphQLClient.Builder;
 using SAHB.GraphQLClient.Builder.Internal;
-using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Internal;
 using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Result;
+using System.Threading;
+using System.Linq.Expressions;
+using SAHB.GraphQLClient.Filtering;
 
 namespace SAHB.GraphQLClient
 {
@@ -39,14 +40,26 @@ namespace SAHB.GraphQLClient
         /// <summary>
         /// The <see cref="IGraphQLDeserialization"/> used
         /// </summary>
-        private IGraphQLDeserialization Deserialization { get; }
+        public IGraphQLDeserialization Deserialization { get; }
 
+        /// <summary>
+        /// The <see cref="IQueryGeneratorFilter"/>
+        /// </summary>
+        public IQueryGeneratorFilter FilterGenerator { get; }
+
+        [Obsolete]
         public GraphQLHttpClient(IGraphQLHttpExecutor httpExecutor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization)
+            : this(httpExecutor, fieldBuilder, queryGenerator, deserialization, null)
+        {
+        }
+
+        public GraphQLHttpClient(IGraphQLHttpExecutor httpExecutor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization, IQueryGeneratorFilter filterGenerator)
         {
             HttpExecutor = httpExecutor ?? throw new ArgumentNullException(nameof(httpExecutor));
             FieldBuilder = fieldBuilder ?? throw new ArgumentNullException(nameof(fieldBuilder));
             QueryGenerator = queryGenerator ?? throw new ArgumentNullException(nameof(queryGenerator));
             Deserialization = deserialization ?? throw new ArgumentNullException(nameof(deserialization));
+            FilterGenerator = filterGenerator;
         }
 
         /// <summary>
@@ -55,7 +68,7 @@ namespace SAHB.GraphQLClient
         /// <returns>Returns a default <see cref="GraphQLHttpClient"/></returns>
         public static GraphQLHttpClient Default()
         {
-            return new GraphQLHttpClient(new GraphQLHttpExecutor(), new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
+            return new GraphQLHttpClient(new GraphQLHttpExecutor(), new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization(), new QueryGeneratorFilter());
         }
 
         /// <summary>
@@ -65,21 +78,21 @@ namespace SAHB.GraphQLClient
         /// <returns>Returns a default <see cref="GraphQLHttpClient"/> using the specified <see cref="HttpClient"/></returns>
         public static GraphQLHttpClient Default(HttpClient client)
         {
-            return new GraphQLHttpClient(new GraphQLHttpExecutor(client), new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization());
+            return new GraphQLHttpClient(new GraphQLHttpExecutor(client), new GraphQLFieldBuilder(), new GraphQLQueryGeneratorFromFields(), new GraphQLDeserilization(), new QueryGeneratorFilter());
         }
 
         /// <inheritdoc />
-        public Task<T> Execute<T>(GraphQLOperationType operationType, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
+        public Task<T> Execute<T>(GraphQLOperationType operationType, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, Expression<Func<T, T>> filter = null, string authorizationToken = null, string authorizationMethod = "Bearer", CancellationToken cancellationToken = default, params GraphQLQueryArgument[] arguments) where T : class
         {
             // Generate selectionSet
             var selectionSet = FieldBuilder.GenerateSelectionSet(typeof(T));
 
             // Execute
-            return Execute<T>(operationType, selectionSet, arguments, url: url, httpMethod: httpMethod, headers: headers, authorizationMethod: authorizationMethod, authorizationToken: authorizationToken);
+            return Execute<T>(operationType, selectionSet, arguments, url: url, httpMethod: httpMethod, headers: headers, filter: filter, authorizationMethod: authorizationMethod, authorizationToken: authorizationToken, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc />
-        public Task<dynamic> Execute(GraphQLOperationType operationType, Action<IGraphQLBuilder> builder, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments)
+        public Task<dynamic> Execute(GraphQLOperationType operationType, Action<IGraphQLBuilder> builder, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer", CancellationToken cancellationToken = default, params GraphQLQueryArgument[] arguments)
         {
             // Get builder
             var build = new GraphQLBuilder();
@@ -89,38 +102,25 @@ namespace SAHB.GraphQLClient
             var selectionSet = build.GetFields();
 
             // Execute
-            return Execute<dynamic>(operationType, selectionSet, arguments, url: url, httpMethod: httpMethod, headers: headers, authorizationMethod: authorizationMethod, authorizationToken: authorizationToken);
+            return Execute<dynamic>(operationType, selectionSet, arguments, url: url, httpMethod: httpMethod, headers: headers, filter: null, authorizationMethod: authorizationMethod, authorizationToken: authorizationToken, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc />
         public IGraphQLBatch CreateBatch(GraphQLOperationType operationType, string url = null, HttpMethod httpMethod = null, IDictionary<string, string> headers = null, string authorizationToken = null, string authorizationMethod = "Bearer")
         {
-            return new GraphQLBatch(operationType, url, httpMethod, headers, authorizationToken, authorizationMethod, HttpExecutor, FieldBuilder, QueryGenerator, Deserialization);
+            return new GraphQLBatch(operationType, url, httpMethod, headers, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod, HttpExecutor, FieldBuilder, QueryGenerator, Deserialization);
         }
 
-        private async Task<T> Execute<T>(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationMethod, string authorizationToken) where T : class
+        private async Task<T> Execute<T>(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, IDictionary<string, string> headers, Expression<Func<T, T>> filter, string authorizationMethod, string authorizationToken, CancellationToken cancellationToken) where T : class
         {
-            var result = await ExecuteQuery<T>(operationType, selectionSet, arguments, url, httpMethod, headers, authorizationMethod, authorizationToken).ConfigureAwait(false);
+            var result = await ExecuteQuery<T>(operationType, selectionSet, arguments, url, httpMethod, headers, filter, authorizationMethod: authorizationMethod, authorizationToken: authorizationToken, cancellationToken: cancellationToken).ConfigureAwait(false);
             return result.Data;
         }
 
-        private async Task<GraphQLDataResult<T>> ExecuteQuery<T>(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationMethod, string authorizationToken) where T : class
+        private Task<GraphQLDataResult<T>> ExecuteQuery<T>(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod, IDictionary<string, string> headers, Expression<Func<T, T>> filter, string authorizationMethod, string authorizationToken, CancellationToken cancellationToken) where T : class
         {
-            // Generate query
-            var requestQuery = QueryGenerator.GenerateQuery(operationType, selectionSet, arguments.ToArray());
-            
-            // Get response
-            GraphQLExecutorResponse response = await HttpExecutor.ExecuteQuery(requestQuery, url, httpMethod, headers: headers, authorizationToken: authorizationToken, authorizationMethod: authorizationMethod).ConfigureAwait(false);
-
-            // Deserilize
-            var result = Deserialization.DeserializeResult<T>(response.Response, selectionSet);
-            if (result?.Errors?.Any() ?? false)
-                throw new GraphQLErrorException(query: requestQuery, errors: result.Errors);
-
-            // Set headers
-            result.Headers = response.Headers;
-
-            return result;
+            var query = GetGraphQLQuery<T>(operationType, selectionSet, arguments, url, httpMethod, headers, GetQueryFilter<T>(filter), authorizationToken: authorizationToken, authorizationMethod: authorizationMethod);
+            return query.ExecuteDetailed(cancellationToken);
         }
 
         /// <inheritdoc />
@@ -135,6 +135,32 @@ namespace SAHB.GraphQLClient
             params GraphQLQueryArgument[] arguments) where T : class
         {
             return CreateQuery<T>(url, HttpMethod.Post, authorizationToken, authorizationMethod, arguments);
+        }
+
+        /// <inheritdoc />
+        public IGraphQLQuery<T> CreateQuery<T>(string url, Expression<Func<T, T>> filter, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
+        {
+            return CreateQuery<T>(url, HttpMethod.Post, filter, authorizationToken, authorizationMethod, arguments);
+        }
+
+        /// <inheritdoc />
+        public IGraphQLQuery<T> CreateMutation<T>(string url, Expression<Func<T, T>> filter, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
+        {
+            return CreateMutation<T>(url, HttpMethod.Post, filter, authorizationToken, authorizationMethod, arguments);
+        }
+
+        /// <inheritdoc />
+        public IGraphQLQuery<T> CreateMutation<T>(string url, HttpMethod httpMethod, Expression<Func<T, T>> filter, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
+        {
+            var selectionSet = FieldBuilder.GenerateSelectionSet(typeof(T));
+            return GetGraphQLQuery<T>(GraphQLOperationType.Mutation, selectionSet, arguments, url, httpMethod, null, GetQueryFilter(filter), authorizationToken, authorizationMethod);
+        }
+
+        /// <inheritdoc />
+        public IGraphQLQuery<T> CreateQuery<T>(string url, HttpMethod httpMethod, Expression<Func<T, T>> filter, string authorizationToken = null, string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
+        {
+            var selectionSet = FieldBuilder.GenerateSelectionSet(typeof(T));
+            return GetGraphQLQuery<T>(GraphQLOperationType.Query, selectionSet, arguments, url, httpMethod, null, GetQueryFilter(filter), authorizationToken, authorizationMethod);
         }
 
         /// <inheritdoc />
@@ -162,7 +188,7 @@ namespace SAHB.GraphQLClient
             var selectionSet = build.GetFields();
 
             // Get query
-            return GetGraphQLQuery(GraphQLOperationType.Mutation, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod);
+            return GetGraphQLQuery(GraphQLOperationType.Mutation, selectionSet, arguments, url, httpMethod, null, null, authorizationToken, authorizationMethod);
         }
 
         /// <inheritdoc />
@@ -170,7 +196,7 @@ namespace SAHB.GraphQLClient
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             var selectionSet = FieldBuilder.GenerateSelectionSet(typeof(T));
-            return GetGraphQLQuery<T>(GraphQLOperationType.Mutation, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod);
+            return GetGraphQLQuery<T>(GraphQLOperationType.Mutation, selectionSet, arguments, url, httpMethod, null, null, authorizationToken, authorizationMethod);
         }
 
         /// <inheritdoc />
@@ -184,7 +210,7 @@ namespace SAHB.GraphQLClient
             var selectionSet = build.GetFields();
 
             // Get query
-            return GetGraphQLQuery(GraphQLOperationType.Query, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod);
+            return GetGraphQLQuery(GraphQLOperationType.Query, selectionSet, arguments, url, httpMethod, null, null, authorizationToken, authorizationMethod);
         }
 
         /// <inheritdoc />
@@ -192,7 +218,7 @@ namespace SAHB.GraphQLClient
             string authorizationMethod = "Bearer", params GraphQLQueryArgument[] arguments) where T : class
         {
             var selectionSet = FieldBuilder.GenerateSelectionSet(typeof(T));
-            return GetGraphQLQuery<T>(GraphQLOperationType.Query, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod);
+            return GetGraphQLQuery<T>(GraphQLOperationType.Query, selectionSet, arguments, url, httpMethod, null, null, authorizationToken, authorizationMethod);
         }
 
         #region Old methods
@@ -211,18 +237,34 @@ namespace SAHB.GraphQLClient
 
         // ReSharper disable once InconsistentNaming
         private IGraphQLQuery GetGraphQLQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod,
+            IDictionary<string, string> headers,
+            Func<GraphQLField, bool> filter,
             string authorizationToken = null,
             string authorizationMethod = "Bearer")
         {
-            return new GraphQLQuery(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, QueryGenerator, HttpExecutor, Deserialization);
+            return new GraphQLQuery(operationType, selectionSet, arguments, url, httpMethod, filter, authorizationToken, authorizationMethod, headers, QueryGenerator, HttpExecutor, Deserialization);
         }
 
         // ReSharper disable once InconsistentNaming
         private IGraphQLQuery<T> GetGraphQLQuery<T>(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, GraphQLQueryArgument[] arguments, string url, HttpMethod httpMethod,
+            IDictionary<string, string> headers,
+            Func<GraphQLField, bool> filter,
             string authorizationToken = null,
             string authorizationMethod = "Bearer") where T : class
         {
-            return new GraphQLQuery<T>(operationType, selectionSet, arguments, url, httpMethod, authorizationToken, authorizationMethod, QueryGenerator, HttpExecutor, Deserialization);
+            return new GraphQLQuery<T>(operationType, selectionSet, arguments, url, httpMethod, filter, authorizationToken, authorizationMethod, headers, QueryGenerator, HttpExecutor, Deserialization);
+        }
+
+        private Func<GraphQLField, bool> GetQueryFilter<T>(Expression<Func<T, T>> filter)
+            where T : class
+        {
+            if (filter == null)
+                return null;
+
+            if (FilterGenerator == null)
+                throw new NotSupportedException("IQueryGeneratorFilter needs to be specified in constructer if filter is used");
+
+            return FilterGenerator.GetFilter(filter);
         }
 
         #endregion

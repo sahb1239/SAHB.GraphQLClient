@@ -38,7 +38,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
 
             Assert.Equal(expected, actual);
         }
-        
+
         [Fact]
         public void Test_Single_Other_Possible_Type_With_Extra_Field()
         {
@@ -68,7 +68,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
 
             Assert.Equal(expected, actual);
         }
-        
+
         [Fact]
         public void Test_Multiple_Other_Possible_Type_With_Same_Field()
         {
@@ -111,7 +111,7 @@ namespace SAHB.GraphQLClient.Tests.QueryGenerator
 
             Assert.Equal(expected, actual);
         }
-        
+
         [Fact]
         public void Test_Multiple_Other_Possible_Type_With_Extra_Field()
         {

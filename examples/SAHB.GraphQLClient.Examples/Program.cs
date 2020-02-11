@@ -21,15 +21,15 @@ namespace SAHB.GraphQLClient.Examples
             // Get response from url using the HeroQuery object
             var response = await client.Query<HeroQuery>("https://mpjk0plp9.lp.gql.zone/graphql");
             Console.WriteLine(response.Hero.Name);
-            
+
             // Get response from url using a generated object
-            var query = client.CreateQuery(builder => 
-                builder.Field("hero", 
-                    hero => 
+            var query = client.CreateQuery(builder =>
+                builder.Field("hero",
+                    hero =>
                         hero
                             .Field("name")
-                            .Field("friends", 
-                                friends => 
+                            .Field("friends",
+                                friends =>
                                     friends.Alias("MyFriends").Field("name"))),
                 "https://mpjk0plp9.lp.gql.zone/graphql");
             var builderResponse = await query.Execute();

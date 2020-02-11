@@ -12,7 +12,7 @@ namespace SAHB.GraphQLClient.Exceptions
     {
         public IEnumerable<GraphQLQueryArgument> Arguments { get; }
 
-        public GraphQLArgumentVariableNotFoundException(IEnumerable<GraphQLQueryArgument> arguments) : base($"The arguments with the following variables could not be found:{Environment.NewLine}{string.Join(Environment.NewLine, arguments.Select(e => e.VariableName))}" )
+        public GraphQLArgumentVariableNotFoundException(IEnumerable<GraphQLQueryArgument> arguments) : base($"The arguments with the following variables could not be found:{Environment.NewLine}{string.Join(Environment.NewLine, arguments.Select(e => e.VariableName))}")
         {
             Arguments = arguments;
         }
