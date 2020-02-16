@@ -78,8 +78,9 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// </summary>
         /// <param name="variableName">The variable name which should be set used in the <see cref="GraphQLArgumentsAttribute"/></param>
         /// <param name="argumentValue">The value which is inserted in the variables part of the GraphQL query</param>
-        public GraphQLQueryArgument(string variableName, object argumentValue, Expression<Func<T, object>> expression)
-            : base(variableName, GetMemberName(expression), argumentValue)
+        /// <param name="field">The field which the argument should be applied to</param>
+        public GraphQLQueryArgument(string variableName, object argumentValue, Expression<Func<T, object>> field)
+            : base(variableName, GetMemberName(field), argumentValue)
         {
         }
 
@@ -89,8 +90,9 @@ namespace SAHB.GraphQLClient.QueryGenerator
         /// <param name="variableName">The variable name which should be set used in the <see cref="GraphQLArgumentsAttribute"/></param>
         /// <param name="directiveName">The directiveName which should have applied the argument</param>
         /// <param name="argumentValue">The value which is inserted in the variables part of the GraphQL query</param>
-        public GraphQLQueryArgument(string variableName, string directiveName, object argumentValue, Expression<Func<T, object>> expression)
-            : base(variableName, directiveName, GetMemberName(expression), argumentValue)
+        /// <param name="field">The field which the argument should be applied to</param>
+        public GraphQLQueryArgument(string variableName, string directiveName, object argumentValue, Expression<Func<T, object>> field)
+            : base(variableName, directiveName, GetMemberName(field), argumentValue)
         {
         }
 

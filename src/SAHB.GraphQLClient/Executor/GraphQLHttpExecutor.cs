@@ -115,7 +115,8 @@ namespace SAHB.GraphQLClient.Executor
             return new GraphQLExecutorResponse
             {
                 Response = stringResponse,
-                Headers = response.Headers
+                Headers = response.Headers,
+                StatusCode = response.StatusCode,
             };
         }
 

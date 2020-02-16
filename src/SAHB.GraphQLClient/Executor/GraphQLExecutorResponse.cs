@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 
 namespace SAHB.GraphQLClient.Executor
 {
@@ -6,5 +7,6 @@ namespace SAHB.GraphQLClient.Executor
     {
         public string Response { get; set; }
         public HttpResponseHeaders Headers { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
     }
 }
