@@ -6,7 +6,7 @@
 		<Company>SAHB</Company>
 		<Description>Query HTTP api using GraphQL with C# defined models.</Description>
 		<PackageProjectUrl>https://github.com/sahb1239/SAHB.GraphQLClient</PackageProjectUrl>
-		<PackageLicenseUrl>https://github.com/sahb1239/SAHB.GraphQLClient/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/sahb1239/SAHB.GraphQLClient</RepositoryUrl>
 		<PackageTags>graphql object mapper</PackageTags>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
