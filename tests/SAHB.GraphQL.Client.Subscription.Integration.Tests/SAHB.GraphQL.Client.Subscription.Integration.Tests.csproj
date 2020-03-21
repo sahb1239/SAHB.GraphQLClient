@@ -18,8 +18,11 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <PostBuildEvent>
+    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT' ">
       copy /Y "$(SolutionDir)\tests\SAHB.GraphQL.Client.Testserver\bin\$(Configuration)\$(TargetFramework)\SAHB.GraphQL.Client.Testserver.deps.json" $(BaseOutputPath)
+    </PostBuildEvent>
+    <PostBuildEvent Condition="'$(OS)' != 'Windows_NT'">
+      cp -f "$(SolutionDir)/tests/SAHB.GraphQL.Client.Testserver/bin/$(Configuration)/$(TargetFramework)/SAHB.GraphQL.Client.Testserver.deps.json" $(BaseOutputPath)
     </PostBuildEvent>
   </PropertyGroup>
 
