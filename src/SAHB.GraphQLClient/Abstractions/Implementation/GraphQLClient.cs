@@ -41,6 +41,22 @@ namespace SAHB.GraphQLClient
         /// </summary>
         public IGraphQLValidation Validator { get; set; }
 
+        public GraphQLClient(
+            IGraphQLFieldBuilder fieldBuilder, 
+            IGraphQLHttpExecutor httpExecutor, 
+            IGraphQLQueryGeneratorFromFields queryGenerator,
+            IGraphQLDeserialization deserialization, 
+            IQueryGeneratorFilter filterGenerator,
+            IGraphQLValidation validator)
+        {
+            FieldBuilder = fieldBuilder ?? throw new ArgumentNullException(nameof(fieldBuilder));
+            HttpExecutor = httpExecutor ?? throw new ArgumentNullException(nameof(httpExecutor));
+            QueryGenerator = queryGenerator ?? throw new ArgumentNullException(nameof(queryGenerator));
+            Deserialization = deserialization ?? throw new ArgumentNullException(nameof(deserialization));
+            FilterGenerator = filterGenerator ?? throw new ArgumentNullException(nameof(filterGenerator));
+            Validator = validator ?? throw new ArgumentNullException(nameof(validator));
+        }
+
         public IGraphQLBatchRequest CreateBatchRequest(GraphQLOperationType operationType)
         {
             return new GraphQLBatchRequest(this, operationType);
