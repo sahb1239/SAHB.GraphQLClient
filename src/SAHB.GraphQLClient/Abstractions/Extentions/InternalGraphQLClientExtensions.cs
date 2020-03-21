@@ -8,12 +8,12 @@ namespace SAHB.GraphQLClient
 {
     internal static class InternalGraphQLClientExtensions
     {
-        public static IEnumerable<GraphQLField> GetSelectionSet<T>(this IGraphQLClient client)
+        internal static IEnumerable<GraphQLField> GetSelectionSet<T>(this IGraphQLClient client)
         {
             return client.FieldBuilder.GenerateSelectionSet(typeof(T));
         }
 
-        public static IEnumerable<GraphQLField> GetSelectionSet(this Action<IGraphQLBuilder> queryBuilder)
+        internal static IEnumerable<GraphQLField> GetSelectionSet(this Action<IGraphQLBuilder> queryBuilder)
         {
             // Get builder
             var build = new GraphQLBuilder();

@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using FakeItEasy;
 using SAHB.GraphQLClient;
 using SAHB.GraphQLClient.Builder;
 using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQLClient.Introspection;
 using Xunit;
 
 namespace SAHB.GraphQL.Client.Tests.Extensions
@@ -347,6 +350,116 @@ namespace SAHB.GraphQL.Client.Tests.Extensions
                 Assert.Equal("some url", actual.Url);
                 A.CallTo(() => client.CreateBatchRequest(GraphQLOperationType.Subscription))
                     .MustHaveHappenedOnceExactly();
+            }
+        }
+
+        public class GetIntrospectionSchema
+        {
+            [Fact]
+            public async Task ShouldThrowArgumentNullExceptionIfClientIsNull()
+            {
+                // Arrange
+                IGraphQLClient client = null;
+
+                // Act / Assert
+                await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetIntrospectionSchema());
+            }
+
+            [Fact]
+            public async Task ShouldCallCreateHttpRequestTWithOperationType()
+            {
+                // Arrange
+                var client = A.Fake<IGraphQLClient>(x => x.Strict());
+                var request = A.Fake<IGraphQLHttpRequest<GraphQLIntrospectionQuery>>(x => x.Strict());
+                var response = A.Fake<IGraphQLHttpResponse<GraphQLIntrospectionQuery, GraphQLIntrospectionQuery, 
+                    IGraphQLHttpRequest<GraphQLIntrospectionQuery>>>(x => x.Strict());
+
+                var expected = new GraphQLIntrospectionQuery()
+                {
+                    Schema = new GraphQLIntrospectionSchema
+                    {
+
+                    }
+                };
+
+                A.CallTo(() => client.CreateHttpRequest<GraphQLIntrospectionQuery>(A<GraphQLOperationType>.Ignored))
+                    .Returns(request);
+                A.CallTo(() => request.Execute(A<CancellationToken>.Ignored)).Returns(Task.FromResult(response));
+                A.CallTo(() => response.Data).Returns(expected);
+
+                // Act
+                var actual = await client.GetIntrospectionSchema();
+
+                // Assert
+                Assert.NotNull(actual);
+                Assert.Equal(expected.Schema, actual);
+
+                A.CallTo(() => client.CreateHttpRequest<GraphQLIntrospectionQuery>(GraphQLOperationType.Query))
+                    .MustHaveHappenedOnceExactly();
+            }
+
+            [Fact]
+            public async Task ShouldCallExecuteOnRequest()
+            {
+                // Arrange
+                var client = A.Fake<IGraphQLClient>(x => x.Strict());
+                var request = A.Fake<IGraphQLHttpRequest<GraphQLIntrospectionQuery>>(x => x.Strict());
+                var response = A.Fake<IGraphQLHttpResponse<GraphQLIntrospectionQuery, GraphQLIntrospectionQuery,
+                    IGraphQLHttpRequest<GraphQLIntrospectionQuery>>>(x => x.Strict());
+
+                var expected = new GraphQLIntrospectionQuery()
+                {
+                    Schema = new GraphQLIntrospectionSchema
+                    {
+
+                    }
+                };
+
+                A.CallTo(() => client.CreateHttpRequest<GraphQLIntrospectionQuery>(A<GraphQLOperationType>.Ignored))
+                    .Returns(request);
+                A.CallTo(() => request.Execute(A<CancellationToken>.Ignored)).Returns(Task.FromResult(response));
+                A.CallTo(() => response.Data).Returns(expected);
+
+                // Act
+                var actual = await client.GetIntrospectionSchema();
+
+                // Assert
+                Assert.NotNull(actual);
+                Assert.Equal(expected.Schema, actual);
+
+                A.CallTo(() => request.Execute(A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+            }
+
+            [Fact]
+            public async Task ShouldCallGetData()
+            {
+                // Arrange
+                var client = A.Fake<IGraphQLClient>(x => x.Strict());
+                var request = A.Fake<IGraphQLHttpRequest<GraphQLIntrospectionQuery>>(x => x.Strict());
+                var response = A.Fake<IGraphQLHttpResponse<GraphQLIntrospectionQuery, GraphQLIntrospectionQuery,
+                    IGraphQLHttpRequest<GraphQLIntrospectionQuery>>>(x => x.Strict());
+
+                var expected = new GraphQLIntrospectionQuery()
+                {
+                    Schema = new GraphQLIntrospectionSchema
+                    {
+
+                    }
+                };
+
+                A.CallTo(() => client.CreateHttpRequest<GraphQLIntrospectionQuery>(A<GraphQLOperationType>.Ignored))
+                    .Returns(request);
+                A.CallTo(() => request.Execute(A<CancellationToken>.Ignored)).Returns(Task.FromResult(response));
+                A.CallTo(() => response.Data).Returns(expected);
+
+                // Act
+                var actual = await client.GetIntrospectionSchema();
+
+                // Assert
+                Assert.NotNull(actual);
+                Assert.Equal(expected.Schema, actual);
+
+                A.CallTo(() => response.Data).MustHaveHappenedOnceExactly();
             }
         }
     }
