@@ -22,4 +22,4 @@ jobs:
     - name: Restore tools
       run: dotnet tool restore
     - name: Build
-      run: dotnet tool run dotnet-cake build.cake
+      run: dotnet build --configuration Release
