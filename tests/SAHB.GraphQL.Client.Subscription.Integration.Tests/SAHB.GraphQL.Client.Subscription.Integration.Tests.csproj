@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="3.2.0" />
+    <PackageReference Include="GraphQL.Server.Transports.WebSockets" Version="3.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
@@ -14,13 +18,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SAHB.GraphQL.Client.Subscription\SAHB.GraphQL.Client.Subscription.csproj" />
-    <ProjectReference Include="..\SAHB.GraphQL.Client.Testserver\SAHB.GraphQL.Client.Testserver.csproj" />
+    <ProjectReference Include="..\..\src\SAHB.GraphQLClient\SAHB.GraphQL.Client.csproj" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <PostBuildEvent Condition="'$(OS)' == 'Windows_NT' ">
-      copy /Y "$(SolutionDir)\tests\SAHB.GraphQL.Client.Testserver\bin\$(Configuration)\$(TargetFramework)\SAHB.GraphQL.Client.Testserver.deps.json" $(BaseOutputPath)
-    </PostBuildEvent>
-  </PropertyGroup>
+  <Import Project="..\TestServer\TestServer.projitems" Label="Shared" />
 
 </Project>
