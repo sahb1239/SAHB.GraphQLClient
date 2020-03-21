@@ -22,4 +22,4 @@ jobs:
     - name: Restore tools
       run: dotnet tool restore
     - name: Build
-      run: dotnet build --configuration Release
+      run: dotnet build --configuration Release --runtime netcoreapp2.2
