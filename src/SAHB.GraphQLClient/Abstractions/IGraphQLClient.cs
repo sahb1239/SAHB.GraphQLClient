@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using SAHB.GraphQL.Client.Introspection.Validation;
 using SAHB.GraphQLClient.Builder;
-using SAHB.GraphQLClient.Deserialization;
-using SAHB.GraphQLClient.Executor;
+using SAHB.GraphQLClient.Execution;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.Filtering;
-using SAHB.GraphQLClient.QueryGenerator;
 
 namespace SAHB.GraphQLClient
 {
@@ -22,21 +19,6 @@ namespace SAHB.GraphQLClient
         IGraphQLFieldBuilder FieldBuilder { get; }
 
         /// <summary>
-        /// The <see cref="IGraphQLHttpExecutor"/> used
-        /// </summary>
-        IGraphQLHttpExecutor HttpExecutor { get; }
-
-        /// <summary>
-        /// The <see cref="IGraphQLQueryGeneratorFromFields"/> used
-        /// </summary>
-        IGraphQLQueryGeneratorFromFields QueryGenerator { get; }
-
-        /// <summary>
-        /// The <see cref="IGraphQLDeserialization"/> used
-        /// </summary>
-        IGraphQLDeserialization Deserialization { get; }
-
-        /// <summary>
         /// The <see cref="IQueryGeneratorFilter"/>
         /// </summary>
         IQueryGeneratorFilter FilterGenerator { get; }
@@ -45,10 +27,15 @@ namespace SAHB.GraphQLClient
         /// The <see cref="IGraphQLValidation"/>
         /// </summary>
         IGraphQLValidation Validator { get; set; }
+        
+        /// <summary>
+        /// The <see cref="IGraphQLExecutor"/>
+        /// </summary>
+        IGraphQLExecutor Executor { get; set; }
 
+        IGraphQLBatchRequest CreateBatchRequest(GraphQLOperationType operationType);
         IGraphQLHttpRequest<T> CreateHttpRequest<T>(GraphQLOperationType operationType) where T : class;
         IGraphQLHttpRequest<dynamic> CreateHttpRequest(GraphQLOperationType operationType, Action<IGraphQLBuilder> queryBuilder);
-        IGraphQLBatchRequest CreateBatchRequest(GraphQLOperationType operationType);
         IGraphQLSubscriptionRequest<T> CreateSubscriptionRequest<T>(GraphQLOperationType operationType) where T : class;
         IGraphQLSubscriptionRequest<dynamic> CreateSubscriptionRequest(GraphQLOperationType operationType, Action<IGraphQLBuilder> queryBuilder);
     }

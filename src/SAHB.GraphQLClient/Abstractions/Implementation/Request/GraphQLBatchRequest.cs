@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
-using System.Net.Http.Headers;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using SAHB.GraphQL.Client.Introspection.Validation;
 using SAHB.GraphQLClient.Builder;
+using SAHB.GraphQLClient.Execution;
 using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQLClient.Introspection;
 using SAHB.GraphQLClient.QueryGenerator;
 
 namespace SAHB.GraphQLClient
@@ -17,6 +20,10 @@ namespace SAHB.GraphQLClient
             : base(graphQLClient, operationType)
         {
         }
+
+        public HttpMethod Method { get; set; }
+
+        #region CreateHttpRequest
 
         public IGraphQLBatchHttpRequest<T, T> CreateHttpRequest<T>() where T : class
         {
@@ -35,11 +42,6 @@ namespace SAHB.GraphQLClient
             return CreateRequest<dynamic, dynamic>(queryBuilder.GetSelectionSet(), e => e);
         }
 
-        public Task Execute(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
         private IGraphQLBatchHttpRequest<TInput, TOutput> CreateRequest<TInput, TOutput>(IEnumerable<GraphQLField> selectionSet, Expression<Func<TInput, TOutput>> filter)
             where TInput : class
             where TOutput : class
@@ -49,16 +51,79 @@ namespace SAHB.GraphQLClient
             return request.Request;
         }
 
+        #endregion
+
+        #region Execute
+
+        public async Task Execute(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await ExecuteBatch(cancellationToken);
+                SetExecutionResult(response);
+            }
+            catch(TaskCanceledException)
+            {
+                SetCancelled();
+            }
+            catch(Exception ex)
+            {
+                SetException(new[] { ex });
+            }
+        }
+
+        private Task<IGraphQLHttpBatchExecutorResponse> ExecuteBatch(CancellationToken cancellationToken)
+        {
+            return this.Client.Executor.ExecuteHttpBatch(this, BatchRequests, cancellationToken);
+        }
+
+        private void SetExecutionResult(IGraphQLHttpBatchExecutorResponse executionResult)
+        {
+            DoOnAllRequests(request => request.SetExecutionResult(executionResult));
+        }
+
+        private void SetCancelled()
+        {
+            DoOnAllRequests(request => request.SetCancelled());
+        }
+
+        private void SetException(IEnumerable<Exception> exceptions)
+        {
+            DoOnAllRequests(request => request.SetException(exceptions));
+        }
+
+        private void DoOnAllRequests(Action<BatchRequest> action)
+        {
+            List<Exception> exceptions = new List<Exception>();
+            foreach (var request in BatchRequests)
+            {
+                try
+                {
+                    action(request);
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }
+            if (exceptions.Any())
+                throw new AggregateException(exceptions);
+        }
+
+        #endregion
+
         private List<BatchRequest> BatchRequests { get; } = new List<BatchRequest>();
 
-
-        private abstract class BatchRequest
+        private abstract class BatchRequest : IHttpBatchRequest
         {
-            public abstract IEnumerable<GraphQLField> GetSelectionSet();
-            public abstract IEnumerable<GraphQLQueryArgument> GetArguments();
-            public abstract IEnumerable<GraphQLQueryArgument> GetDirectiveArguments();
+            public abstract IReadOnlyCollection<GraphQLField> GetSelectionSet();
+            public abstract ICollection<GraphQLQueryArgument> GetArguments();
+            public abstract ICollection<GraphQLQueryArgument> GetDirectiveArguments();
 
-            public abstract void SetExecutionResult(string query, string response, HttpResponseHeaders headers, HttpStatusCode statusCode);
+            public abstract Func<GraphQLField, bool> GetQueryFilter();
+            public abstract IEnumerable<ValidationError> Validate(GraphQLIntrospectionSchema graphQLIntrospectionSchema);
+
+            public abstract void SetExecutionResult(IGraphQLHttpBatchExecutorResponse response);
 
             public abstract void SetException(IEnumerable<Exception> exceptions);
 
@@ -85,11 +150,18 @@ namespace SAHB.GraphQLClient
             public TaskCompletionSource<IGraphQLHttpResponse<TInput, TOutput, IGraphQLBatchHttpRequest<TInput, TOutput>>> ExecutionResult { get; }
                 = new TaskCompletionSource<IGraphQLHttpResponse<TInput, TOutput, IGraphQLBatchHttpRequest<TInput, TOutput>>>();
 
-            public override IEnumerable<GraphQLQueryArgument> GetArguments() => Request.Arguments;
+            public override ICollection<GraphQLQueryArgument> GetArguments() => Request.Arguments;
 
-            public override IEnumerable<GraphQLQueryArgument> GetDirectiveArguments() => Request.DirectiveArguments;
+            public override ICollection<GraphQLQueryArgument> GetDirectiveArguments() => Request.DirectiveArguments;
 
-            public override IEnumerable<GraphQLField> GetSelectionSet() => Request.SelectionSet;
+            public override Func<GraphQLField, bool> GetQueryFilter()
+            {
+                return Request.GetQueryFilter(Request.Filter);
+            }
+
+            public override IReadOnlyCollection<GraphQLField> GetSelectionSet() => Request.SelectionSet;
+
+            public override IEnumerable<ValidationError> Validate(GraphQLIntrospectionSchema graphQLIntrospectionSchema) => Request.Validate(graphQLIntrospectionSchema);
 
             public override void SetCancelled()
             {
@@ -101,9 +173,9 @@ namespace SAHB.GraphQLClient
                 ExecutionResult.SetException(exceptions);
             }
 
-            public override void SetExecutionResult(string query, string response, HttpResponseHeaders headers, HttpStatusCode statusCode)
+            public override void SetExecutionResult(IGraphQLHttpBatchExecutorResponse response)
             {
-                ExecutionResult.SetResult(new GraphQLBatchResponse<TInput, TOutput>(Request.Client, Request, query, response, Request.Filter, headers, statusCode));
+                ExecutionResult.SetResult(response.GetResponse<TInput, TOutput>(Request));
             }
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using SAHB.GraphQL.Client.Introspection.Validation;
 using SAHB.GraphQLClient.FieldBuilder;
@@ -29,30 +30,12 @@ namespace SAHB.GraphQLClient
         public IReadOnlyCollection<GraphQLField> SelectionSet => new ReadOnlyCollection<GraphQLField>(selectionSet);
 
         /// <inheritdoc />
-        public Task<GraphQLIntrospectionSchema> GetIntrospectionSchema()
-        {
-            return Client.GetIntrospectionSchema();
-        }
-
-        /// <inheritdoc />
         public IEnumerable<ValidationError> Validate(GraphQLIntrospectionSchema schema)
         {
             return Client.Validator.ValidateGraphQLSelectionSet(schema, Operation, SelectionSet);
         }
 
-        protected string GetQuery()
-        {
-            return Client.QueryGenerator.GenerateQuery(Operation, SelectionSet, Arguments.Concat(DirectiveArguments).ToArray());
-        }
-
-        protected string GetQuery<TOutput>(Expression<Func<T, TOutput>> filter)
-            where TOutput : class
-        {
-            var queryFilter = GetQueryFilter(filter);
-            return Client.QueryGenerator.GenerateQuery(Operation, SelectionSet, queryFilter, Arguments.Concat(DirectiveArguments).ToArray());
-        }
-
-        protected Func<GraphQLField, bool> GetQueryFilter<TOutput>(Expression<Func<T, TOutput>> filter)
+        internal Func<GraphQLField, bool> GetQueryFilter<TOutput>(Expression<Func<T, TOutput>> filter)
             where TOutput : class
         {
             if (filter == null)
@@ -61,8 +44,7 @@ namespace SAHB.GraphQLClient
             if (Client.FilterGenerator == null)
                 throw new NotSupportedException("IQueryGeneratorFilter needs to be specified in constructer if filter is used");
 
-            throw new NotImplementedException();
-            //return Client.FilterGenerator.GetFilter(filter);
+            return Client.FilterGenerator.GetFilter(filter);
         }
     }
 }

@@ -37,6 +37,8 @@ EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		tests\TestServer\TestServer.projitems*{15808cc4-3bcf-46b2-9f16-b5251433ac6c}*SharedItemsImports = 13
+		tests\TestServer\TestServer.projitems*{2e930707-9dfb-425d-9d4d-ac0a682c3881}*SharedItemsImports = 5
+		tests\TestServer\TestServer.projitems*{f8b79fa0-4c95-4fe1-955b-0dea9f4cb3f3}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

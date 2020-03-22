@@ -1,11 +1,9 @@
 ﻿using System;
 using SAHB.GraphQL.Client.Introspection.Validation;
 using SAHB.GraphQLClient.Builder;
-using SAHB.GraphQLClient.Deserialization;
-using SAHB.GraphQLClient.Executor;
+using SAHB.GraphQLClient.Execution;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.Filtering;
-using SAHB.GraphQLClient.QueryGenerator;
 
 namespace SAHB.GraphQLClient
 {
@@ -17,44 +15,30 @@ namespace SAHB.GraphQLClient
         public IGraphQLFieldBuilder FieldBuilder { get; }
 
         /// <summary>
-        /// The <see cref="IGraphQLHttpExecutor"/> used
-        /// </summary>
-        public IGraphQLHttpExecutor HttpExecutor { get; }
-
-        /// <summary>
-        /// The <see cref="IGraphQLQueryGeneratorFromFields"/> used
-        /// </summary>
-        public IGraphQLQueryGeneratorFromFields QueryGenerator { get; }
-
-        /// <summary>
-        /// The <see cref="IGraphQLDeserialization"/> used
-        /// </summary>
-        public IGraphQLDeserialization Deserialization { get; }
-
-        /// <summary>
         /// The <see cref="IQueryGeneratorFilter"/>
         /// </summary>
-        public IQueryGeneratorFilter FilterGenerator { get; }
+        public IQueryGeneratorFilter FilterGenerator { get; set; }
 
         /// <summary>
         /// The <see cref="IGraphQLValidation"/>
         /// </summary>
         public IGraphQLValidation Validator { get; set; }
 
+        /// <summary>
+        /// The <see cref="IGraphQLExecutor"/>
+        /// </summary>
+        public IGraphQLExecutor Executor { get; set; }
+
         public GraphQLClient(
-            IGraphQLFieldBuilder fieldBuilder, 
-            IGraphQLHttpExecutor httpExecutor, 
-            IGraphQLQueryGeneratorFromFields queryGenerator,
-            IGraphQLDeserialization deserialization, 
+            IGraphQLFieldBuilder fieldBuilder,
             IQueryGeneratorFilter filterGenerator,
-            IGraphQLValidation validator)
+            IGraphQLValidation validator,
+            IGraphQLExecutor executor)
         {
             FieldBuilder = fieldBuilder ?? throw new ArgumentNullException(nameof(fieldBuilder));
-            HttpExecutor = httpExecutor ?? throw new ArgumentNullException(nameof(httpExecutor));
-            QueryGenerator = queryGenerator ?? throw new ArgumentNullException(nameof(queryGenerator));
-            Deserialization = deserialization ?? throw new ArgumentNullException(nameof(deserialization));
             FilterGenerator = filterGenerator ?? throw new ArgumentNullException(nameof(filterGenerator));
             Validator = validator ?? throw new ArgumentNullException(nameof(validator));
+            Executor = executor ?? throw new ArgumentNullException(nameof(executor));
         }
 
         public IGraphQLBatchRequest CreateBatchRequest(GraphQLOperationType operationType)

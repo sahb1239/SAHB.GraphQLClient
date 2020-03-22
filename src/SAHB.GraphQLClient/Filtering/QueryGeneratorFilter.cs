@@ -9,7 +9,7 @@ namespace SAHB.GraphQLClient.Filtering
 {
     public class QueryGeneratorFilter : IQueryGeneratorFilter
     {
-        public Func<GraphQLField, bool> GetFilter<T>(Expression<Func<T, T>> expression)
+        public Func<GraphQLField, bool> GetFilter<TInput, TOutput>(Expression<Func<TInput, TOutput>> expression)
         {
             var memberNames = ExpressionHelper.GetMemberNamesFromExpression(expression);
             var queryGeneratorField = new QueryGeneratorField(memberNames);

@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using SAHB.GraphQLClient.Builder;
 using SAHB.GraphQLClient.FieldBuilder;
 
 namespace SAHB.GraphQLClient
@@ -21,11 +20,10 @@ namespace SAHB.GraphQLClient
 
         public Task<IGraphQLHttpResponse<TInput, TInput, IGraphQLHttpRequest<TInput>>> Execute(CancellationToken cancellationToken = default)
         {
-            var query = GetQuery();
-            return Execute(query, e => e, cancellationToken);
+            return Execute(e => e, cancellationToken);
         }
 
-        public Task<IGraphQLHttpResponse<TInput, TOutput, IGraphQLHttpRequest<TInput>>> Execute<TOutput>(
+        public async Task<IGraphQLHttpResponse<TInput, TOutput, IGraphQLHttpRequest<TInput>>> Execute<TOutput>(
             Expression<Func<TInput, TOutput>> filter,
             CancellationToken cancellationToken = default) where TOutput : class
         {
@@ -34,18 +32,14 @@ namespace SAHB.GraphQLClient
                 throw new ArgumentNullException(nameof(filter));
             }
 
-            var query = GetQuery(filter);
-            return Execute(query, filter, cancellationToken);
-        }
-
-        private async Task<IGraphQLHttpResponse<TInput, TOutput, IGraphQLHttpRequest<TInput>>> Execute<TOutput>(string query, Expression<Func<TInput, TOutput>> filter, CancellationToken cancellationToken)
-            where TOutput : class
-        {
             // Get Response
-            var response = await this.Client.HttpExecutor.ExecuteQuery(query, Url, Method, AuthorizationToken, AuthorizationMethod, Headers, cancellationToken)
+            var response = await this.Client.Executor.ExecuteHttp(this,
+                    GetQueryFilter(filter),
+                    filter,
+                    cancellationToken)
                 .ConfigureAwait(false);
 
-            return new GraphQLHttpResponse<TInput, TOutput>(Client, this, query, response.Response, filter, response.Headers, response.StatusCode);
+            return response;
         }
     }
 }

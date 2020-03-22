@@ -385,6 +385,7 @@ namespace SAHB.GraphQL.Client.Tests.Extensions
                 A.CallTo(() => client.CreateHttpRequest<GraphQLIntrospectionQuery>(A<GraphQLOperationType>.Ignored))
                     .Returns(request);
                 A.CallTo(() => request.Execute(A<CancellationToken>.Ignored)).Returns(Task.FromResult(response));
+                A.CallToSet(() => request.ShouldThrowIfQueryIsInvalid).DoesNothing();
                 A.CallTo(() => response.Data).Returns(expected);
 
                 // Act
@@ -396,6 +397,10 @@ namespace SAHB.GraphQL.Client.Tests.Extensions
 
                 A.CallTo(() => client.CreateHttpRequest<GraphQLIntrospectionQuery>(GraphQLOperationType.Query))
                     .MustHaveHappenedOnceExactly();
+
+                A.CallToSet(() => request.ShouldThrowIfQueryIsInvalid)
+                    .To(false)
+                    .MustHaveHappened(1, Times.Exactly);
             }
 
             [Fact]
@@ -418,6 +423,7 @@ namespace SAHB.GraphQL.Client.Tests.Extensions
                 A.CallTo(() => client.CreateHttpRequest<GraphQLIntrospectionQuery>(A<GraphQLOperationType>.Ignored))
                     .Returns(request);
                 A.CallTo(() => request.Execute(A<CancellationToken>.Ignored)).Returns(Task.FromResult(response));
+                A.CallToSet(() => request.ShouldThrowIfQueryIsInvalid).DoesNothing();
                 A.CallTo(() => response.Data).Returns(expected);
 
                 // Act
@@ -428,6 +434,10 @@ namespace SAHB.GraphQL.Client.Tests.Extensions
                 Assert.Equal(expected.Schema, actual);
 
                 A.CallTo(() => request.Execute(A<CancellationToken>.Ignored)).MustHaveHappenedOnceExactly();
+
+                A.CallToSet(() => request.ShouldThrowIfQueryIsInvalid)
+                    .To(false)
+                    .MustHaveHappened(1, Times.Exactly);
             }
 
             [Fact]
@@ -450,6 +460,7 @@ namespace SAHB.GraphQL.Client.Tests.Extensions
                 A.CallTo(() => client.CreateHttpRequest<GraphQLIntrospectionQuery>(A<GraphQLOperationType>.Ignored))
                     .Returns(request);
                 A.CallTo(() => request.Execute(A<CancellationToken>.Ignored)).Returns(Task.FromResult(response));
+                A.CallToSet(() => request.ShouldThrowIfQueryIsInvalid).DoesNothing();
                 A.CallTo(() => response.Data).Returns(expected);
 
                 // Act
@@ -460,6 +471,10 @@ namespace SAHB.GraphQL.Client.Tests.Extensions
                 Assert.Equal(expected.Schema, actual);
 
                 A.CallTo(() => response.Data).MustHaveHappenedOnceExactly();
+
+                A.CallToSet(() => request.ShouldThrowIfQueryIsInvalid)
+                    .To(false)
+                    .MustHaveHappened(1, Times.Exactly);
             }
         }
     }

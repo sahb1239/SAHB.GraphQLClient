@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using SAHB.GraphQL.Client.Introspection.Validation;
 using SAHB.GraphQLClient.FieldBuilder;
@@ -11,12 +12,6 @@ namespace SAHB.GraphQLClient
         where TInput : class
     {
         IReadOnlyCollection<GraphQLField> SelectionSet { get; }
-
-        /// <summary>
-        /// Returns the GraphQL introspection schema
-        /// </summary>
-        /// <returns>The GraphQL introspection schema</returns>
-        Task<GraphQLIntrospectionSchema> GetIntrospectionSchema();
 
         /// <summary>
         /// Validates the GraphQL request

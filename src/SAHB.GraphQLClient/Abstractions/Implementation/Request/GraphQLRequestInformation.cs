@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQLClient.Introspection;
 using SAHB.GraphQLClient.QueryGenerator;
 
 namespace SAHB.GraphQLClient
@@ -36,5 +39,11 @@ namespace SAHB.GraphQLClient
 
         /// <inheritdoc />
         public string AuthorizationToken { get; set; }
+
+        /// <inheritdoc />
+        public Task<GraphQLIntrospectionSchema> GetIntrospectionSchema(CancellationToken cancellationToken = default)
+        {
+            return Client.GetIntrospectionSchema(cancellationToken);
+        }
     }
 }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Collections.Generic;
 using System.Net;
-using System.Net.Http.Headers;
+using SAHB.GraphQLClient.Execution;
 
 namespace SAHB.GraphQLClient
 {
@@ -14,12 +10,11 @@ namespace SAHB.GraphQLClient
             where TInput : class
             where TOutput : class
         {
-            public GraphQLBatchResponse(IGraphQLClient client, IGraphQLBatchHttpRequest<TInput, TOutput> request, string query, string response, Expression<Func<TInput, TOutput>> filter, HttpResponseHeaders headers, HttpStatusCode statusCode)
-                : base(client, request, query, response, filter)
+            public GraphQLBatchResponse(IGraphQLBatchHttpRequest<TInput, TOutput> request, IGraphQLHttpExecutorResponse<TInput, TOutput> response)
+                : base(request, response)
             {
-                Headers = new ReadOnlyDictionary<string, IEnumerable<string>>(
-                    headers?.ToDictionary(e => e.Key, e => e.Value) ?? new Dictionary<string, IEnumerable<string>>());
-                StatusCode = statusCode;
+                Headers = response.Headers;
+                StatusCode = response.StatusCode;
             }
 
             public IReadOnlyDictionary<string, IEnumerable<string>> Headers { get; }

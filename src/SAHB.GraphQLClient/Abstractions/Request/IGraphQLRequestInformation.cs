@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using SAHB.GraphQLClient.Exceptions;
 using SAHB.GraphQLClient.FieldBuilder;
+using SAHB.GraphQLClient.Introspection;
 using SAHB.GraphQLClient.QueryGenerator;
 
 namespace SAHB.GraphQLClient
@@ -46,5 +49,11 @@ namespace SAHB.GraphQLClient
         /// Authorization token for the request.
         /// </summary>
         string AuthorizationToken { get; set; }
+
+        /// <summary>
+        /// Returns the GraphQL introspection schema
+        /// </summary>
+        /// <returns>The GraphQL introspection schema</returns>
+        Task<GraphQLIntrospectionSchema> GetIntrospectionSchema(CancellationToken cancellationToken = default);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using SAHB.GraphQLClient.Builder;
 using SAHB.GraphQLClient.FieldBuilder;
@@ -119,15 +120,15 @@ namespace SAHB.GraphQLClient
 
         #region Introspection
 
-        public static async Task<GraphQLIntrospectionSchema> GetIntrospectionSchema(this IGraphQLClient client)
+        public static async Task<GraphQLIntrospectionSchema> GetIntrospectionSchema(this IGraphQLClient client, CancellationToken cancellationToken = default)
         {
             if (client is null)
             {
                 throw new ArgumentNullException(nameof(client));
             }
 
-            var request = client.Query<GraphQLIntrospectionQuery>();
-            var response = await request.GetData().ConfigureAwait(false);
+            var request = client.Query<GraphQLIntrospectionQuery>().SetShouldThrowIfQueryIsInvalid(false);
+            var response = await request.GetData(cancellationToken).ConfigureAwait(false);
 
             return response.Schema;
         }

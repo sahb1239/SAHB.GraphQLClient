@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Linq.Expressions;
 using SAHB.GraphQLClient.Exceptions;
+using SAHB.GraphQLClient.Execution;
 using SAHB.GraphQLClient.Result;
 
 namespace SAHB.GraphQLClient
@@ -13,45 +12,35 @@ namespace SAHB.GraphQLClient
         where TOutput : class
         where TInputRequest : IGraphQLRequest<TInput>
     {
-        public GraphQLResponse(IGraphQLClient client, TInputRequest request, string query, string response, Expression<Func<TInput, TOutput>> filter)
+        public GraphQLResponse(TInputRequest request, IGraphQLExecutorResponse<TInput, TOutput> response)
         {
             this.Response = response;
-            this.Filter = filter ?? throw new ArgumentNullException(nameof(filter));
-            Client = client;
             this.Request = request;
-            this.Query = query;
+            this.Query = response.Query;
 
-            DeserilizeResponse();
+            CheckDeserilizationResult();
+            SetData();
         }
 
-        private void DeserilizeResponse()
+        private void CheckDeserilizationResult()
         {
-            // Deserilize
-            var deserilizationResult = Client.Deserialization.DeserializeResult<TInput>(GetRawOutput(), Request.SelectionSet);
-
-            if (deserilizationResult?.Errors?.Any() ?? false)
+            var deserilizationResult = Response.OutputDeserilizedResponse;
+            if (deserilizationResult.Errors?.Any() ?? false)
                 throw new GraphQLErrorException(query: Query, errors: deserilizationResult.Errors);
-
-            // Set data
-            Data = GetOutputData(deserilizationResult.Data);
-            Errors = new ReadOnlyCollection<GraphQLDataError>(deserilizationResult.Errors.ToList());
-            AdditionalData = new ReadOnlyDictionary<string, object>(deserilizationResult.AdditionalData.ToDictionary(e => e.Key, e => (object)e.Value));
         }
 
-        private TOutput GetOutputData(TInput input)
+        private void SetData()
         {
-            var compiledFilter = Filter.Compile();
-            return compiledFilter(input);
+            // Set data
+            Data = Response.OutputDeserilizedResponse.Data;
+            Errors = new ReadOnlyCollection<GraphQLDataError>(Response.OutputDeserilizedResponse.Errors.ToList());
+            AdditionalData = new ReadOnlyDictionary<string, object>(Response.OutputDeserilizedResponse.AdditionalData.ToDictionary(e => e.Key, e => (object)e.Value));
         }
-
-        public IGraphQLClient Client { get; }
 
         public TInputRequest Request { get; }
         public string Query { get; }
 
-        protected string Response { get; }
-
-        public Expression<Func<TInput, TOutput>> Filter { get; }
+        protected IGraphQLExecutorResponse<TInput, TOutput> Response { get; }
 
         public TOutput Data { get; private set; }
 
@@ -61,7 +50,7 @@ namespace SAHB.GraphQLClient
 
         public string GetRawOutput()
         {
-            return Response;
+            return Response.Response;
         }
     }
 }

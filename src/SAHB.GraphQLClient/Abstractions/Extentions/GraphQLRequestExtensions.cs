@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using SAHB.GraphQL.Client.Introspection.Validation;
 using SAHB.GraphQLClient.Exceptions;
+using SAHB.GraphQLClient.Execution;
+using SAHB.GraphQLClient.Introspection;
 
 namespace SAHB.GraphQLClient
 {
@@ -21,7 +24,7 @@ namespace SAHB.GraphQLClient
         /// <typeparam name="TInput">Input type for the GraphQL request</typeparam>
         /// <param name="request">The request to validate</param>
         /// <returns>Validation errors</returns>
-        public static async Task<IEnumerable<ValidationError>> Validate<TInput>(this IGraphQLRequest<TInput> request)
+        public static async Task<IEnumerable<ValidationError>> Validate<TInput>(this IGraphQLRequest<TInput> request, CancellationToken cancellationToken = default)
            where TInput : class
         {
             if (request is null)
@@ -29,7 +32,7 @@ namespace SAHB.GraphQLClient
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var introspectionSchema = await request.GetIntrospectionSchema().ConfigureAwait(false);
+            var introspectionSchema = await request.GetIntrospectionSchema(cancellationToken).ConfigureAwait(false);
             return request.Validate(introspectionSchema);
         }
 
@@ -39,7 +42,7 @@ namespace SAHB.GraphQLClient
         /// <typeparam name="TInput">Input type for the GraphQL request</typeparam>
         /// <param name="request">The request to validate</param>
         /// <returns>If the request is valid</returns>
-        public static async Task<bool> IsValid<TInput>(this IGraphQLRequest<TInput> request)
+        public static async Task<bool> IsValid<TInput>(this IGraphQLRequest<TInput> request, CancellationToken cancellationToken = default)
            where TInput : class
         {
             if (request is null)
@@ -47,7 +50,7 @@ namespace SAHB.GraphQLClient
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var validationErrors = await request.Validate() ?? new List<ValidationError>();
+            var validationErrors = await request.Validate(cancellationToken) ?? new List<ValidationError>();
 
             return !validationErrors.Any();
         }
@@ -59,7 +62,7 @@ namespace SAHB.GraphQLClient
         /// <param name="request">The request to validate</param>
         /// <returns>The parameter <paramref name="request"/></returns>
         /// <exception cref="GraphQLValidationExtentions">Thrown if the request is not valid</exception>
-        public static async Task<TRequest> ThrowIfNotValid<TRequest>(this TRequest request)
+        public static async Task<TRequest> ThrowIfNotValid<TRequest>(this TRequest request, CancellationToken cancellationToken = default)
             where TRequest : IGraphQLRequest<object>
         {
             if (request == null)
@@ -67,7 +70,40 @@ namespace SAHB.GraphQLClient
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var validationErrors = await request.Validate() ?? new List<ValidationError>();
+            var validationErrors = await request.Validate(cancellationToken) ?? new List<ValidationError>();
+
+            if (validationErrors.Any())
+            {
+                throw new GraphQLValidationErrorException(validationErrors);
+            }
+            else
+            {
+                return request;
+            }
+        }
+
+        /// <summary>
+        /// Validates the GraphQL request and throws a <see cref="GraphQLValidationErrorException"/> if the request is not valid
+        /// </summary>
+        /// <typeparam name="TInput">Input type for the GraphQL request</typeparam>
+        /// <param name="request">The request to validate</param>
+        /// <param name="introspectionSchema">The introspection schema which should be used for the validation</param>
+        /// <returns>The parameter <paramref name="request"/></returns>
+        /// <exception cref="GraphQLValidationExtentions">Thrown if the request is not valid</exception>
+        public static TRequest ThrowIfNotValid<TRequest>(this TRequest request, GraphQLIntrospectionSchema introspectionSchema)
+            where TRequest : IGraphQLRequest<object>
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (introspectionSchema is null)
+            {
+                throw new ArgumentNullException(nameof(introspectionSchema));
+            }
+
+            var validationErrors = request.Validate(introspectionSchema) ?? new List<ValidationError>();
 
             if (validationErrors.Any())
             {
