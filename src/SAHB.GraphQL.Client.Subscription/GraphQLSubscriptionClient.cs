@@ -59,16 +59,18 @@ namespace SAHB.GraphQLClient.Subscription
         public bool IsInitilized { get; private set; }
 
         /// <inheritdoc />
-        public async Task Initilize()
+        public async Task Initilize(object payload = null)
         {
             if (!IsConnected)
                 throw new InvalidOperationException("Connection is not open");
 
+            if (payload == null)
+                payload = new object();
             // Sent GQL_CONNECTION_INIT
             await SendOperationMessage(new OperationMessage
             {
                 Type = MessageType.GQL_CONNECTION_INIT,
-                Payload = new object()
+                Payload = payload
             }).ConfigureAwait(false);
 
             // Wait for ack
