@@ -14,7 +14,7 @@ namespace SAHB.GraphQLClient.Subscription
         /// Initilizes the GraphQL subscription connection
         /// </summary>
         /// <returns></returns>
-        Task Initilize();
+        Task Initilize(object payload = null);
 
         /// <summary>
         /// Returns true if the websocket is connected
