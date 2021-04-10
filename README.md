@@ -1,5 +1,5 @@
 # SAHB.GraphQL.Client
-Query HTTP api using GraphQL. The client recieves a model as typeparameter and then queries the GraphQL api and deserilize the result.
+Query HTTP api using GraphQL. The client receives a model as typeparameter and then queries the GraphQL api and deserilize the result.
 
 ## Nuget
 The library can be found on NuGet with the package name [SAHB.GraphQL.Client](https://www.nuget.org/packages/SAHB.GraphQL.Client/).
