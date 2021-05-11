@@ -14,9 +14,22 @@ namespace SAHB.GraphQLClient.Batching.Internal
     {
         private readonly GraphQLBatchMerger _batch;
 
-        internal GraphQLBatch(GraphQLOperationType graphQLOperationType, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization)
+        internal GraphQLBatch(GraphQLOperationType graphQLOperationType, string operationName, string url,
+            HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationToken,
+            string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder,
+            IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization)
         {
-            _batch = new GraphQLBatchMerger(graphQLOperationType, url, httpMethod, headers, authorizationToken, authorizationMethod, executor, fieldBuilder, queryGenerator, deserialization);
+            _batch = new GraphQLBatchMerger(graphQLOperationType, operationName, url, httpMethod, headers,
+                authorizationToken, authorizationMethod, executor, fieldBuilder, queryGenerator, deserialization);
+        }
+
+        internal GraphQLBatch(GraphQLOperationType graphQLOperationType, string url, HttpMethod httpMethod,
+            IDictionary<string, string> headers, string authorizationToken, string authorizationMethod,
+            IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder,
+            IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization deserialization) : this(
+            graphQLOperationType, null, url, httpMethod, headers, authorizationToken, authorizationMethod, executor,
+            fieldBuilder, queryGenerator, deserialization)
+        {
         }
 
         /// <inheritdoc />

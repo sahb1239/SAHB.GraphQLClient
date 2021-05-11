@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using SAHB.GraphQLClient.Deserialization;
 using SAHB.GraphQLClient.FieldBuilder;
@@ -10,6 +11,7 @@ using SAHB.GraphQLClient.Executor;
 using SAHB.GraphQLClient.QueryGenerator;
 using SAHB.GraphQLClient.Result;
 using System.Threading;
+using SAHB.GraphQLClient.QueryGenerator.Attributes;
 
 namespace SAHB.GraphQLClient.Internal
 {
@@ -59,9 +61,13 @@ namespace SAHB.GraphQLClient.Internal
             this._arguments = arguments;
             this._headers = headers;
             this._filter = filter;
+
+            var operationNameAttribute = typeof(T).GetTypeInfo().GetCustomAttribute<GraphQLOperationNameAttribute>();
+            this.OperationName = operationNameAttribute?.OperationName;
         }
 
         private GraphQLOperationType OperationType { get; }
+        private string OperationName { get; }
         private IEnumerable<GraphQLField> SelectionSet { get; }
 
         /// <inheritdoc />
@@ -84,7 +90,7 @@ namespace SAHB.GraphQLClient.Internal
         private async Task<GraphQLDataResult<T>> GetDataResult(CancellationToken cancellationToken)
         {
             // Generate query
-            var query = _queryGenerator.GenerateQuery(OperationType, SelectionSet, _filter, _arguments);
+            var query = _queryGenerator.GenerateQuery(OperationType, OperationName, SelectionSet, _filter, _arguments);
 
             // Get result
             var result = await _executor.ExecuteQuery(
