@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Reflection;
 using SAHB.GraphQLClient.FieldBuilder;
 using SAHB.GraphQLClient.FieldBuilder.Attributes;
 using SAHB.GraphQLClient.QueryGenerator;
+using SAHB.GraphQLClient.QueryGenerator.Attributes;
 
 namespace SAHB.GraphQLClient.Extentions
 {
@@ -24,8 +26,12 @@ namespace SAHB.GraphQLClient.Extentions
         {
             if (queryGenerator == null) throw new ArgumentNullException(nameof(queryGenerator));
             if (fieldBuilder == null) throw new ArgumentNullException(nameof(fieldBuilder));
-            var selectionSet = fieldBuilder.GenerateSelectionSet(typeof(T));
-            return queryGenerator.GenerateQuery(GraphQLOperationType.Query, selectionSet, arguments);
+
+            var type = typeof(T);
+            var selectionSet = fieldBuilder.GenerateSelectionSet(type);
+            var operationNameAttribute = type.GetTypeInfo().GetCustomAttribute<GraphQLOperationNameAttribute>();
+            
+            return queryGenerator.GenerateQuery(GraphQLOperationType.Query, operationNameAttribute?.OperationName, selectionSet, arguments);
         }
 
         /// <summary>
@@ -41,8 +47,12 @@ namespace SAHB.GraphQLClient.Extentions
         {
             if (queryGenerator == null) throw new ArgumentNullException(nameof(queryGenerator));
             if (fieldBuilder == null) throw new ArgumentNullException(nameof(fieldBuilder));
-            var selectionSet = fieldBuilder.GenerateSelectionSet(typeof(T));
-            return queryGenerator.GenerateQuery(GraphQLOperationType.Mutation, selectionSet, arguments);
+            
+            var type = typeof(T);
+            var selectionSet = fieldBuilder.GenerateSelectionSet(type);
+            var operationNameAttribute = type.GetTypeInfo().GetCustomAttribute<GraphQLOperationNameAttribute>();
+            
+            return queryGenerator.GenerateQuery(GraphQLOperationType.Mutation, operationNameAttribute?.OperationName, selectionSet, arguments);
         }
     }
 }

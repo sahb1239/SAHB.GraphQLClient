@@ -17,21 +17,33 @@ namespace SAHB.GraphQLClient.QueryGenerator
     /// <inheritdoc />
     public class GraphQLQueryGeneratorFromFields : IGraphQLQueryGeneratorFromFields
     {
-        /// <inheritdoc />
-        public string GenerateQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, params GraphQLQueryArgument[] arguments)
+        public string GenerateQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet,
+            params GraphQLQueryArgument[] arguments)
         {
-            return GenerateQuery(operationType, selectionSet, null, arguments);
+            return GenerateQuery(operationType, null, selectionSet, null, arguments);;
         }
 
         /// <inheritdoc />
-        public string GenerateQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, Func<GraphQLField, bool> filter, params GraphQLQueryArgument[] arguments)
+        public string GenerateQuery(GraphQLOperationType operationType, string operationName, IEnumerable<GraphQLField> selectionSet, params GraphQLQueryArgument[] arguments)
+        {
+            return GenerateQuery(operationType, operationName, selectionSet, null, arguments);
+        }
+
+        public string GenerateQuery(GraphQLOperationType operationType, IEnumerable<GraphQLField> selectionSet, Func<GraphQLField, bool> filter,
+            params GraphQLQueryArgument[] arguments)
+        {
+            return GenerateQuery(operationType, null, selectionSet, filter, arguments);
+        }
+
+        /// <inheritdoc />
+        public string GenerateQuery(GraphQLOperationType operationType, string operationName, IEnumerable<GraphQLField> selectionSet, Func<GraphQLField, bool> filter, params GraphQLQueryArgument[] arguments)
         {
             switch (operationType)
             {
                 case GraphQLOperationType.Query:
                 case GraphQLOperationType.Mutation:
                 case GraphQLOperationType.Subscription:
-                    return GetQuery(operationType, selectionSet.ToList(), filter, arguments);
+                    return GetQuery(operationType, operationName, selectionSet.ToList(), filter, arguments);
             }
 
             throw new NotImplementedException($"Operation {operationType} not implemented");
@@ -39,13 +51,13 @@ namespace SAHB.GraphQLClient.QueryGenerator
 
         [Obsolete("Please use GenerateQuery instead")]
         /// <inheritdoc />
-        public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments) => GenerateQuery(GraphQLOperationType.Query, fields, arguments);
+        public string GetQuery(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments) => GenerateQuery(GraphQLOperationType.Query, null, fields, arguments);
 
         [Obsolete("Please use GenerateQuery instead")]
         /// <inheritdoc />
-        public string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments) => GenerateQuery(GraphQLOperationType.Mutation, fields, arguments);
+        public string GetMutation(IEnumerable<GraphQLField> fields, params GraphQLQueryArgument[] arguments) => GenerateQuery(GraphQLOperationType.Mutation, null, fields, arguments);
 
-        private string GetQuery(GraphQLOperationType operationType, ICollection<GraphQLField> selectionSet, Func<GraphQLField, bool> filter, params GraphQLQueryArgument[] queryArguments)
+        private string GetQuery(GraphQLOperationType operationType, string operationName, ICollection<GraphQLField> selectionSet, Func<GraphQLField, bool> filter, params GraphQLQueryArgument[] queryArguments)
         {
             // Get arguments
             var readonlyArguments = GetArguments(selectionSet, filter, queryArguments);
@@ -79,6 +91,7 @@ namespace SAHB.GraphQLClient.QueryGenerator
 
             var queryBuilder = new StringBuilder();
             AppendRootQueryType(queryBuilder, queryType);
+            AppendRootOperationName(queryBuilder, operationName);
             AppendRootArguments(queryBuilder, readonlyArguments);
             AppendRootSelectionSet(queryBuilder, selectionSet, filter, readonlyArguments);
 
@@ -204,6 +217,15 @@ namespace SAHB.GraphQLClient.QueryGenerator
             // Append rootQueryType
             // Format: query
             builder.Append(queryType);
+        }
+        
+        private void AppendRootOperationName(StringBuilder queryBuilder, string operationName)
+        {
+            if (!string.IsNullOrEmpty(operationName))
+            {
+                queryBuilder.Append(' ');
+                queryBuilder.Append(operationName);
+            }
         }
 
         private void AppendRootArguments(StringBuilder builder, IReadOnlyDictionary<GraphQLFieldArguments, GraphQLQueryArgument> arguments)

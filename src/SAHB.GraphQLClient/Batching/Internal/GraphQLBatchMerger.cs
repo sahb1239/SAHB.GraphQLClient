@@ -18,6 +18,7 @@ namespace SAHB.GraphQLClient.Batching.Internal
     internal class GraphQLBatchMerger
     {
         private readonly GraphQLOperationType _graphQLOperationType;
+        private readonly string _operationName;
         private readonly string _url;
         private readonly HttpMethod _httpMethod;
         private readonly IDictionary<string, string> _headers;
@@ -34,9 +35,22 @@ namespace SAHB.GraphQLClient.Batching.Internal
         private GraphQLDataResult<JObject> _result;
         private string _executedQuery;
 
-        public GraphQLBatchMerger(GraphQLOperationType graphQLOperationType, string url, HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationToken, string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder, IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization graphQLDeserialization)
+        public GraphQLBatchMerger(GraphQLOperationType graphQLOperationType, string url,
+            HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationToken,
+            string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder,
+            IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization graphQLDeserialization) : this(
+            graphQLOperationType, null, url, httpMethod, headers, authorizationToken, authorizationMethod, executor,
+            fieldBuilder, queryGenerator, graphQLDeserialization)
+        {
+        }
+
+        public GraphQLBatchMerger(GraphQLOperationType graphQLOperationType, string operationName, string url,
+            HttpMethod httpMethod, IDictionary<string, string> headers, string authorizationToken,
+            string authorizationMethod, IGraphQLHttpExecutor executor, IGraphQLFieldBuilder fieldBuilder,
+            IGraphQLQueryGeneratorFromFields queryGenerator, IGraphQLDeserialization graphQLDeserialization)
         {
             _graphQLOperationType = graphQLOperationType;
+            _operationName = operationName;
             _url = url;
             _httpMethod = httpMethod;
             _headers = headers;
@@ -78,16 +92,13 @@ namespace SAHB.GraphQLClient.Batching.Internal
             return GetDeserializedResult<T>(identifier, cancellationToken);
         }
 
-        public async Task<GraphQLDataResult<T>> GetDetailedValue<T>(string identifier, CancellationToken cancellationToken)
+        public async Task<GraphQLDataResult<T>> GetDetailedValue<T>(string identifier,
+            CancellationToken cancellationToken)
             where T : class
         {
             var deserialized = await GetDeserializedResult<T>(identifier, cancellationToken).ConfigureAwait(false);
 
-            return new GraphQLDataResult<T>
-            {
-                Data = deserialized,
-                Headers = _result.Headers
-            };
+            return new GraphQLDataResult<T> {Data = deserialized, Headers = _result.Headers};
         }
 
         public async Task Execute(CancellationToken cancellationToken)
@@ -107,11 +118,13 @@ namespace SAHB.GraphQLClient.Batching.Internal
             var fields = _fields.SelectMany(e => e.Value).ToList();
 
             // Generate query
-            _executedQuery = _queryGenerator.GenerateQuery(_graphQLOperationType, fields,
+            _executedQuery = _queryGenerator.GenerateQuery(_graphQLOperationType, _operationName, fields,
                 _arguments.SelectMany(e => e.Value).ToArray());
 
             // Execute query
-            var serverResult = await _executor.ExecuteQuery(query: _executedQuery, url: _url, method: _httpMethod, authorizationToken: _authorizationToken, authorizationMethod: _authorizationMethod, headers: _headers, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var serverResult = await _executor.ExecuteQuery(query: _executedQuery, url: _url, method: _httpMethod,
+                authorizationToken: _authorizationToken, authorizationMethod: _authorizationMethod, headers: _headers,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
 
             // Deserilize result
             _result = _graphQLDeserialization.DeserializeResult<JObject>(serverResult.Response, fields);
@@ -178,7 +191,8 @@ namespace SAHB.GraphQLClient.Batching.Internal
             }
 
             // Deserialize from
-            return _graphQLDeserialization.DeserializeResult<T>(jsonObject: deserilizeFrom, fields: _fields[identifier]);
+            return _graphQLDeserialization.DeserializeResult<T>(jsonObject: deserilizeFrom,
+                fields: _fields[identifier]);
         }
 
         public bool Executed => _isExecuted;
